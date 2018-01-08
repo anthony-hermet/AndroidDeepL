@@ -1,9 +1,12 @@
-package com.anthony.deepl;
+package com.anthony.deepl.activity;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.anthony.deepl.R;
+import com.anthony.deepl.fragment.MainFragment;
+
+public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -1,3 +1,9 @@
 <resources>
+
+    <!--GLOBAL-->
     <string name="app_name">DeepL</string>
+
+    <!--MAIN ACTIVITY-->
+    <string name="to_translate_hint">Write or paste your text here. (English, French, German, Spanish, Italian, Dutch, Polish)</string>
+
 </resources>
