@@ -31,8 +31,6 @@ public class LanguageManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Language {}
 
-    private HashMap<String, String> mLanguagesHashMap;
-
     public static String getLanguageString(@Language String language, Context context) {
         int resId;
         switch (language) {
