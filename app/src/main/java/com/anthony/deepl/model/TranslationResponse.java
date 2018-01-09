@@ -83,7 +83,7 @@ class TranslationResponseResult {
 class TranslationResponseTranslations {
 
     @SerializedName("timeAfterPreprocessing")
-    private int mAfterPreprocessingTime;
+    private Double mAfterPreprocessingTime;
 
     @SerializedName("timeReceivedFromEndpoint")
     private String mReceivedFromEndpointTime;
