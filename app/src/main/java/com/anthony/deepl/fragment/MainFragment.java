@@ -7,8 +7,10 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 
 import com.anthony.deepl.R;
+import com.anthony.deepl.manager.LanguageManager;
 
 public class MainFragment extends Fragment {
 
@@ -56,7 +58,21 @@ public class MainFragment extends Fragment {
     // region Private Methods
 
     private void initViews(View view) {
+        // Views retrieval
+        mTranslateFromSpinner = view.findViewById(R.id.translate_from_spinner);
+        mTranslateToSpinner = view.findViewById(R.id.translate_to_spinner);
 
+        // Spinners setup
+        String translateFromLanguages[] = LanguageManager.getLanguagesStringArray(getContext(), null, true);
+        String translateToLanguages[] = LanguageManager.getLanguagesStringArray(getContext(), LanguageManager.getSavedTranslateFrom(), true);
+        // Default layout : android.R.layout.simple_spinner_item
+        ArrayAdapter<String> translateFromAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, translateFromLanguages);
+        ArrayAdapter<String> translateToAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, translateToLanguages);
+        // Default layout : android.R.layout.simple_spinner_dropdown_item
+        translateFromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        translateToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mTranslateFromSpinner.setAdapter(translateFromAdapter);
+        mTranslateToSpinner.setAdapter(translateToAdapter);
     }
 
     // endregion

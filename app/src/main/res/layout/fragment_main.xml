@@ -21,6 +21,7 @@
         android:id="@+id/translate_from_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:dropDownWidth="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/translate_from_text_view"
         app:layout_constraintBottom_toBottomOf="@id/translate_from_text_view"/>
@@ -54,6 +55,7 @@
         android:id="@+id/translate_to_spinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:dropDownWidth="match_parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/translate_to_text_view"
         app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"/>
@@ -66,7 +68,6 @@
         android:inputType="textLongMessage"
         android:gravity="top"
         android:minLines="5"
-        android:clickable="false"
         app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
