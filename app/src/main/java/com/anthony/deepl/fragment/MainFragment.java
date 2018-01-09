@@ -3,6 +3,7 @@ package com.anthony.deepl.fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,8 +14,12 @@ public class MainFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public MainFragment() {
-    }
+    private AppCompatSpinner mTranslateFromSpinner;
+    private AppCompatSpinner mTranslateToSpinner;
+
+    public MainFragment() {}
+
+    // region Overridden methods
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -24,7 +29,9 @@ public class MainFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        initViews(view);
+        return view;
     }
 
     @Override
@@ -42,6 +49,17 @@ public class MainFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+    // endregion
+
+
+    // region Private Methods
+
+    private void initViews(View view) {
+
+    }
+
+    // endregion
 
     public interface OnFragmentInteractionListener {
     }
