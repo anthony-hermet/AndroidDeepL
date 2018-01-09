@@ -9,6 +9,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -29,6 +30,8 @@ public class LanguageManager {
     @StringDef({AUTO, ENGLISH, GERMAN, FRENCH, SPANISH, ITALIAN, DUTCH, POLISH})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Language {}
+
+    private HashMap<String, String> mLanguagesHashMap;
 
     public static String getLanguageString(@Language String language, Context context) {
         int resId;
@@ -65,12 +68,23 @@ public class LanguageManager {
         return context.getString(resId);
     }
 
+    @Language
+    public static String getLanguageValue(String languageString, Context context) {
+        List<String> languagesList = Arrays.asList(AUTO, ENGLISH, GERMAN, FRENCH, SPANISH, ITALIAN, DUTCH, POLISH);
+        for (int i = 0, size = languagesList.size(); i < size; i++) {
+            if (languageString.equals(getLanguageString(languagesList.get(i), context))) {
+                return languagesList.get(i);
+            }
+        }
+        return AUTO;
+    }
+
     public static String[] getLanguagesStringArray(Context context, @Language String languageToRemove, boolean addAuto) {
         // We use a LinkedList because Arrays.asList return a fixed size list, not allowing item removal
         List<String> languagesList = new LinkedList<>(Arrays.asList(AUTO, ENGLISH, GERMAN, FRENCH, SPANISH, ITALIAN, DUTCH, POLISH));
         List<String> languagesStringList = new ArrayList<>();
         if (languageToRemove != null) {
-            languagesList.remove(ENGLISH);
+            languagesList.remove(languageToRemove);
         }
         if (!addAuto) {
             languagesList.remove(AUTO);

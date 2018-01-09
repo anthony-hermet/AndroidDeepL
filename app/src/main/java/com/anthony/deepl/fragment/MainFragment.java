@@ -7,7 +7,9 @@ import android.support.v7.widget.AppCompatSpinner;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.manager.LanguageManager;
@@ -29,8 +31,7 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         initViews(view);
         return view;
@@ -64,14 +65,28 @@ public class MainFragment extends Fragment {
 
         // Spinners setup
         String translateFromLanguages[] = LanguageManager.getLanguagesStringArray(getContext(), null, true);
-        String translateToLanguages[] = LanguageManager.getLanguagesStringArray(getContext(), LanguageManager.getSavedTranslateFrom(), true);
-        // Default layout : android.R.layout.simple_spinner_item
+        // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
         ArrayAdapter<String> translateFromAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, translateFromLanguages);
-        ArrayAdapter<String> translateToAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, translateToLanguages);
-        // Default layout : android.R.layout.simple_spinner_dropdown_item
-        translateFromAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        translateToAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        translateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateFromSpinner.setAdapter(translateFromAdapter);
+
+        mTranslateFromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                updateTranslateToSpinner();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    // Update languages available on translateTo spinner depending on selected translateFrom language
+    private void updateTranslateToSpinner() {
+        String selectedLanguage = LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
+        String translateToLanguages[] = LanguageManager.getLanguagesStringArray(getContext(), selectedLanguage, false);
+        ArrayAdapter<String> translateToAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, translateToLanguages);
+        translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
     }
 
