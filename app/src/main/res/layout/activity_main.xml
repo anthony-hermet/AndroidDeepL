@@ -7,6 +7,10 @@
     android:orientation="vertical"
     tools:context="com.anthony.deepl.activity.MainActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
     <fragment
         android:id="@+id/create_news_fragment"
         android:name="com.anthony.deepl.fragment.MainFragment"
