@@ -7,14 +7,12 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.backend.DeepLService;
@@ -157,7 +155,6 @@ public class MainFragment extends Fragment {
     }
 
     private void updateTranslation() {
-        Log.d("TEST", String.valueOf(mTranslationInProgress));
         // If a translation is in progress, we return directly
         if (mTranslationInProgress ||
                 mToTranslateEditText.getText().toString().replace(" ", "").length() <= 2) {
@@ -174,12 +171,10 @@ public class MainFragment extends Fragment {
         if (toTranslate.equals(mLastTranlatedSentence) &&
                 translateFrom.equals(mLastTranslatedFrom) &&
                 translateTo.equals(mLastTranslatedTo)) {
-            Log.d("TEST", "return");
             return;
         }
 
         // If fields have changed, we launch a new translation
-        Log.d("TEST", "translate");
         mTranslationInProgress = true;
         mLastTranlatedSentence = toTranslate;
         mLastTranslatedFrom = translateFrom;
@@ -206,7 +201,7 @@ public class MainFragment extends Fragment {
             @Override
             public void onFailure(@NonNull Call<TranslationResponse> call, @NonNull Throwable t) {
                 mTranslationInProgress = false;
-                Log.d("TEST", "failure");
+                // TODO : Log exception into tracking tool
             }
         });
     }
