@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--MAIN ACTIVITY-->
+    <string name="translate_from_label">Vertaal uit</string>
+    <string name="translate_to_label">Vertaal in het</string>
+    <string name="spinner_detect_language">Elke taal (detecteren)</string>
+    <string name="spinner_english">Engels</string>
+    <string name="spinner_german">Duits</string>
+    <string name="spinner_french">Frans</string>
+    <string name="spinner_spanish">Spaans</string>
+    <string name="spinner_italian">Italiaans</string>
+    <string name="spinner_dutch">Nederlands</string>
+    <string name="spinner_polish">Pools</string>
+    <string name="detected_language_label">(gedetecteerd)</string>
+    <string name="to_translate_hint">Typ of plak hier een tekst.\n(Engels, Duits, Frans, Spaans,\Italiaans, Nederlands, Pools)</string>
+    <string name="alternatives_label">Alternatieven :</string>
+
+</resources>

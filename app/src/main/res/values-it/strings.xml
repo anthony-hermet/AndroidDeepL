@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--MAIN ACTIVITY-->
+    <string name="translate_from_label">Traduci da</string>
+    <string name="translate_to_label">Traduci in</string>
+    <string name="spinner_detect_language">Qualsiasi lingua (rileva)</string>
+    <string name="spinner_english">Inglese</string>
+    <string name="spinner_german">Tedesco</string>
+    <string name="spinner_french">Francese</string>
+    <string name="spinner_spanish">Spagnolo</string>
+    <string name="spinner_italian">Italiano</string>
+    <string name="spinner_dutch">Olandese</string>
+    <string name="spinner_polish">Polacco</string>
+    <string name="detected_language_label">(rilevato)</string>
+    <string name="to_translate_hint">Scrivi o incolla il testo qui.\n(Inglese, Tedesco, Francese, Spagnolo,\Italiano, Olandese, Polacco)</string>
+    <string name="alternatives_label">Alternative :</string>
+
+</resources>
