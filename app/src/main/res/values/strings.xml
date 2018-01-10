@@ -16,9 +16,11 @@
     <string name="spinner_polish">Polish</string>
     <string name="detected_language_label">(detected)</string>
     <string name="to_translate_hint">Type or paste text here.\n(English, French, German, Spanish,\nItalian, Dutch, Polish)</string>
+    <string name="copied_to_clipboard_text">Text copied to clipboard</string>
     <string name="alternatives_label">Alternatives :</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Clear text</string>
+    <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
 
 </resources>

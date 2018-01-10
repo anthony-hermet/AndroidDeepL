@@ -1,16 +1,20 @@
 package com.anthony.deepl.fragment;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -43,6 +47,7 @@ public class MainFragment extends Fragment {
     private EditText mToTranslateEditText;
     private EditText mTranslatedEditText;
     private ImageButton mClearButton;
+    private ImageButton mCopyToClipboardButton;
 
     private DeepLService mDeepLService;
 
@@ -103,6 +108,7 @@ public class MainFragment extends Fragment {
         mToTranslateEditText = view.findViewById(R.id.to_translate_edit_text);
         mTranslatedEditText = view.findViewById(R.id.translated_edit_text);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
+        mCopyToClipboardButton = view.findViewById(R.id.copy_to_clipboard_button);
 
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
@@ -119,8 +125,7 @@ public class MainFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         mTranslateToSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -130,14 +135,12 @@ public class MainFragment extends Fragment {
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
+            public void onNothingSelected(AdapterView<?> parent) {}
         });
 
         mToTranslateEditText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -146,14 +149,53 @@ public class MainFragment extends Fragment {
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(Editable s) {}
+        });
+
+        mTranslatedEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mCopyToClipboardButton.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
             }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
         mClearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mToTranslateEditText.setText("");
+                mTranslatedEditText.setText("");
+            }
+        });
+
+        mCopyToClipboardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String translatedText = mTranslatedEditText.getText().toString();
+                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                if (clipboard != null) {
+                    // First we close the keyboard
+                    Activity mainActivity = getActivity();
+                    View view = mainActivity.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+
+                    // Then we clip the translated text and display confirmation snackbar
+                    ClipData clip = ClipData.newPlainText(translatedText, translatedText);
+                    clipboard.setPrimaryClip(clip);
+                    Snackbar.make(mClearButton,
+                            R.string.copied_to_clipboard_text,
+                            Snackbar.LENGTH_SHORT).show();
+                }
+                // TODO
+                // else Timber.e("Clipboard is null and shouldn't be");
             }
         });
     }

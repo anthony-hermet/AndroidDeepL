@@ -86,4 +86,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             tools:text="Bonjour le monde"/>
 
+    <ImageButton
+            android:id="@+id/copy_to_clipboard_button"
+            android:layout_width="34dp"
+            android:layout_height="34dp"
+            android:layout_margin="6dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            android:background="?selectableItemBackgroundBorderless"
+            android:tint="@color/colorAccentDark"
+            android:contentDescription="@string/copy_to_clipboard_button_description"
+            app:srcCompat="@drawable/ic_content_copy_black_24dp"
+            app:layout_constraintTop_toTopOf="@id/translated_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/translated_edit_text"
+            tools:visibility="visible"/>
+
 </android.support.constraint.ConstraintLayout>
