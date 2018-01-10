@@ -18,4 +18,7 @@
     <string name="to_translate_hint">Type or paste text here.\n(English, French, German, Spanish,\nItalian, Dutch, Polish)</string>
     <string name="alternatives_label">Alternatives :</string>
 
+    <!--BUTTON DESCRIPTIONS-->
+    <string name="clear_to_translate_button_description">Clear text</string>
+
 </resources>

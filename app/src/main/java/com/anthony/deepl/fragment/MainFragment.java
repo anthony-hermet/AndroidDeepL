@@ -7,12 +7,14 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.backend.DeepLService;
@@ -40,6 +42,7 @@ public class MainFragment extends Fragment {
     private AppCompatSpinner mTranslateToSpinner;
     private EditText mToTranslateEditText;
     private EditText mTranslatedEditText;
+    private ImageButton mClearButton;
 
     private DeepLService mDeepLService;
 
@@ -99,6 +102,7 @@ public class MainFragment extends Fragment {
         mTranslateToSpinner = view.findViewById(R.id.translate_to_spinner);
         mToTranslateEditText = view.findViewById(R.id.to_translate_edit_text);
         mTranslatedEditText = view.findViewById(R.id.translated_edit_text);
+        mClearButton = view.findViewById(R.id.clear_to_translate_button);
 
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
@@ -107,6 +111,7 @@ public class MainFragment extends Fragment {
         translateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateFromSpinner.setAdapter(translateFromAdapter);
 
+        // Init listeners for Spinners, EditText and Buttons
         mTranslateFromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -136,11 +141,19 @@ public class MainFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                mClearButton.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
                 updateTranslation();
             }
 
             @Override
             public void afterTextChanged(Editable s) {
+            }
+        });
+
+        mClearButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mToTranslateEditText.setText("");
             }
         });
     }
