@@ -9,6 +9,8 @@ import retrofit2.http.POST;
 
 public interface DeepLService {
 
+    String BASE_URL = "https://www.deepl.com";
+
     @POST("/jsonrpc")
     Call<TranslationResponse> translateText(@Body TranslationRequest translationRequest);
 

@@ -13,7 +13,7 @@
     <string name="spinner_dutch">Olandese</string>
     <string name="spinner_polish">Polacco</string>
     <string name="detected_language_label">(rilevato)</string>
-    <string name="to_translate_hint">Scrivi o incolla il testo qui.\n(Inglese, Tedesco, Francese, Spagnolo,\Italiano, Olandese, Polacco)</string>
+    <string name="to_translate_hint">Scrivi o incolla il testo qui.\n(Inglese, Tedesco, Francese, Spagnolo,\nItaliano, Olandese, Polacco)</string>
     <string name="alternatives_label">Alternative :</string>
 
 </resources>

@@ -22,5 +22,6 @@
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Clear text</string>
     <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
+    <string name="invert_languages_button_description">Invert languages</string>
 
 </resources>
