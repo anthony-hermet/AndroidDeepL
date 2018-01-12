@@ -60,6 +60,7 @@ public class MainFragment extends Fragment implements
     private String mLastTranslatedSentence;
     private String mLastTranslatedFrom;
     private String mLastTranslatedTo;
+    private String mDetectedLanguage;
     private boolean mTranslationInProgress;
 
     public MainFragment() {
@@ -107,6 +108,10 @@ public class MainFragment extends Fragment implements
             case R.id.clear_to_translate_button:
                 mToTranslateEditText.setText("");
                 mTranslatedEditText.setText("");
+                if (mDetectedLanguage != null) {
+                    hideDetectedLanguage();
+                    updateTranslateToSpinner();
+                }
                 break;
             case R.id.copy_to_clipboard_button:
                 copyTranslatedTextToClipboard();
@@ -124,6 +129,7 @@ public class MainFragment extends Fragment implements
         int parentId = parent.getId();
         switch (parentId) {
             case R.id.translate_from_spinner:
+                hideDetectedLanguage();
                 updateTranslateToSpinner();
                 break;
             case R.id.translate_to_spinner:
@@ -210,14 +216,17 @@ public class MainFragment extends Fragment implements
 
     private void updateTranslateToSpinner() {
         // We update the translateTo spinner based on translateFrom selected language
-        String selectedLanguage = LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
+        String selectedLanguage = mDetectedLanguage != null ?
+                mDetectedLanguage :
+                LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
         mTranslateToLanguages = LanguageManager.getLanguagesStringArray(getContext(), selectedLanguage, false);
         ArrayAdapter<String> translateToAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
 
         // If translateFrom selected language isn't auto, we display the invert languages button
-        mInvertLanguagesButton.setVisibility(selectedLanguage.equals(AUTO) ? View.INVISIBLE : View.VISIBLE);
+        mInvertLanguagesButton.setVisibility((selectedLanguage.equals(AUTO) && mDetectedLanguage == null) ?
+                View.INVISIBLE : View.VISIBLE);
 
         // We select the last used translateTo
         Context context = getContext();
@@ -281,12 +290,10 @@ public class MainFragment extends Fragment implements
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
 
-                // If AUTO is selected, we update the label with the detected language
+                // If AUTO is selected, we update the label with the detected language and the translateTo spinner
                 if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
-                    TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
-                    String detectedLanguage = LanguageManager.getLanguageString(response.body().getSourceLanguage(), getContext());
-                    detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
-                    spinnerTextView.setText(detectedLanguage);
+                    mDetectedLanguage = response.body().getSourceLanguage();
+                    displayDetectedLanguage();
                 }
             }
 
@@ -299,7 +306,19 @@ public class MainFragment extends Fragment implements
     }
 
     private void displayDetectedLanguage() {
+        updateTranslateToSpinner();
+        String detectedLanguage = LanguageManager.getLanguageString(mDetectedLanguage, getContext());
+        detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
+        TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
+        spinnerTextView.setText(detectedLanguage);
+    }
 
+    private void hideDetectedLanguage() {
+        mDetectedLanguage = null;
+        if (mTranslateFromSpinner.getSelectedItemPosition() == 0) {
+            TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
+            spinnerTextView.setText(mTranslateFromLanguages[0]);
+        }
     }
 
     private void copyTranslatedTextToClipboard() {
