@@ -1,74 +1,120 @@
 <android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.anthony.deepl.fragment.MainFragment">
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context="com.anthony.deepl.fragment.MainFragment">
 
     <TextView
-        android:id="@+id/translate_from_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:gravity="center_vertical"
-        android:text="@string/translate_from_label"
-        android:textSize="@dimen/translate_label_size"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/translate_from_spinner"/>
+            android:id="@+id/translate_from_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:gravity="center_vertical"
+            android:text="@string/translate_from_label"
+            android:textSize="@dimen/translate_label_size"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/translate_from_spinner"/>
 
     <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/translate_from_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/translate_from_text_view"
-        app:layout_constraintBottom_toBottomOf="@id/translate_from_text_view"/>
+            android:id="@+id/translate_from_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/translate_from_text_view"
+            app:layout_constraintBottom_toBottomOf="@id/translate_from_text_view"/>
 
     <EditText
-        android:id="@+id/to_translate_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/translate_edit_text_height"
-        android:inputType="textLongMessage"
-        android:hint="@string/to_translate_hint"
-        android:gravity="top"
-        android:minLines="5"
-        app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Hello world"/>
+            android:id="@+id/to_translate_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/translate_edit_text_height"
+            android:inputType="textLongMessage"
+            android:hint="@string/to_translate_hint"
+            android:gravity="top"
+            android:minLines="5"
+            app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Hello world"/>
+
+    <ImageButton
+            android:id="@+id/clear_to_translate_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="6dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            android:background="?selectableItemBackgroundBorderless"
+            android:tint="@color/colorAccentDark"
+            android:contentDescription="@string/clear_to_translate_button_description"
+            app:srcCompat="@drawable/ic_clear_black_24dp"
+            app:layout_constraintTop_toTopOf="@id/to_translate_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/to_translate_edit_text"
+            tools:visibility="visible"/>
+
+    <ImageButton
+            android:id="@+id/invert_languages_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="3dp"
+            android:padding="4dp"
+            android:visibility="invisible"
+            android:background="?selectableItemBackgroundBorderless"
+            android:tint="@color/colorAccentDark"
+            android:contentDescription="@string/invert_languages_button_description"
+            app:srcCompat="@drawable/ic_swap_vert_black_24dp"
+            app:layout_constraintTop_toBottomOf="@id/to_translate_edit_text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:visibility="visible"/>
 
     <TextView
-        android:id="@+id/translate_to_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="25dp"
-        android:gravity="center_vertical"
-        android:text="@string/translate_to_label"
-        android:textSize="@dimen/translate_label_size"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/to_translate_edit_text"
-        app:layout_constraintEnd_toStartOf="@+id/translate_to_spinner"/>
+            android:id="@+id/translate_to_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="25dp"
+            android:gravity="center_vertical"
+            android:text="@string/translate_to_label"
+            android:textSize="@dimen/translate_label_size"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/invert_languages_button"
+            app:layout_constraintEnd_toStartOf="@+id/translate_to_spinner"/>
 
     <android.support.v7.widget.AppCompatSpinner
-        android:id="@+id/translate_to_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/translate_to_text_view"
-        app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"/>
+            android:id="@+id/translate_to_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/translate_to_text_view"
+            app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"/>
 
     <EditText
-        android:id="@+id/translated_edit_text"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:minHeight="@dimen/translate_edit_text_height"
-        android:inputType="textLongMessage"
-        android:gravity="top"
-        android:minLines="5"
-        app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="Bonjour le monde" />
+            android:id="@+id/translated_edit_text"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minHeight="@dimen/translate_edit_text_height"
+            android:inputType="textLongMessage"
+            android:gravity="top"
+            android:minLines="5"
+            app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="Bonjour le monde"/>
+
+    <ImageButton
+            android:id="@+id/copy_to_clipboard_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="6dp"
+            android:padding="4dp"
+            android:visibility="gone"
+            android:background="?selectableItemBackgroundBorderless"
+            android:tint="@color/colorAccentDark"
+            android:contentDescription="@string/copy_to_clipboard_button_description"
+            app:srcCompat="@drawable/ic_content_copy_black_24dp"
+            app:layout_constraintTop_toTopOf="@id/translated_edit_text"
+            app:layout_constraintEnd_toEndOf="@id/translated_edit_text"
+            tools:visibility="visible"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.anthony.deepl.manager;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.StringDef;
 
 import com.anthony.deepl.R;
@@ -9,9 +10,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class LanguageManager {
 
@@ -31,12 +33,13 @@ public class LanguageManager {
     @Retention(RetentionPolicy.SOURCE)
     public @interface Language {}
 
+    private static final String LANGUAGE_SHARED_PREFERENCES = "deepl_language_manager";
+    private static final String LAST_TRANSLATE_FROM_PREFERENCES_KEY = "last_translate_from";
+    private static final String LAST_TRANSLATE_TO_PREFERENCES_KEY = "last_translate_to";
+
     public static String getLanguageString(@Language String language, Context context) {
         int resId;
         switch (language) {
-            case AUTO :
-                resId = R.string.spinner_detect_language;
-                break;
             case ENGLISH :
                 resId = R.string.spinner_english;
                 break;
@@ -98,12 +101,26 @@ public class LanguageManager {
     }
 
     @Language
-    public static String getSavedTranslateFrom() {
-        return AUTO;
+    public static String getLastUsedTranslateFrom(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(LANGUAGE_SHARED_PREFERENCES, MODE_PRIVATE);
+        return prefs.getString(LAST_TRANSLATE_FROM_PREFERENCES_KEY, AUTO);
+    }
+
+    public static void saveLastUsedTranslateFrom(Context context, @Language String language) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(LANGUAGE_SHARED_PREFERENCES, MODE_PRIVATE).edit();
+        editor.putString(LAST_TRANSLATE_FROM_PREFERENCES_KEY, language);
+        editor.apply();
     }
 
     @Language
-    public static String getSavedTranslateTo() {
-        return ENGLISH;
+    public static String getLastUsedTranslateTo(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(LANGUAGE_SHARED_PREFERENCES, MODE_PRIVATE);
+        return prefs.getString(LAST_TRANSLATE_TO_PREFERENCES_KEY, ENGLISH);
+    }
+
+    public static void saveLastUsedTranslateTo(Context context, @Language String language) {
+        SharedPreferences.Editor editor = context.getSharedPreferences(LANGUAGE_SHARED_PREFERENCES, MODE_PRIVATE).edit();
+        editor.putString(LAST_TRANSLATE_TO_PREFERENCES_KEY, language);
+        editor.apply();
     }
 }

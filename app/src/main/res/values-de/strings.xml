@@ -13,7 +13,7 @@
     <string name="spinner_dutch">Deutsch</string>
     <string name="spinner_polish">Polnisch</string>
     <string name="detected_language_label">(erkannt)</string>
-    <string name="to_translate_hint">Gib deinen Text hier ein.\n(Englisch, Deutsch, Französisch, Spanisch,\Italienisch, Deutsch, Polnisch)</string>
+    <string name="to_translate_hint">Gib deinen Text hier ein.\n(Englisch, Deutsch, Französisch, Spanisch,\nItalienisch, Deutsch, Polnisch)</string>
     <string name="alternatives_label">Alternativen :</string>
 
 </resources>
