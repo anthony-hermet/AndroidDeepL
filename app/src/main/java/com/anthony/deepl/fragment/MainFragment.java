@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,13 +20,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.backend.DeepLService;
 import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
 import com.anthony.deepl.model.TranslationResponse;
+import com.anthony.deepl.util.AndroidUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +57,8 @@ public class MainFragment extends Fragment implements
     private ImageButton mClearButton;
     private ImageButton mCopyToClipboardButton;
     private ImageButton mInvertLanguagesButton;
+    private TextView mAlternativesLabel;
+    private LinearLayout mAlternativesLinearLayout;
 
     private DeepLService mDeepLService;
     private String mTranslateFromLanguages[];
@@ -106,12 +112,7 @@ public class MainFragment extends Fragment implements
         int viewId = v.getId();
         switch (viewId) {
             case R.id.clear_to_translate_button:
-                mToTranslateEditText.setText("");
-                mTranslatedEditText.setText("");
-                if (mDetectedLanguage != null) {
-                    hideDetectedLanguage();
-                    updateTranslateToSpinner();
-                }
+                clearTextTapped();
                 break;
             case R.id.copy_to_clipboard_button:
                 copyTranslatedTextToClipboard();
@@ -157,6 +158,8 @@ public class MainFragment extends Fragment implements
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
         mCopyToClipboardButton = view.findViewById(R.id.copy_to_clipboard_button);
         mInvertLanguagesButton = view.findViewById(R.id.invert_languages_button);
+        mAlternativesLabel = view.findViewById(R.id.alternatives_label);
+        mAlternativesLinearLayout = view.findViewById(R.id.alternatives_linear_layout);
 
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
@@ -285,8 +288,30 @@ public class MainFragment extends Fragment implements
         call.enqueue(new Callback<TranslationResponse>() {
             @Override
             public void onResponse(@NonNull Call<TranslationResponse> call, @NonNull Response<TranslationResponse> response) {
+                Context context = getContext();
+                if (context == null) return;
+
+                // Main translation
+                TranslationResponse translationResponse = response.body();
                 mTranslationInProgress = false;
-                mTranslatedEditText.setText(response.body().getBestResult());
+                mTranslatedEditText.setText(translationResponse.getBestResult());
+
+                // Alternative translations
+                List<String> alternatives = translationResponse.getOtherResults();
+                int margin3dp = (int) AndroidUtils.convertDpToPixel(3, context);
+                int margin6dp = (int) AndroidUtils.convertDpToPixel(6, context);
+                mAlternativesLabel.setVisibility(alternatives.size() > 0 ? View.VISIBLE : View.GONE);
+                mAlternativesLinearLayout.removeAllViews();
+                for (int i = 0, size = alternatives.size(); i < size; i++) {
+                    TextView textView = new TextView(context);
+                    textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
+                    textView.setText(alternatives.get(i));
+                    LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                    textViewParams.setMargins(margin6dp, margin3dp, margin6dp, margin3dp);
+                    textView.setLayoutParams(textViewParams);
+                    mAlternativesLinearLayout.addView(textView);
+                }
+
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
 
@@ -318,6 +343,17 @@ public class MainFragment extends Fragment implements
         if (mTranslateFromSpinner.getSelectedItemPosition() == 0) {
             TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
             spinnerTextView.setText(mTranslateFromLanguages[0]);
+        }
+    }
+
+    private void clearTextTapped() {
+        mToTranslateEditText.setText("");
+        mTranslatedEditText.setText("");
+        mAlternativesLabel.setVisibility(View.GONE);
+        mAlternativesLinearLayout.removeAllViews();
+        if (mDetectedLanguage != null) {
+            hideDetectedLanguage();
+            updateTranslateToSpinner();
         }
     }
 

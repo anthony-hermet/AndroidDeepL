@@ -117,4 +117,25 @@
             app:layout_constraintEnd_toEndOf="@id/translated_edit_text"
             tools:visibility="visible"/>
 
+    <TextView
+        android:id="@+id/alternatives_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alternatives_label"
+        android:layout_margin="6dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/translated_edit_text"/>
+
+    <LinearLayout
+        android:id="@+id/alternatives_linear_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="start"
+        android:layout_marginTop="3dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/alternatives_label"/>
+
 </android.support.constraint.ConstraintLayout>

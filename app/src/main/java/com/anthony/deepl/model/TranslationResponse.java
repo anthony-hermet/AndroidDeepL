@@ -29,8 +29,8 @@ public class TranslationResponse {
                         null;
         for (int i = 0, size = beams != null ? beams.size() : 0; i < size; i++) {
             TranslationResponseBeam beam = beams.get(i);
-            if (bestResultScore == null || bestResultScore < beam.getTranslationScore()) {
-                bestResultScore = beam.getTranslationScore();
+            if (bestResultScore == null || bestResultScore < beam.getTotalProbability()) {
+                bestResultScore = beam.getTotalProbability();
                 bestResultSentence = beam.getTranslatedSentence();
             }
         }
@@ -49,8 +49,8 @@ public class TranslationResponse {
         for (int i = 0, size = beams != null ? beams.size() : 0; i < size; i++) {
             TranslationResponseBeam beam = beams.get(i);
             otherSentences.add(beam.getTranslatedSentence());
-            if (bestResultScore == null || bestResultScore < beam.getTranslationScore()) {
-                bestResultScore = beam.getTranslationScore();
+            if (bestResultScore == null || bestResultScore < beam.getTotalProbability()) {
+                bestResultScore = beam.getTotalProbability();
                 bestResultPosition = i;
             }
         }
@@ -126,7 +126,11 @@ class TranslationResponseBeam {
     private Float mTotalProbability;
 
     public float getTranslationScore() {
-        return mTranslationScore >= 0 ? mTranslationScore : mTranslationScore * -1;
+        return mTranslationScore;
+    }
+
+    public float getTotalProbability() {
+        return mTotalProbability;
     }
 
     public String getTranslatedSentence() {
