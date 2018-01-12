@@ -16,6 +16,10 @@ public class TranslationResponse {
     @SerializedName("result")
     private TranslationResponseResult mResult;
 
+    public String getSourceLanguage() {
+        return mResult.getSourceLanguage();
+    }
+
     public String getBestResult() {
         String bestResultSentence = null;
         Float bestResultScore = null;
@@ -73,6 +77,10 @@ class TranslationResponseResult {
 
     @SerializedName("translations")
     private List<TranslationResponseTranslations> mTranslations;
+
+    public String getSourceLanguage() {
+        return mSourceLanguage;
+    }
 
     public List<TranslationResponseTranslations> getTranslations() {
         return mTranslations;

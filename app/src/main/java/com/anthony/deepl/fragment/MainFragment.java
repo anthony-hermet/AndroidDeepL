@@ -19,7 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.backend.DeepLService;
@@ -280,6 +280,14 @@ public class MainFragment extends Fragment implements
                 mTranslatedEditText.setText(response.body().getBestResult());
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
+
+                // If AUTO is selected, we update the label with the detected language
+                if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
+                    TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
+                    String detectedLanguage = LanguageManager.getLanguageString(response.body().getSourceLanguage(), getContext());
+                    detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
+                    spinnerTextView.setText(detectedLanguage);
+                }
             }
 
             @Override
@@ -288,6 +296,10 @@ public class MainFragment extends Fragment implements
                 // TODO : Log exception into tracking tool
             }
         });
+    }
+
+    private void displayDetectedLanguage() {
+
     }
 
     private void copyTranslatedTextToClipboard() {

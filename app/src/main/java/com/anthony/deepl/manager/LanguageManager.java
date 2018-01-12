@@ -40,9 +40,6 @@ public class LanguageManager {
     public static String getLanguageString(@Language String language, Context context) {
         int resId;
         switch (language) {
-            case AUTO :
-                resId = R.string.spinner_detect_language;
-                break;
             case ENGLISH :
                 resId = R.string.spinner_english;
                 break;
