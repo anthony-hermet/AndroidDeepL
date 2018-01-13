@@ -30,6 +30,7 @@ import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
 import com.anthony.deepl.model.TranslationResponse;
 import com.anthony.deepl.util.AndroidUtils;
+import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,10 +40,9 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 import static com.anthony.deepl.manager.LanguageManager.AUTO;
-import static com.anthony.deepl.manager.LanguageManager.ENGLISH;
-import static com.anthony.deepl.manager.LanguageManager.FRENCH;
 
 public class MainFragment extends Fragment implements
         View.OnClickListener,
@@ -61,6 +61,7 @@ public class MainFragment extends Fragment implements
     private LinearLayout mAlternativesLinearLayout;
 
     private DeepLService mDeepLService;
+    private FirebaseAnalytics mFirebaseAnalytics;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
     private String mLastTranslatedSentence;
@@ -69,8 +70,7 @@ public class MainFragment extends Fragment implements
     private String mDetectedLanguage;
     private boolean mTranslationInProgress;
 
-    public MainFragment() {
-    }
+    public MainFragment() {}
 
     // region Overridden methods
 
@@ -82,6 +82,7 @@ public class MainFragment extends Fragment implements
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mDeepLService = retrofit.create(DeepLService.class);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
     }
 
     @Override
@@ -245,6 +246,7 @@ public class MainFragment extends Fragment implements
     private void updateTranslation() {
         // If a translation is in progress, we return directly
         if (mTranslationInProgress ||
+                mTranslateToLanguages == null ||
                 mToTranslateEditText.getText().toString().replace(" ", "").length() <= 2) {
             return;
         }
@@ -276,8 +278,8 @@ public class MainFragment extends Fragment implements
         mLastTranslatedFrom = translateFrom;
         mLastTranslatedTo = translateTo;
         List<String> preferredLanguages = new ArrayList<>();
-        preferredLanguages.add(FRENCH);
-        preferredLanguages.add(ENGLISH);
+        preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(context));
+        preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
         TranslationRequest request = new TranslationRequest(
                 toTranslate,
@@ -312,6 +314,12 @@ public class MainFragment extends Fragment implements
                     mAlternativesLinearLayout.addView(textView);
                 }
 
+                // Reporting
+                Bundle params = new Bundle();
+                params.putString("translate_from", mLastTranslatedFrom);
+                params.putString("translate_to", mLastTranslatedTo);
+                mFirebaseAnalytics.logEvent("translation", params);
+
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
 
@@ -325,7 +333,7 @@ public class MainFragment extends Fragment implements
             @Override
             public void onFailure(@NonNull Call<TranslationResponse> call, @NonNull Throwable t) {
                 mTranslationInProgress = false;
-                // TODO : Log exception into tracking tool
+                Timber.e(t);
             }
         });
     }
@@ -355,6 +363,7 @@ public class MainFragment extends Fragment implements
             hideDetectedLanguage();
             updateTranslateToSpinner();
         }
+        mFirebaseAnalytics.logEvent("clear_text", null);
     }
 
     private void copyTranslatedTextToClipboard() {
@@ -375,9 +384,12 @@ public class MainFragment extends Fragment implements
             Snackbar.make(mClearButton,
                     R.string.copied_to_clipboard_text,
                     Snackbar.LENGTH_SHORT).show();
+
+            mFirebaseAnalytics.logEvent("copy_to_clipboard", null);
         }
-        // TODO
-        // else Timber.e("Clipboard is null and shouldn't be");
+        else {
+            Timber.w("Clipboard is null and shouldn't be");
+        }
     }
 
     private void invertLanguages() {
@@ -394,6 +406,8 @@ public class MainFragment extends Fragment implements
                 break;
             }
         }
+
+        mFirebaseAnalytics.logEvent("invert_languages", null);
     }
 
     // endregion
