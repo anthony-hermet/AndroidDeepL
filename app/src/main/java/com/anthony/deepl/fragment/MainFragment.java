@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -25,6 +24,7 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.anthony.deepl.R;
+import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
 import com.anthony.deepl.backend.DeepLService;
 import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
@@ -61,6 +61,7 @@ public class MainFragment extends Fragment implements
     private LinearLayout mAlternativesLinearLayout;
 
     private DeepLService mDeepLService;
+    private ShrinkSpinnerAdapter mTranslateFromAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
@@ -165,9 +166,9 @@ public class MainFragment extends Fragment implements
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
         mTranslateFromLanguages = LanguageManager.getLanguagesStringArray(getContext(), null, true);
-        ArrayAdapter<String> translateFromAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateFromLanguages);
-        translateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
-        mTranslateFromSpinner.setAdapter(translateFromAdapter);
+        mTranslateFromAdapter = new ShrinkSpinnerAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateFromLanguages);
+        mTranslateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
+        mTranslateFromSpinner.setAdapter(mTranslateFromAdapter);
 
         // We select the last used translateTo
         Context context = getContext();
@@ -224,7 +225,7 @@ public class MainFragment extends Fragment implements
                 mDetectedLanguage :
                 LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
         mTranslateToLanguages = LanguageManager.getLanguagesStringArray(getContext(), selectedLanguage, false);
-        ArrayAdapter<String> translateToAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
+        ShrinkSpinnerAdapter<String> translateToAdapter = new ShrinkSpinnerAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
 
@@ -325,7 +326,7 @@ public class MainFragment extends Fragment implements
 
                 // If AUTO is selected, we update the label with the detected language and the translateTo spinner
                 if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
-                    mDetectedLanguage = response.body().getSourceLanguage();
+                    mDetectedLanguage = translationResponse.getSourceLanguage();
                     displayDetectedLanguage();
                 }
             }
@@ -344,10 +345,12 @@ public class MainFragment extends Fragment implements
         detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
         TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
         spinnerTextView.setText(detectedLanguage);
+        mTranslateFromAdapter.setDetectedLanguage(detectedLanguage);
     }
 
     private void hideDetectedLanguage() {
         mDetectedLanguage = null;
+        mTranslateFromAdapter.clearDetectedLanguage();
         if (mTranslateFromSpinner.getSelectedItemPosition() == 0) {
             TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
             spinnerTextView.setText(mTranslateFromLanguages[0]);
@@ -373,12 +376,12 @@ public class MainFragment extends Fragment implements
             // First we close the keyboard
             Activity mainActivity = getActivity();
             View view = mainActivity.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (view != null && imm != null) {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
 
-            // Then we clip the translated text and display confirmation snackbar
+            // Then we clip the translated text and display confirmation Snackbar
             ClipData clip = ClipData.newPlainText(translatedText, translatedText);
             clipboard.setPrimaryClip(clip);
             Snackbar.make(mClearButton,
