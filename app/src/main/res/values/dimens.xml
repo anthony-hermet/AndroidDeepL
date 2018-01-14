@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="default_toolbar_elevation">8dp</dimen>
-    <dimen name="translate_edit_text_height">160dp</dimen>
     <dimen name="translate_label_size">15sp</dimen>
 </resources>

@@ -1,4 +1,5 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -42,17 +43,11 @@
                     android:id="@+id/to_translate_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:gravity="top"
                     android:hint="@string/to_translate_hint"
-                    android:inputType="textLongMessage"
-                    android:minHeight="@dimen/translate_edit_text_height"
-                    android:minLines="5"
-                    android:padding="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/clear_to_translate_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
-                    tools:text="Hello world" />
+                    style="@style/TranslationEditTeStyle" />
 
                 <ImageButton
                     android:id="@+id/clear_to_translate_button"
@@ -64,7 +59,7 @@
                     android:padding="4dp"
                     android:tint="@color/colorAccentDark"
                     android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@id/to_translate_edit_text"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/to_translate_edit_text"
                     app:srcCompat="@drawable/ic_clear_black_24dp"
                     tools:visibility="visible" />
@@ -126,15 +121,10 @@
                     android:id="@+id/translated_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:background="@android:color/transparent"
-                    android:gravity="top"
-                    android:inputType="textLongMessage"
-                    android:minHeight="@dimen/translate_edit_text_height"
-                    android:minLines="5"
-                    android:padding="6dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/copy_to_clipboard_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
+                    style="@style/TranslationEditTeStyle"
                     tools:text="Bonjour le monde" />
 
                 <android.support.design.widget.FloatingActionButton
@@ -158,15 +148,21 @@
             android:id="@+id/alternatives_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
             android:text="@string/alternatives_label"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible"/>
 
         <LinearLayout
             android:id="@+id/alternatives_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="3dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginEnd="6dp"
             android:gravity="start"
             android:orientation="vertical" />
 

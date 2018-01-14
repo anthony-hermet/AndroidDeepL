@@ -13,6 +13,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -323,16 +324,16 @@ public class MainFragment extends Fragment implements
 
                 // Alternative translations
                 List<String> alternatives = translationResponse.getOtherResults();
-                int margin3dp = (int) AndroidUtils.convertDpToPixel(3, context);
-                int margin6dp = (int) AndroidUtils.convertDpToPixel(6, context);
+                int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
                 mAlternativesLabel.setVisibility(alternatives.size() > 0 ? View.VISIBLE : View.GONE);
                 mAlternativesLinearLayout.removeAllViews();
                 for (int i = 0, size = alternatives.size(); i < size; i++) {
                     TextView textView = new TextView(context);
                     textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
                     textView.setText(alternatives.get(i));
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
                     LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    textViewParams.setMargins(margin6dp, margin3dp, margin6dp, margin3dp);
+                    textViewParams.setMargins(0, margin4dp, 0, margin4dp);
                     textView.setLayoutParams(textViewParams);
                     mAlternativesLinearLayout.addView(textView);
                 }
