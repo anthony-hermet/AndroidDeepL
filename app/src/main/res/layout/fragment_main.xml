@@ -73,19 +73,15 @@
 
         </android.support.v7.widget.CardView>
 
-        <ImageButton
+        <android.support.design.widget.FloatingActionButton
             android:id="@+id/invert_languages_button"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_margin="3dp"
-            android:background="?selectableItemBackgroundBorderless"
             android:contentDescription="@string/invert_languages_button_description"
-            android:padding="4dp"
-            android:tint="@color/colorAccentDark"
-            android:visibility="invisible"
             app:srcCompat="@drawable/ic_swap_vert_black_24dp"
-            tools:visibility="visible" />
+            app:fabSize="mini"/>
 
         <android.support.v7.widget.CardView
             style="@style/TranslationCardViewStyle"
@@ -141,21 +137,18 @@
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
                     tools:text="Bonjour le monde" />
 
-                <ImageButton
+                <android.support.design.widget.FloatingActionButton
                     android:id="@+id/copy_to_clipboard_button"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     android:layout_margin="6dp"
-                    android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/copy_to_clipboard_button_description"
-                    android:padding="4dp"
-                    android:tint="@color/colorAccentDark"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/translated_edit_text"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_content_copy_black_24dp"
-                    tools:visibility="visible" />
+                    app:fabSize="mini"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
             </android.support.constraint.ConstraintLayout>
 

@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -57,8 +58,8 @@ public class MainFragment extends Fragment implements
     private EditText mTranslatedEditText;
     private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
-    private ImageButton mCopyToClipboardButton;
-    private ImageButton mInvertLanguagesButton;
+    private FloatingActionButton mCopyToClipboardFab;
+    private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
     private LinearLayout mAlternativesLinearLayout;
 
@@ -161,8 +162,8 @@ public class MainFragment extends Fragment implements
         mTranslatedEditText = view.findViewById(R.id.translated_edit_text);
         mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
-        mCopyToClipboardButton = view.findViewById(R.id.copy_to_clipboard_button);
-        mInvertLanguagesButton = view.findViewById(R.id.invert_languages_button);
+        mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
+        mInvertLanguagesFab = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
         mAlternativesLinearLayout = view.findViewById(R.id.alternatives_linear_layout);
 
@@ -191,8 +192,10 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner.setOnItemSelectedListener(this);
         mTranslateToSpinner.setOnItemSelectedListener(this);
         mClearButton.setOnClickListener(this);
-        mCopyToClipboardButton.setOnClickListener(this);
-        mInvertLanguagesButton.setOnClickListener(this);
+        mCopyToClipboardFab.setOnClickListener(this);
+        mInvertLanguagesFab.setOnClickListener(this);
+        mCopyToClipboardFab.hide();
+        mInvertLanguagesFab.hide();
         mToTranslateEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -217,7 +220,12 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCopyToClipboardButton.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+                if (count > 0) {
+                    mCopyToClipboardFab.show();
+                }
+                else {
+                    mCopyToClipboardFab.hide();
+                }
             }
 
             @Override
@@ -237,9 +245,13 @@ public class MainFragment extends Fragment implements
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
 
-        // If translateFrom selected language isn't auto, we display the invert languages button
-        mInvertLanguagesButton.setVisibility((selectedLanguage.equals(AUTO) && mDetectedLanguage == null) ?
-                View.INVISIBLE : View.VISIBLE);
+        // We hide invert button if translateFrom is AUTO but language isn't detected
+        if (selectedLanguage.equals(AUTO) && mDetectedLanguage == null) {
+            mInvertLanguagesFab.hide();
+        }
+        else {
+            mInvertLanguagesFab.show();
+        }
 
         // We select the last used translateTo
         Context context = getContext();
