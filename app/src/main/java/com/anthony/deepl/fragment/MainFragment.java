@@ -56,7 +56,7 @@ public class MainFragment extends Fragment implements
     private AppCompatSpinner mTranslateFromSpinner;
     private AppCompatSpinner mTranslateToSpinner;
     private EditText mToTranslateEditText;
-    private EditText mTranslatedEditText;
+    private TextView mTranslatedEditText;
     private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
     private FloatingActionButton mCopyToClipboardFab;
@@ -332,6 +332,7 @@ public class MainFragment extends Fragment implements
                     textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
                     textView.setText(alternatives.get(i));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+                    textView.setTextIsSelectable(true);
                     LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
                     textViewParams.setMargins(0, margin4dp, 0, margin4dp);
                     textView.setLayoutParams(textViewParams);

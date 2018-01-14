@@ -47,7 +47,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/clear_to_translate_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
-                    style="@style/TranslationEditTeStyle" />
+                    style="@style/TranslationTextStyle" />
 
                 <ImageButton
                     android:id="@+id/clear_to_translate_button"
@@ -117,14 +117,15 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/translate_to_text_view" />
 
-                <EditText
+                <TextView
                     android:id="@+id/translated_edit_text"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:textIsSelectable="true"
                     app:layout_constraintEnd_toStartOf="@+id/copy_to_clipboard_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
-                    style="@style/TranslationEditTeStyle"
+                    style="@style/TranslationTextStyle"
                     tools:text="Bonjour le monde" />
 
                 <android.support.design.widget.FloatingActionButton
@@ -149,8 +150,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginLeft="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
             android:text="@string/alternatives_label"
             android:visibility="gone"
             tools:visibility="visible"/>
@@ -159,10 +160,10 @@
             android:id="@+id/alternatives_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:layout_marginLeft="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginEnd="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
             android:gravity="start"
             android:orientation="vertical" />
 
