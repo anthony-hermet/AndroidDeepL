@@ -407,7 +407,9 @@ public class MainFragment extends Fragment implements
 
     private void invertLanguages() {
         Context context = getContext();
-        String oldTranslateFrom = LanguageManager.getLanguageValue(mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()], context);
+        String oldTranslateFrom = mDetectedLanguage != null ?
+                mDetectedLanguage :
+                LanguageManager.getLanguageValue(mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()], context);
         String oldTranslateTo = mTranslateToLanguages[mTranslateToSpinner.getSelectedItemPosition()];
 
         LanguageManager.saveLastUsedTranslateTo(context, oldTranslateFrom);
