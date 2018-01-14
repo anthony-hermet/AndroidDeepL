@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
@@ -54,6 +55,7 @@ public class MainFragment extends Fragment implements
     private AppCompatSpinner mTranslateToSpinner;
     private EditText mToTranslateEditText;
     private EditText mTranslatedEditText;
+    private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
     private ImageButton mCopyToClipboardButton;
     private ImageButton mInvertLanguagesButton;
@@ -157,11 +159,16 @@ public class MainFragment extends Fragment implements
         mTranslateToSpinner = view.findViewById(R.id.translate_to_spinner);
         mToTranslateEditText = view.findViewById(R.id.to_translate_edit_text);
         mTranslatedEditText = view.findViewById(R.id.translated_edit_text);
+        mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
         mCopyToClipboardButton = view.findViewById(R.id.copy_to_clipboard_button);
         mInvertLanguagesButton = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
         mAlternativesLinearLayout = view.findViewById(R.id.alternatives_linear_layout);
+
+        mTranslateProgressbar.getIndeterminateDrawable().setColorFilter(
+                getResources().getColor(R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
 
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
@@ -193,7 +200,8 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mClearButton.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+                int toTranslateCount = mToTranslateEditText.getText().toString().replace(" ", "").length();
+                mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
                 updateTranslation();
             }
 
@@ -287,6 +295,7 @@ public class MainFragment extends Fragment implements
                 translateFrom,
                 translateTo,
                 preferredLanguages);
+        mTranslateProgressbar.setVisibility(View.VISIBLE);
         Call<TranslationResponse> call = mDeepLService.translateText(request);
         call.enqueue(new Callback<TranslationResponse>() {
             @Override
@@ -296,6 +305,7 @@ public class MainFragment extends Fragment implements
 
                 // Main translation
                 TranslationResponse translationResponse = response.body();
+                mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
                 mTranslatedEditText.setText(translationResponse.getBestResult());
 
