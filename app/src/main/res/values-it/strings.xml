@@ -14,6 +14,12 @@
     <string name="spinner_polish">Polacco</string>
     <string name="detected_language_label">(rilevato)</string>
     <string name="to_translate_hint">Scrivi o incolla il testo qui.\n(Inglese, Tedesco, Francese, Spagnolo, Italiano, Olandese, Polacco)</string>
+    <string name="copied_to_clipboard_text">Testo copiato negli Appunti</string>
     <string name="alternatives_label">Alternative :</string>
+
+    <!--BUTTON DESCRIPTIONS-->
+    <string name="clear_to_translate_button_description">Rimuovere testo</string>
+    <string name="copy_to_clipboard_button_description">Copia negli Appunti</string>
+    <string name="invert_languages_button_description">Inverti lingue</string>
 
 </resources>

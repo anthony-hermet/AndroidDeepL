@@ -14,6 +14,12 @@
     <string name="spinner_polish">Polski</string>
     <string name="detected_language_label">(rozpoznany)</string>
     <string name="to_translate_hint">Wpisz lub wklej tekst.\n(Angielski, Niemiecki, Francuski, Hiszpański, Włoski, Niderlandzki, Polski)</string>
+    <string name="copied_to_clipboard_text">Tekst skopiowany do schowka</string>
     <string name="alternatives_label">Alternatywy :</string>
+
+    <!--BUTTON DESCRIPTIONS-->
+    <string name="clear_to_translate_button_description">Usunięcie</string>
+    <string name="copy_to_clipboard_button_description">Kopiowanie do schowka</string>
+    <string name="invert_languages_button_description">Języki inwersyjne</string>
 
 </resources>

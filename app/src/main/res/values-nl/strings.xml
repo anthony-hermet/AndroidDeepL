@@ -14,6 +14,12 @@
     <string name="spinner_polish">Pools</string>
     <string name="detected_language_label">(gedetecteerd)</string>
     <string name="to_translate_hint">Typ of plak hier een tekst.\n(Engels, Duits, Frans, Spaans, Italiaans, Nederlands, Pools)</string>
+    <string name="copied_to_clipboard_text">Tekst gekopieerd naar klembord</string>
     <string name="alternatives_label">Alternatieven :</string>
+
+    <!--BUTTON DESCRIPTIONS-->
+    <string name="clear_to_translate_button_description">Tekst verwijderen</string>
+    <string name="copy_to_clipboard_button_description">Kopiëren naar klembord</string>
+    <string name="invert_languages_button_description">Omkerende talen</string>
 
 </resources>

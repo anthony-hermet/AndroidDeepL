@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -56,7 +57,8 @@ public class MainFragment extends Fragment implements
     private AppCompatSpinner mTranslateFromSpinner;
     private AppCompatSpinner mTranslateToSpinner;
     private EditText mToTranslateEditText;
-    private TextView mTranslatedEditText;
+    private TextView mTranslateFromTextView;
+    private TextView mTranslatedTextView;
     private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
     private FloatingActionButton mCopyToClipboardFab;
@@ -160,7 +162,8 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner = view.findViewById(R.id.translate_from_spinner);
         mTranslateToSpinner = view.findViewById(R.id.translate_to_spinner);
         mToTranslateEditText = view.findViewById(R.id.to_translate_edit_text);
-        mTranslatedEditText = view.findViewById(R.id.translated_edit_text);
+        mTranslateFromTextView = view.findViewById(R.id.translate_from_text_view);
+        mTranslatedTextView = view.findViewById(R.id.translated_edit_text);
         mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
         mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
@@ -214,7 +217,7 @@ public class MainFragment extends Fragment implements
             }
         });
 
-        mTranslatedEditText.addTextChangedListener(new TextWatcher() {
+        mTranslatedTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -233,7 +236,6 @@ public class MainFragment extends Fragment implements
             public void afterTextChanged(Editable s) {
             }
         });
-
     }
 
     private void updateTranslateToSpinner() {
@@ -320,7 +322,7 @@ public class MainFragment extends Fragment implements
                 TranslationResponse translationResponse = response.body();
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedEditText.setText(translationResponse.getBestResult());
+                mTranslatedTextView.setText(translationResponse.getBestResult());
 
                 // Alternative translations
                 List<String> alternatives = translationResponse.getOtherResults();
@@ -370,6 +372,13 @@ public class MainFragment extends Fragment implements
         TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
         spinnerTextView.setText(detectedLanguage);
         mTranslateFromAdapter.setDetectedLanguage(detectedLanguage);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkTranslateFromLabelVisibility();
+            }
+        }, 50);
     }
 
     private void hideDetectedLanguage() {
@@ -379,11 +388,18 @@ public class MainFragment extends Fragment implements
             TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
             spinnerTextView.setText(mTranslateFromLanguages[0]);
         }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkTranslateFromLabelVisibility();
+            }
+        }, 50);
     }
 
     private void clearTextTapped() {
         mToTranslateEditText.setText("");
-        mTranslatedEditText.setText("");
+        mTranslatedTextView.setText("");
         mAlternativesLabel.setVisibility(View.GONE);
         mAlternativesLinearLayout.removeAllViews();
         if (mDetectedLanguage != null) {
@@ -394,7 +410,7 @@ public class MainFragment extends Fragment implements
     }
 
     private void copyTranslatedTextToClipboard() {
-        String translatedText = mTranslatedEditText.getText().toString();
+        String translatedText = mTranslatedTextView.getText().toString();
         ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
             // First we close the keyboard
@@ -437,6 +453,12 @@ public class MainFragment extends Fragment implements
         }
 
         mFirebaseAnalytics.logEvent("invert_languages", null);
+    }
+
+    private void checkTranslateFromLabelVisibility() {
+        int[] textViewLocation = new int[2];
+        mTranslateFromTextView.getLocationOnScreen(textViewLocation);
+        mTranslateFromTextView.setVisibility(textViewLocation[0] > 0 ? View.VISIBLE : View.INVISIBLE);
     }
 
     // endregion
