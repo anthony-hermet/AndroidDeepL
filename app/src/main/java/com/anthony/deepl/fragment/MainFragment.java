@@ -11,6 +11,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +19,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -451,6 +453,20 @@ public class MainFragment extends Fragment implements
                 break;
             }
         }
+
+        final OvershootInterpolator interpolator = new OvershootInterpolator();
+        ViewCompat.animate(mInvertLanguagesFab).
+                rotation(180f).
+                withLayer().
+                setDuration(450).
+                setInterpolator(interpolator).
+                withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mInvertLanguagesFab.setRotation(0);
+                    }
+                }).
+                setStartDelay(75);
 
         mFirebaseAnalytics.logEvent("invert_languages", null);
     }
