@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TranslationResponse {
+public class TranslationResponseSingleLine {
 
     @SerializedName("id")
     private String mId;
@@ -14,7 +14,7 @@ public class TranslationResponse {
     private String mJsonRpc;
 
     @SerializedName("result")
-    private TranslationResponseResult mResult;
+    private TranslationResponseSingleLineResult mResult;
 
     public String getSourceLanguage() {
         return mResult.getSourceLanguage();
@@ -23,12 +23,12 @@ public class TranslationResponse {
     public String getBestResult() {
         String bestResultSentence = null;
         Float bestResultScore = null;
-        List<TranslationResponseBeam> beams =
+        List<TranslationResponseSingleLineBeam> beams =
                 (mResult.getTranslations() != null && mResult.getTranslations().size() > 0) ?
                         mResult.getTranslations().get(0).getBeams() :
                         null;
         for (int i = 0, size = beams != null ? beams.size() : 0; i < size; i++) {
-            TranslationResponseBeam beam = beams.get(i);
+            TranslationResponseSingleLineBeam beam = beams.get(i);
             if (bestResultScore == null || bestResultScore < beam.getTotalProbability()) {
                 bestResultScore = beam.getTotalProbability();
                 bestResultSentence = beam.getTranslatedSentence();
@@ -41,13 +41,13 @@ public class TranslationResponse {
         int bestResultPosition = -1;
         Float bestResultScore = null;
         List<String> otherSentences = new ArrayList<>();
-        List<TranslationResponseBeam> beams =
+        List<TranslationResponseSingleLineBeam> beams =
                 (mResult.getTranslations() != null && mResult.getTranslations().size() > 0) ?
                         mResult.getTranslations().get(0).getBeams() :
                         null;
 
         for (int i = 0, size = beams != null ? beams.size() : 0; i < size; i++) {
-            TranslationResponseBeam beam = beams.get(i);
+            TranslationResponseSingleLineBeam beam = beams.get(i);
             otherSentences.add(beam.getTranslatedSentence());
             if (bestResultScore == null || bestResultScore < beam.getTotalProbability()) {
                 bestResultScore = beam.getTotalProbability();
@@ -64,7 +64,7 @@ public class TranslationResponse {
 
 }
 
-class TranslationResponseResult {
+class TranslationResponseSingleLineResult {
 
     @SerializedName("source_lang")
     private String mSourceLanguage;
@@ -76,19 +76,19 @@ class TranslationResponseResult {
     private String mTargetLanguage;
 
     @SerializedName("translations")
-    private List<TranslationResponseTranslations> mTranslations;
+    private List<TranslationResponseSingleLineTranslations> mTranslations;
 
     public String getSourceLanguage() {
         return mSourceLanguage;
     }
 
-    public List<TranslationResponseTranslations> getTranslations() {
+    public List<TranslationResponseSingleLineTranslations> getTranslations() {
         return mTranslations;
     }
 
 }
 
-class TranslationResponseTranslations {
+class TranslationResponseSingleLineTranslations {
 
     @SerializedName("timeAfterPreprocessing")
     private Double mAfterPreprocessingTime;
@@ -103,15 +103,15 @@ class TranslationResponseTranslations {
     private Float mTotalEndpointTime;
 
     @SerializedName("beams")
-    private List<TranslationResponseBeam> mBeams;
+    private List<TranslationResponseSingleLineBeam> mBeams;
 
-    public List<TranslationResponseBeam> getBeams() {
+    public List<TranslationResponseSingleLineBeam> getBeams() {
         return mBeams;
     }
 
 }
 
-class TranslationResponseBeam {
+class TranslationResponseSingleLineBeam {
 
     @SerializedName("num_symbols")
     private int mTranslationLength;

@@ -27,8 +27,8 @@ import android.widget.LinearLayout.LayoutParams;
 import com.anthony.deepl.R;
 import com.anthony.deepl.backend.DeepLService;
 import com.anthony.deepl.manager.LanguageManager;
-import com.anthony.deepl.model.TranslationRequest;
-import com.anthony.deepl.model.TranslationResponse;
+import com.anthony.deepl.model.TranslationRequestSingleLine;
+import com.anthony.deepl.model.TranslationResponseSingleLine;
 import com.anthony.deepl.util.AndroidUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -281,20 +281,20 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(context));
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
-        TranslationRequest request = new TranslationRequest(
+        TranslationRequestSingleLine request = new TranslationRequestSingleLine(
                 toTranslate,
                 translateFrom,
                 translateTo,
                 preferredLanguages);
-        Call<TranslationResponse> call = mDeepLService.translateText(request);
-        call.enqueue(new Callback<TranslationResponse>() {
+        Call<TranslationResponseSingleLine> call = mDeepLService.translateSingleLineText(request);
+        call.enqueue(new Callback<TranslationResponseSingleLine>() {
             @Override
-            public void onResponse(@NonNull Call<TranslationResponse> call, @NonNull Response<TranslationResponse> response) {
+            public void onResponse(@NonNull Call<TranslationResponseSingleLine> call, @NonNull Response<TranslationResponseSingleLine> response) {
                 Context context = getContext();
                 if (context == null) return;
 
                 // Main translation
-                TranslationResponse translationResponse = response.body();
+                TranslationResponseSingleLine translationResponse = response.body();
                 mTranslationInProgress = false;
                 mTranslatedEditText.setText(translationResponse.getBestResult());
 
@@ -331,7 +331,7 @@ public class MainFragment extends Fragment implements
             }
 
             @Override
-            public void onFailure(@NonNull Call<TranslationResponse> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TranslationResponseSingleLine> call, @NonNull Throwable t) {
                 mTranslationInProgress = false;
                 Timber.e(t);
             }
