@@ -308,7 +308,7 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
         TranslationRequest request = new TranslationRequest(
-                toTranslate,
+                LanguageManager.formatStringForPostRequest(toTranslate),
                 translateFrom,
                 translateTo,
                 preferredLanguages);
@@ -324,7 +324,7 @@ public class MainFragment extends Fragment implements
                 TranslationResponse translationResponse = response.body();
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedTextView.setText(translationResponse.getBestResult());
+                mTranslatedTextView.setText(LanguageManager.unformatStringResponseForDisplay(translationResponse.getBestResult()));
 
                 // Alternative translations
                 List<String> alternatives = translationResponse.getOtherResults();
@@ -334,7 +334,7 @@ public class MainFragment extends Fragment implements
                 for (int i = 0, size = alternatives.size(); i < size; i++) {
                     TextView textView = new TextView(context);
                     textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
-                    textView.setText(alternatives.get(i));
+                    textView.setText(LanguageManager.unformatStringResponseForDisplay(alternatives.get(i)));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
                     textView.setTextIsSelectable(true);
                     LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
