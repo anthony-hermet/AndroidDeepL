@@ -388,7 +388,9 @@ public class MainFragment extends Fragment implements
         mTranslateFromAdapter.clearDetectedLanguage();
         if (mTranslateFromSpinner.getSelectedItemPosition() == 0) {
             TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
-            spinnerTextView.setText(mTranslateFromLanguages[0]);
+            if (spinnerTextView != null) {
+                spinnerTextView.setText(mTranslateFromLanguages[0]);
+            }
         }
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -458,7 +460,7 @@ public class MainFragment extends Fragment implements
         ViewCompat.animate(mInvertLanguagesFab).
                 rotation(180f).
                 withLayer().
-                setDuration(450).
+                setDuration(350).
                 setInterpolator(interpolator).
                 withEndAction(new Runnable() {
                     @Override
