@@ -5,26 +5,32 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.anthony.deepl.R;
+import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
 import com.anthony.deepl.backend.DeepLService;
 import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
@@ -53,14 +59,17 @@ public class MainFragment extends Fragment implements
     private AppCompatSpinner mTranslateFromSpinner;
     private AppCompatSpinner mTranslateToSpinner;
     private EditText mToTranslateEditText;
-    private EditText mTranslatedEditText;
+    private TextView mTranslateFromTextView;
+    private TextView mTranslatedTextView;
+    private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
-    private ImageButton mCopyToClipboardButton;
-    private ImageButton mInvertLanguagesButton;
+    private FloatingActionButton mCopyToClipboardFab;
+    private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
     private LinearLayout mAlternativesLinearLayout;
 
     private DeepLService mDeepLService;
+    private ShrinkSpinnerAdapter mTranslateFromAdapter;
     private FirebaseAnalytics mFirebaseAnalytics;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
@@ -155,19 +164,25 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner = view.findViewById(R.id.translate_from_spinner);
         mTranslateToSpinner = view.findViewById(R.id.translate_to_spinner);
         mToTranslateEditText = view.findViewById(R.id.to_translate_edit_text);
-        mTranslatedEditText = view.findViewById(R.id.translated_edit_text);
+        mTranslateFromTextView = view.findViewById(R.id.translate_from_text_view);
+        mTranslatedTextView = view.findViewById(R.id.translated_edit_text);
+        mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
-        mCopyToClipboardButton = view.findViewById(R.id.copy_to_clipboard_button);
-        mInvertLanguagesButton = view.findViewById(R.id.invert_languages_button);
+        mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
+        mInvertLanguagesFab = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
         mAlternativesLinearLayout = view.findViewById(R.id.alternatives_linear_layout);
+
+        mTranslateProgressbar.getIndeterminateDrawable().setColorFilter(
+                getResources().getColor(R.color.colorPrimary),
+                android.graphics.PorterDuff.Mode.SRC_IN);
 
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
         mTranslateFromLanguages = LanguageManager.getLanguagesStringArray(getContext(), null, true);
-        ArrayAdapter<String> translateFromAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateFromLanguages);
-        translateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
-        mTranslateFromSpinner.setAdapter(translateFromAdapter);
+        mTranslateFromAdapter = new ShrinkSpinnerAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateFromLanguages);
+        mTranslateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
+        mTranslateFromSpinner.setAdapter(mTranslateFromAdapter);
 
         // We select the last used translateTo
         Context context = getContext();
@@ -183,8 +198,10 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner.setOnItemSelectedListener(this);
         mTranslateToSpinner.setOnItemSelectedListener(this);
         mClearButton.setOnClickListener(this);
-        mCopyToClipboardButton.setOnClickListener(this);
-        mInvertLanguagesButton.setOnClickListener(this);
+        mCopyToClipboardFab.setOnClickListener(this);
+        mInvertLanguagesFab.setOnClickListener(this);
+        mCopyToClipboardFab.hide();
+        mInvertLanguagesFab.hide();
         mToTranslateEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -192,7 +209,8 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mClearButton.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+                int toTranslateCount = mToTranslateEditText.getText().toString().replace(" ", "").length();
+                mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
                 updateTranslation();
             }
 
@@ -201,21 +219,25 @@ public class MainFragment extends Fragment implements
             }
         });
 
-        mTranslatedEditText.addTextChangedListener(new TextWatcher() {
+        mTranslatedTextView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mCopyToClipboardButton.setVisibility(count > 0 ? View.VISIBLE : View.GONE);
+                if (count > 0) {
+                    mCopyToClipboardFab.show();
+                }
+                else {
+                    mCopyToClipboardFab.hide();
+                }
             }
 
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
-
     }
 
     private void updateTranslateToSpinner() {
@@ -224,13 +246,17 @@ public class MainFragment extends Fragment implements
                 mDetectedLanguage :
                 LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
         mTranslateToLanguages = LanguageManager.getLanguagesStringArray(getContext(), selectedLanguage, false);
-        ArrayAdapter<String> translateToAdapter = new ArrayAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
+        ShrinkSpinnerAdapter<String> translateToAdapter = new ShrinkSpinnerAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
 
-        // If translateFrom selected language isn't auto, we display the invert languages button
-        mInvertLanguagesButton.setVisibility((selectedLanguage.equals(AUTO) && mDetectedLanguage == null) ?
-                View.INVISIBLE : View.VISIBLE);
+        // We hide invert button if translateFrom is AUTO but language isn't detected
+        if (selectedLanguage.equals(AUTO) && mDetectedLanguage == null) {
+            mInvertLanguagesFab.hide();
+        }
+        else {
+            mInvertLanguagesFab.show();
+        }
 
         // We select the last used translateTo
         Context context = getContext();
@@ -282,10 +308,11 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
         TranslationRequest request = new TranslationRequest(
-                toTranslate,
+                LanguageManager.formatStringForPostRequest(toTranslate),
                 translateFrom,
                 translateTo,
                 preferredLanguages);
+        mTranslateProgressbar.setVisibility(View.VISIBLE);
         Call<TranslationResponse> call = mDeepLService.translateText(request);
         call.enqueue(new Callback<TranslationResponse>() {
             @Override
@@ -295,21 +322,23 @@ public class MainFragment extends Fragment implements
 
                 // Main translation
                 TranslationResponse translationResponse = response.body();
+                mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedEditText.setText(translationResponse.getBestResult());
+                mTranslatedTextView.setText(LanguageManager.unformatStringResponseForDisplay(translationResponse.getBestResult()));
 
                 // Alternative translations
                 List<String> alternatives = translationResponse.getOtherResults();
-                int margin3dp = (int) AndroidUtils.convertDpToPixel(3, context);
-                int margin6dp = (int) AndroidUtils.convertDpToPixel(6, context);
+                int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
                 mAlternativesLabel.setVisibility(alternatives.size() > 0 ? View.VISIBLE : View.GONE);
                 mAlternativesLinearLayout.removeAllViews();
                 for (int i = 0, size = alternatives.size(); i < size; i++) {
                     TextView textView = new TextView(context);
                     textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
-                    textView.setText(alternatives.get(i));
+                    textView.setText(LanguageManager.unformatStringResponseForDisplay(alternatives.get(i)));
+                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+                    textView.setTextIsSelectable(true);
                     LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    textViewParams.setMargins(margin6dp, margin3dp, margin6dp, margin3dp);
+                    textViewParams.setMargins(0, margin4dp, 0, margin4dp);
                     textView.setLayoutParams(textViewParams);
                     mAlternativesLinearLayout.addView(textView);
                 }
@@ -325,7 +354,7 @@ public class MainFragment extends Fragment implements
 
                 // If AUTO is selected, we update the label with the detected language and the translateTo spinner
                 if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
-                    mDetectedLanguage = response.body().getSourceLanguage();
+                    mDetectedLanguage = translationResponse.getSourceLanguage();
                     displayDetectedLanguage();
                 }
             }
@@ -344,19 +373,37 @@ public class MainFragment extends Fragment implements
         detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
         TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
         spinnerTextView.setText(detectedLanguage);
+        mTranslateFromAdapter.setDetectedLanguage(detectedLanguage);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkTranslateFromLabelVisibility();
+            }
+        }, 50);
     }
 
     private void hideDetectedLanguage() {
         mDetectedLanguage = null;
+        mTranslateFromAdapter.clearDetectedLanguage();
         if (mTranslateFromSpinner.getSelectedItemPosition() == 0) {
             TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
-            spinnerTextView.setText(mTranslateFromLanguages[0]);
+            if (spinnerTextView != null) {
+                spinnerTextView.setText(mTranslateFromLanguages[0]);
+            }
         }
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                checkTranslateFromLabelVisibility();
+            }
+        }, 50);
     }
 
     private void clearTextTapped() {
         mToTranslateEditText.setText("");
-        mTranslatedEditText.setText("");
+        mTranslatedTextView.setText("");
         mAlternativesLabel.setVisibility(View.GONE);
         mAlternativesLinearLayout.removeAllViews();
         if (mDetectedLanguage != null) {
@@ -367,18 +414,18 @@ public class MainFragment extends Fragment implements
     }
 
     private void copyTranslatedTextToClipboard() {
-        String translatedText = mTranslatedEditText.getText().toString();
+        String translatedText = mTranslatedTextView.getText().toString();
         ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         if (clipboard != null) {
             // First we close the keyboard
             Activity mainActivity = getActivity();
             View view = mainActivity.getCurrentFocus();
-            if (view != null) {
-                InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            InputMethodManager imm = (InputMethodManager) mainActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (view != null && imm != null) {
                 imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             }
 
-            // Then we clip the translated text and display confirmation snackbar
+            // Then we clip the translated text and display confirmation Snackbar
             ClipData clip = ClipData.newPlainText(translatedText, translatedText);
             clipboard.setPrimaryClip(clip);
             Snackbar.make(mClearButton,
@@ -394,7 +441,9 @@ public class MainFragment extends Fragment implements
 
     private void invertLanguages() {
         Context context = getContext();
-        String oldTranslateFrom = LanguageManager.getLanguageValue(mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()], context);
+        String oldTranslateFrom = mDetectedLanguage != null ?
+                mDetectedLanguage :
+                LanguageManager.getLanguageValue(mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()], context);
         String oldTranslateTo = mTranslateToLanguages[mTranslateToSpinner.getSelectedItemPosition()];
 
         LanguageManager.saveLastUsedTranslateTo(context, oldTranslateFrom);
@@ -407,7 +456,27 @@ public class MainFragment extends Fragment implements
             }
         }
 
+        final OvershootInterpolator interpolator = new OvershootInterpolator();
+        ViewCompat.animate(mInvertLanguagesFab).
+                rotation(180f).
+                withLayer().
+                setDuration(350).
+                setInterpolator(interpolator).
+                withEndAction(new Runnable() {
+                    @Override
+                    public void run() {
+                        mInvertLanguagesFab.setRotation(0);
+                    }
+                }).
+                setStartDelay(75);
+
         mFirebaseAnalytics.logEvent("invert_languages", null);
+    }
+
+    private void checkTranslateFromLabelVisibility() {
+        int[] textViewLocation = new int[2];
+        mTranslateFromTextView.getLocationOnScreen(textViewLocation);
+        mTranslateFromTextView.setVisibility(textViewLocation[0] > 0 ? View.VISIBLE : View.INVISIBLE);
     }
 
     // endregion

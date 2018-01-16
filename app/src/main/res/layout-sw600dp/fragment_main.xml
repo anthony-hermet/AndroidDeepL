@@ -15,7 +15,8 @@
         <android.support.v7.widget.CardView
             style="@style/TranslationCardViewStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -24,8 +25,8 @@
                 <TextView
                     android:id="@+id/translate_from_text_view"
                     android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:layout_margin="8dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="12dp"
                     android:gravity="center_vertical"
                     android:text="@string/translate_from_label"
                     android:textSize="@dimen/translate_label_size"
@@ -49,7 +50,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/clear_to_translate_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
-                    style="@style/TranslationTextStyle" />
+                    style="@style/TranslationTextTabletStyle" />
 
                 <ImageButton
                     android:id="@+id/clear_to_translate_button"
@@ -83,7 +84,8 @@
         <android.support.v7.widget.CardView
             style="@style/TranslationCardViewStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -92,8 +94,8 @@
                 <TextView
                     android:id="@+id/translate_to_text_view"
                     android:layout_width="wrap_content"
-                    android:layout_height="25dp"
-                    android:layout_margin="8dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="12dp"
                     android:gravity="center_vertical"
                     android:text="@string/translate_to_label"
                     android:textSize="@dimen/translate_label_size"
@@ -128,7 +130,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/copy_to_clipboard_button"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
-                    style="@style/TranslationTextStyle"
+                    style="@style/TranslationTextTabletStyle"
                     tools:text="Bonjour le monde" />
 
                 <android.support.design.widget.FloatingActionButton
@@ -153,20 +155,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginLeft="18dp"
             android:text="@string/alternatives_label"
             android:visibility="gone"
-            tools:visibility="gone"/>
+            tools:visibility="visible"/>
 
         <LinearLayout
             android:id="@+id/alternatives_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:layout_marginEnd="12dp"
+            android:layout_marginStart="18dp"
+            android:layout_marginLeft="18dp"
+            android:layout_marginRight="18dp"
+            android:layout_marginEnd="18dp"
             android:gravity="start"
             android:orientation="vertical" />
 
