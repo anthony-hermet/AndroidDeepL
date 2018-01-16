@@ -69,17 +69,6 @@ public class LanguageManager {
         return context.getString(resId);
     }
 
-    public static String formatStringForPostRequest(String toTranslate) {
-        toTranslate = toTranslate.replace("\n", "%0D");
-        return toTranslate;
-    }
-
-    public static String unformatStringResponseForDisplay(String translated) {
-        translated = translated.replace("%0D", "\n");
-        translated = translated.replace("%0", "\n");
-        return translated;
-    }
-
     @Language
     public static String getLanguageValue(String languageString, Context context) {
         List<String> languagesList = Arrays.asList(AUTO, ENGLISH, GERMAN, FRENCH, SPANISH, ITALIAN, DUTCH, POLISH);

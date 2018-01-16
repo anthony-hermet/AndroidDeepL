@@ -17,19 +17,17 @@ public class TranslationRequest {
     private TranslationRequestParams mParams;
 
     public TranslationRequest(String sentence, String fromLanguage, String toLanguage, List<String> userPreferredLanguages) {
-        TranslationRequestJob job = new TranslationRequestJob();
-        job.setSentence(sentence);
         List<TranslationRequestJob> jobList = new ArrayList<>();
-        jobList.add(job);
-
-        TranslationRequestLanguage languages = new TranslationRequestLanguage();
-        languages.setSourceLanguage(fromLanguage);
-        languages.setTargetLanguage(toLanguage);
-        languages.setPreferredLanguages(userPreferredLanguages);
+        String[] sentences = sentence.split("\n");
+        for (int i = 0, size = sentences.length; i < size; i++) {
+            TranslationRequestJob job = new TranslationRequestJob();
+            job.setSentence(sentences[i]);
+            jobList.add(job);
+        }
 
         mParams = new TranslationRequestParams();
         mParams.setJobList(jobList);
-        mParams.setRequestLanguages(languages);
+        mParams.setRequestLanguages(new TranslationRequestLanguage(fromLanguage, toLanguage, userPreferredLanguages));
     }
 
 }
@@ -80,15 +78,9 @@ class TranslationRequestLanguage {
     @SerializedName("user_preferred_langs")
     private List<String> mPreferredLanguages;
 
-    void setSourceLanguage(String sourceLanguage) {
+    public TranslationRequestLanguage(String sourceLanguage, String targetLanguage, List<String> preferredLanguages) {
         mSourceLanguage = sourceLanguage;
-    }
-
-    void setTargetLanguage(String targetLanguage) {
         mTargetLanguage = targetLanguage;
-    }
-
-    void setPreferredLanguages(List<String> preferredLanguages) {
         mPreferredLanguages = preferredLanguages;
     }
 

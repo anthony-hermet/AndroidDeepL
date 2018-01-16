@@ -308,7 +308,7 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
         TranslationRequest request = new TranslationRequest(
-                LanguageManager.formatStringForPostRequest(toTranslate),
+                toTranslate,
                 translateFrom,
                 translateTo,
                 preferredLanguages);
@@ -324,23 +324,25 @@ public class MainFragment extends Fragment implements
                 TranslationResponse translationResponse = response.body();
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedTextView.setText(LanguageManager.unformatStringResponseForDisplay(translationResponse.getBestResult()));
+                mTranslatedTextView.setText(translationResponse.getBestTranslation());
 
                 // Alternative translations
                 List<String> alternatives = translationResponse.getOtherResults();
-                int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
-                mAlternativesLabel.setVisibility(alternatives.size() > 0 ? View.VISIBLE : View.GONE);
                 mAlternativesLinearLayout.removeAllViews();
-                for (int i = 0, size = alternatives.size(); i < size; i++) {
-                    TextView textView = new TextView(context);
-                    textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
-                    textView.setText(LanguageManager.unformatStringResponseForDisplay(alternatives.get(i)));
-                    textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
-                    textView.setTextIsSelectable(true);
-                    LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    textViewParams.setMargins(0, margin4dp, 0, margin4dp);
-                    textView.setLayoutParams(textViewParams);
-                    mAlternativesLinearLayout.addView(textView);
+                mAlternativesLabel.setVisibility((alternatives != null && alternatives.size() > 0) ? View.VISIBLE : View.GONE);
+                if (alternatives != null) {
+                    int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
+                    for (int i = 0, size = alternatives.size(); i < size; i++) {
+                        TextView textView = new TextView(context);
+                        textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
+                        textView.setText(alternatives.get(i));
+                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+                        textView.setTextIsSelectable(true);
+                        LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        textViewParams.setMargins(0, margin4dp, 0, margin4dp);
+                        textView.setLayoutParams(textViewParams);
+                        mAlternativesLinearLayout.addView(textView);
+                    }
                 }
 
                 // Reporting

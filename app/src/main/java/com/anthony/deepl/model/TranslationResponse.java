@@ -20,31 +20,38 @@ public class TranslationResponse {
         return mResult.getSourceLanguage();
     }
 
-    public String getBestResult() {
-        String bestResultSentence = null;
-        Float bestResultScore = null;
-        List<TranslationResponseBeam> beams =
-                (mResult.getTranslations() != null && mResult.getTranslations().size() > 0) ?
-                        mResult.getTranslations().get(0).getBeams() :
-                        null;
-        for (int i = 0, size = beams != null ? beams.size() : 0; i < size; i++) {
-            TranslationResponseBeam beam = beams.get(i);
-            if (bestResultScore == null || bestResultScore < beam.getTotalProbability()) {
-                bestResultScore = beam.getTotalProbability();
-                bestResultSentence = beam.getTranslatedSentence();
+    public String getBestTranslation() {
+        String bestTranslation = "";
+        List<TranslationResponseTranslations> translations = mResult.getTranslations();
+        for (int i = 0, translationSize = translations != null ? translations.size() : 0; i < translationSize; i++) {
+            String bestResultSentence = null;
+            Float bestResultScore = null;
+            List<TranslationResponseBeam> beams = translations.get(i).getBeams();
+            for (int j = 0, size = beams != null ? beams.size() : 0; j < size; j++) {
+                TranslationResponseBeam beam = beams.get(j);
+                if (bestResultScore == null || bestResultScore < beam.getTotalProbability()) {
+                    bestResultScore = beam.getTotalProbability();
+                    bestResultSentence = beam.getTranslatedSentence();
+                }
+            }
+            if (bestResultSentence != null) {
+                bestTranslation = bestTranslation.concat(bestResultSentence);
+                if (i + 1 < translationSize) {
+                    bestTranslation = bestTranslation.concat("\n");
+                }
             }
         }
-        return bestResultSentence;
+        return bestTranslation;
     }
 
     public List<String> getOtherResults() {
+        if (mResult.getTranslations() == null || mResult.getTranslations().size() > 1) {
+            return null;
+        }
         int bestResultPosition = -1;
         Float bestResultScore = null;
         List<String> otherSentences = new ArrayList<>();
-        List<TranslationResponseBeam> beams =
-                (mResult.getTranslations() != null && mResult.getTranslations().size() > 0) ?
-                        mResult.getTranslations().get(0).getBeams() :
-                        null;
+        List<TranslationResponseBeam> beams = mResult.getTranslations().get(0).getBeams();
 
         for (int i = 0, size = beams != null ? beams.size() : 0; i < size; i++) {
             TranslationResponseBeam beam = beams.get(i);
