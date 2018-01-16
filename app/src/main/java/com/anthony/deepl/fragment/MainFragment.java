@@ -27,8 +27,8 @@ import android.widget.LinearLayout.LayoutParams;
 import com.anthony.deepl.R;
 import com.anthony.deepl.backend.DeepLService;
 import com.anthony.deepl.manager.LanguageManager;
-import com.anthony.deepl.model.TranslationRequestSingleLine;
-import com.anthony.deepl.model.TranslationResponseSingleLine;
+import com.anthony.deepl.model.TranslationRequest;
+import com.anthony.deepl.model.TranslationResponse;
 import com.anthony.deepl.util.AndroidUtils;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
@@ -281,37 +281,39 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(context));
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
-        TranslationRequestSingleLine request = new TranslationRequestSingleLine(
+        TranslationRequest request = new TranslationRequest(
                 toTranslate,
                 translateFrom,
                 translateTo,
                 preferredLanguages);
-        Call<TranslationResponseSingleLine> call = mDeepLService.translateSingleLineText(request);
-        call.enqueue(new Callback<TranslationResponseSingleLine>() {
+        Call<TranslationResponse> call = mDeepLService.translateText(request);
+        call.enqueue(new Callback<TranslationResponse>() {
             @Override
-            public void onResponse(@NonNull Call<TranslationResponseSingleLine> call, @NonNull Response<TranslationResponseSingleLine> response) {
+            public void onResponse(@NonNull Call<TranslationResponse> call, @NonNull Response<TranslationResponse> response) {
                 Context context = getContext();
                 if (context == null) return;
 
                 // Main translation
-                TranslationResponseSingleLine translationResponse = response.body();
+                TranslationResponse translationResponse = response.body();
                 mTranslationInProgress = false;
-                mTranslatedEditText.setText(translationResponse.getBestResult());
+                mTranslatedEditText.setText(translationResponse.getBestTranslation());
 
                 // Alternative translations
                 List<String> alternatives = translationResponse.getOtherResults();
-                int margin3dp = (int) AndroidUtils.convertDpToPixel(3, context);
-                int margin6dp = (int) AndroidUtils.convertDpToPixel(6, context);
-                mAlternativesLabel.setVisibility(alternatives.size() > 0 ? View.VISIBLE : View.GONE);
                 mAlternativesLinearLayout.removeAllViews();
-                for (int i = 0, size = alternatives.size(); i < size; i++) {
-                    TextView textView = new TextView(context);
-                    textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
-                    textView.setText(alternatives.get(i));
-                    LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                    textViewParams.setMargins(margin6dp, margin3dp, margin6dp, margin3dp);
-                    textView.setLayoutParams(textViewParams);
-                    mAlternativesLinearLayout.addView(textView);
+                mAlternativesLabel.setVisibility((alternatives != null && alternatives.size() > 0) ? View.VISIBLE : View.GONE);
+                if (alternatives != null) {
+                    int margin3dp = (int) AndroidUtils.convertDpToPixel(3, context);
+                    int margin6dp = (int) AndroidUtils.convertDpToPixel(6, context);
+                    for (int i = 0, size = alternatives.size(); i < size; i++) {
+                        TextView textView = new TextView(context);
+                        textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
+                        textView.setText(alternatives.get(i));
+                        LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                        textViewParams.setMargins(margin6dp, margin3dp, margin6dp, margin3dp);
+                        textView.setLayoutParams(textViewParams);
+                        mAlternativesLinearLayout.addView(textView);
+                    }
                 }
 
                 // Reporting
@@ -331,7 +333,7 @@ public class MainFragment extends Fragment implements
             }
 
             @Override
-            public void onFailure(@NonNull Call<TranslationResponseSingleLine> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<TranslationResponse> call, @NonNull Throwable t) {
                 mTranslationInProgress = false;
                 Timber.e(t);
             }
