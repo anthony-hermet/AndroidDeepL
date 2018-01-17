@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--MAIN ACTIVITY-->
+    <string name="translate_from_label">Traduire de</string>
+    <string name="translate_to_label">Traduire en</string>
+    <string name="spinner_detect_language">N\'importe quelle langue (détecter)</string>
+    <string name="spinner_english">Anglais</string>
+    <string name="spinner_german">Allemand</string>
+    <string name="spinner_french">Français</string>
+    <string name="spinner_spanish">Espagnol</string>
+    <string name="spinner_italian">Italien</string>
+    <string name="spinner_dutch">Néerlandais</string>
+    <string name="spinner_polish">Polonais</string>
+    <string name="detected_language_label">(langue identifiée)</string>
+    <string name="to_translate_hint">Écrivez ou collez votre texte ici.\n(Anglais, Allemand, Français, Espagnol, Italien, Néerlandais, Polonais)</string>
+    <string name="copied_to_clipboard_text">Texte copié dans le presse-papier</string>
+    <string name="alternatives_label">Autres traductions :</string>
+
+    <!--BUTTON DESCRIPTIONS-->
+    <string name="clear_to_translate_button_description">Supprimer le texte</string>
+    <string name="copy_to_clipboard_button_description">Copier dans le presse-papier</string>
+    <string name="invert_languages_button_description">Inverser les langues</string>
+
+</resources>

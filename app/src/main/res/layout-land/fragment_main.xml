@@ -1,0 +1,198 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.anthony.deepl.fragment.MainFragment">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp"
+        android:focusableInTouchMode="true">
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/to_translate_card_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/invert_languages_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            style="@style/TranslationCardViewStyle">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/translate_from_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/translate_from_label"
+                    android:textSize="@dimen/translate_label_size"
+                    app:layout_constraintEnd_toStartOf="@+id/translate_from_spinner"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/translate_from_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/translate_from_text_view"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/translate_from_text_view" />
+
+                <EditText
+                    android:id="@+id/to_translate_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:hint="@string/to_translate_hint"
+                    android:inputType="textMultiLine|textCapSentences"
+                    app:layout_constraintEnd_toStartOf="@+id/clear_to_translate_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
+                    style="@style/TranslationTextStyle" />
+
+                <ImageButton
+                    android:id="@+id/clear_to_translate_button"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_margin="6dp"
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/clear_to_translate_button_description"
+                    android:padding="4dp"
+                    android:tint="@color/colorAccentDark"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/to_translate_edit_text"
+                    app:srcCompat="@drawable/ic_clear_black_24dp"
+                    tools:visibility="visible" />
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/invert_languages_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="3dp"
+            android:contentDescription="@string/invert_languages_button_description"
+            app:layout_constraintTop_toTopOf="@id/to_translate_card_view"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/to_translate_card_view"
+            app:srcCompat="@drawable/ic_swap_horiz_black_24dp"
+            app:fabSize="mini"/>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/translated_card_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/invert_languages_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            style="@style/TranslationCardViewStyle">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/translate_to_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="25dp"
+                    android:layout_margin="8dp"
+                    android:gravity="center_vertical"
+                    android:text="@string/translate_to_label"
+                    android:textSize="@dimen/translate_label_size"
+                    app:layout_constraintEnd_toStartOf="@+id/translate_to_spinner"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ProgressBar
+                    android:id="@+id/translate_progressbar"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginStart="10dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/translate_to_text_view"
+                    app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"/>
+
+                <android.support.v7.widget.AppCompatSpinner
+                    android:id="@+id/translate_to_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/translate_to_text_view" />
+
+                <TextView
+                    android:id="@+id/translated_edit_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textIsSelectable="true"
+                    android:inputType="none"
+                    android:textSize="15sp"
+                    app:layout_constraintEnd_toStartOf="@+id/copy_to_clipboard_button"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
+                    style="@style/TranslationTextStyle"
+                    tools:text="Bonjour le monde" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/copy_to_clipboard_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_margin="6dp"
+                    android:contentDescription="@string/copy_to_clipboard_button_description"
+                    app:srcCompat="@drawable/ic_content_copy_black_24dp"
+                    app:fabSize="mini"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+        </android.support.v7.widget.CardView>
+
+        <TextView
+            android:id="@+id/alternatives_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:text="@string/alternatives_label"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/to_translate_card_view"
+            tools:visibility="gone"/>
+
+        <LinearLayout
+            android:id="@+id/alternatives_linear_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:layout_marginEnd="12dp"
+            android:gravity="start"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/alternatives_label" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

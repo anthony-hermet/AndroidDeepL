@@ -1,0 +1,27 @@
+<resources>
+
+    <!--GLOBAL-->
+    <string name="app_name" translatable="false">DeepL</string>
+
+    <!--MAIN ACTIVITY-->
+    <string name="translate_from_label">Translate from</string>
+    <string name="translate_to_label">Translate into</string>
+    <string name="spinner_detect_language">Any language (detect)</string>
+    <string name="spinner_english">English</string>
+    <string name="spinner_german">German</string>
+    <string name="spinner_french">French</string>
+    <string name="spinner_spanish">Spanish</string>
+    <string name="spinner_italian">Italian</string>
+    <string name="spinner_dutch">Dutch</string>
+    <string name="spinner_polish">Polish</string>
+    <string name="detected_language_label">(detected)</string>
+    <string name="to_translate_hint">Type or paste text here.\n(English, French, German, Spanish, Italian, Dutch, Polish)</string>
+    <string name="copied_to_clipboard_text">Text copied to clipboard</string>
+    <string name="alternatives_label">Alternatives :</string>
+
+    <!--BUTTON DESCRIPTIONS-->
+    <string name="clear_to_translate_button_description">Clear text</string>
+    <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
+    <string name="invert_languages_button_description">Invert languages</string>
+
+</resources>
