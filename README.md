@@ -3,8 +3,7 @@
 <img src="https://lh3.googleusercontent.com/BL0P8TR4Rnk9QOD2F-quWKluCqiLXoPysDqSblfaDs-LXs8ti97bBzbvXA12-igo844=w300" align="left" width="200" hspace="10" vspace="10"/>
 </br>
 DeepL Android application is the unofficial Android application of deepl.com website. Try out the world’s best
-machine translation. DeepL trains artificial intelligence to understand and translate texts. 
-
+machine translation. DeepL trains artificial intelligence to understand and translate texts. </br>
 <a href="https://play.google.com/store/apps/details?id=com.anthony.deepl">
     <img alt="Get it on Google Play"
         height="75"
