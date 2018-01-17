@@ -36,9 +36,9 @@ public class TranslationResponse {
             }
             if (bestResultSentence != null) {
                 bestTranslation = bestTranslation.concat(bestResultSentence);
-                if (i + 1 < translationSize) {
-                    bestTranslation = bestTranslation.concat("\n");
-                }
+            }
+            if (i + 1 < translationSize) {
+                bestTranslation = bestTranslation.concat("\n");
             }
         }
         return bestTranslation;
