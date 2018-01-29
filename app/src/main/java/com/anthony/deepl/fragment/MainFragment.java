@@ -36,6 +36,7 @@ import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
 import com.anthony.deepl.model.TranslationResponse;
 import com.anthony.deepl.util.AndroidUtils;
+
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
@@ -79,7 +80,8 @@ public class MainFragment extends Fragment implements
     private String mDetectedLanguage;
     private boolean mTranslationInProgress;
 
-    public MainFragment() {}
+    public MainFragment() {
+    }
 
     // region Overridden methods
 
@@ -152,7 +154,8 @@ public class MainFragment extends Fragment implements
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
 
     // endregion
 
@@ -228,8 +231,7 @@ public class MainFragment extends Fragment implements
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count > 0) {
                     mCopyToClipboardFab.show();
-                }
-                else {
+                } else {
                     mCopyToClipboardFab.hide();
                 }
             }
@@ -253,8 +255,7 @@ public class MainFragment extends Fragment implements
         // We hide invert button if translateFrom is AUTO but language isn't detected
         if (selectedLanguage.equals(AUTO) && mDetectedLanguage == null) {
             mInvertLanguagesFab.hide();
-        }
-        else {
+        } else {
             mInvertLanguagesFab.show();
         }
 
@@ -319,9 +320,13 @@ public class MainFragment extends Fragment implements
             public void onResponse(@NonNull Call<TranslationResponse> call, @NonNull Response<TranslationResponse> response) {
                 Context context = getContext();
                 if (context == null) return;
+                TranslationResponse translationResponse = response.body();
+                if (translationResponse == null) {
+                    onFailure(call, new Exception("Translation response body is null"));
+                    return;
+                }
 
                 // Main translation
-                TranslationResponse translationResponse = response.body();
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
                 mTranslatedTextView.setText(translationResponse.getBestTranslation());
@@ -435,8 +440,7 @@ public class MainFragment extends Fragment implements
                     Snackbar.LENGTH_SHORT).show();
 
             mFirebaseAnalytics.logEvent("copy_to_clipboard", null);
-        }
-        else {
+        } else {
             Timber.w("Clipboard is null and shouldn't be");
         }
     }
