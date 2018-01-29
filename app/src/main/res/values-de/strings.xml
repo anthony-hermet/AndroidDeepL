@@ -16,6 +16,8 @@
     <string name="to_translate_hint">Gib deinen Text hier ein.\n(Englisch, Deutsch, Französisch, Spanisch, Italienisch, Deutsch, Polnisch)</string>
     <string name="copied_to_clipboard_text">Text in die Zwischenablage kopiert</string>
     <string name="alternatives_label">Alternativen :</string>
+    <string name="snack_bar_retry_label">Netzwerkfehler</string>
+    <string name="snack_bar_retry_button">Wiederholungsversuch</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Text entfernen</string>

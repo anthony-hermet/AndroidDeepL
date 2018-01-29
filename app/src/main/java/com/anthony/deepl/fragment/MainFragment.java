@@ -68,6 +68,7 @@ public class MainFragment extends Fragment implements
     private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
     private LinearLayout mAlternativesLinearLayout;
+    private Snackbar mRetrySnackBar;
 
     private DeepLService mDeepLService;
     private ShrinkSpinnerAdapter mTranslateFromAdapter;
@@ -214,7 +215,18 @@ public class MainFragment extends Fragment implements
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int toTranslateCount = mToTranslateEditText.getText().toString().replace(" ", "").length();
                 mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
-                updateTranslation();
+                if (toTranslateCount > 2) {
+                    updateTranslation();
+                }
+                else {
+                    mTranslatedTextView.setText("");
+                    mAlternativesLabel.setVisibility(View.GONE);
+                    mAlternativesLinearLayout.removeAllViews();
+                    if (mRetrySnackBar != null) {
+                        mRetrySnackBar.dismiss();
+                        mRetrySnackBar = null;
+                    }
+                }
             }
 
             @Override
@@ -327,6 +339,10 @@ public class MainFragment extends Fragment implements
                 }
 
                 // Main translation
+                if (mRetrySnackBar != null) {
+                    mRetrySnackBar.dismiss();
+                    mRetrySnackBar = null;
+                }
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
                 mTranslatedTextView.setText(translationResponse.getBestTranslation());
@@ -368,7 +384,29 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onFailure(@NonNull Call<TranslationResponse> call, @NonNull Throwable t) {
+                mTranslateProgressbar.setVisibility(View.GONE);
+                mLastTranslatedSentence = "";
                 mTranslationInProgress = false;
+                mTranslatedTextView.setText("");
+
+                if (mRetrySnackBar != null) {
+                    mRetrySnackBar.dismiss();
+                    mRetrySnackBar = null;
+                }
+                View view = getView();
+                if (view != null) {
+                    mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
+                            .setAction(R.string.snack_bar_retry_button, new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    mRetrySnackBar.dismiss();
+                                    mRetrySnackBar = null;
+                                    updateTranslation();
+                                }
+                            });
+                    mRetrySnackBar.show();
+                }
+
                 Timber.e(t);
             }
         });
