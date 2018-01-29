@@ -525,6 +525,16 @@ public class MainFragment extends Fragment implements
 
     // endregion
 
+
+    // region Public Methods
+
+    public void setSharedText(String text) {
+        mToTranslateEditText.setText(text);
+    }
+
+    // endregion
+
+
     public interface OnFragmentInteractionListener {
     }
 }
