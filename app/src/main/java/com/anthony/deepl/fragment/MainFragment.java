@@ -532,6 +532,10 @@ public class MainFragment extends Fragment implements
         mToTranslateEditText.setText(text);
     }
 
+    public void displayLaunchDialog(String title, String content) {
+
+    }
+
     // endregion
 
 
