@@ -18,6 +18,8 @@
     <string name="to_translate_hint">Type or paste text here.\n(English, French, German, Spanish, Italian, Dutch, Polish)</string>
     <string name="copied_to_clipboard_text">Text copied to clipboard</string>
     <string name="alternatives_label">Alternatives :</string>
+    <string name="snack_bar_retry_label">Network error</string>
+    <string name="snack_bar_retry_button">Retry</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Clear text</string>

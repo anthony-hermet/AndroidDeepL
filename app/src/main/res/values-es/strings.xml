@@ -16,6 +16,8 @@
     <string name="to_translate_hint">Escribe o pega el texto aquí.\n(Inglés, Alemán, Francés, Español, Italiano, Neerlandés, Polaco)</string>
     <string name="copied_to_clipboard_text">Texto copiado en el portapapeles</string>
     <string name="alternatives_label">Alternativas :</string>
+    <string name="snack_bar_retry_label">Error de red</string>
+    <string name="snack_bar_retry_button">Reintentar</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Borrar texto</string>
