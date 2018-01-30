@@ -10,7 +10,7 @@
     <string name="spinner_french">Französisch</string>
     <string name="spinner_spanish">Spanisch</string>
     <string name="spinner_italian">Italienisch</string>
-    <string name="spinner_dutch">Deutsch</string>
+    <string name="spinner_dutch">Niederländisch</string>
     <string name="spinner_polish">Polnisch</string>
     <string name="detected_language_label">(erkannt)</string>
     <string name="to_translate_hint">Gib deinen Text hier ein.\n(Englisch, Deutsch, Französisch, Spanisch, Italienisch, Deutsch, Polnisch)</string>
