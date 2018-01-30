@@ -2,6 +2,7 @@
 
     <!--GLOBAL-->
     <string name="app_name" translatable="false">DeepL</string>
+    <string name="ok" translatable="false">OK</string>
 
     <!--MAIN ACTIVITY-->
     <string name="translate_from_label">Translate from</string>

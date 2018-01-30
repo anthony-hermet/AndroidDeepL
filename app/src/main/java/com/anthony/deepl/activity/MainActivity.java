@@ -7,6 +7,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -68,6 +69,16 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                             mFirebaseRemoteConfig.activateFetched();
                             String launchDialogTitle = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_TITLE_KEY);
                             String launchDialogContent = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_CONTENT_KEY);
+                            if (launchDialogContent != null && launchDialogContent.length() > 0) {
+                                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
+                                alertDialogBuilder
+                                        .setTitle(launchDialogTitle)
+                                        .setMessage(launchDialogContent.replace("\\n", "\n"))
+                                        .setCancelable(true)
+                                        .setPositiveButton(getString(R.string.ok), null)
+                                        .create()
+                                        .show();
+                            }
                         }
                     }
                 });

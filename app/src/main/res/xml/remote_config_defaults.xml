@@ -3,10 +3,10 @@
 <defaultsMap>
     <entry>
         <key>launch_dialog_title</key>
-        <value></value>
+        <value/>
     </entry>
     <entry>
         <key>launch_dialog_content</key>
-        <value></value>
+        <value/>
     </entry>
 </defaultsMap>
