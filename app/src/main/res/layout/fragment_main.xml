@@ -59,7 +59,7 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/clear_to_translate_button_description"
                     android:padding="4dp"
-                    android:tint="@color/colorAccentDark"
+                    android:tint="@color/colorAccent"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/to_translate_edit_text"
@@ -77,6 +77,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_margin="3dp"
             android:contentDescription="@string/invert_languages_button_description"
+            app:backgroundTint="@color/colorAccentLight"
             app:srcCompat="@drawable/ic_swap_vert_black_24dp"
             app:fabSize="mini"/>
 
@@ -140,6 +141,7 @@
                     android:contentDescription="@string/copy_to_clipboard_button_description"
                     app:srcCompat="@drawable/ic_content_copy_black_24dp"
                     app:fabSize="mini"
+                    app:backgroundTint="@color/colorAccentLight"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"/>

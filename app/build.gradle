@@ -37,6 +37,7 @@ dependencies {
         transitive = true
     }
     implementation 'com.google.firebase:firebase-core:11.8.0'
+    implementation 'com.google.firebase:firebase-config:11.8.0'
 
     // Other libraries
     implementation "com.squareup.retrofit2:retrofit:2.3.0"

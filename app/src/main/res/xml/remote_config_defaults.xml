@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- START xml_defaults -->
+<defaultsMap>
+    <entry>
+        <key>launch_dialog_title</key>
+        <value/>
+    </entry>
+    <entry>
+        <key>launch_dialog_content</key>
+        <value/>
+    </entry>
+</defaultsMap>
