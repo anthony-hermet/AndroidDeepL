@@ -1,7 +1,6 @@
 package com.anthony.deepl.fragment;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
@@ -66,6 +65,7 @@ public class MainFragment extends Fragment implements
     private TextView mTranslatedTextView;
     private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
+    private FloatingActionButton mMicFab;
     private FloatingActionButton mCopyToClipboardFab;
     private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
@@ -129,6 +129,9 @@ public class MainFragment extends Fragment implements
             case R.id.clear_to_translate_button:
                 clearTextTapped();
                 break;
+            case R.id.mic_fab_button:
+                Toast.makeText(getContext(), "MIC", Toast.LENGTH_SHORT).show();
+                break;
             case R.id.copy_to_clipboard_button:
                 copyTranslatedTextToClipboard();
                 break;
@@ -174,6 +177,7 @@ public class MainFragment extends Fragment implements
         mTranslatedTextView = view.findViewById(R.id.translated_edit_text);
         mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
+        mMicFab = view.findViewById(R.id.mic_fab_button);
         mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
         mInvertLanguagesFab = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
@@ -204,6 +208,7 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner.setOnItemSelectedListener(this);
         mTranslateToSpinner.setOnItemSelectedListener(this);
         mClearButton.setOnClickListener(this);
+        mMicFab.setOnClickListener(this);
         mCopyToClipboardFab.setOnClickListener(this);
         mInvertLanguagesFab.setOnClickListener(this);
         mCopyToClipboardFab.hide();
@@ -216,7 +221,14 @@ public class MainFragment extends Fragment implements
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int toTranslateCount = mToTranslateEditText.getText().toString().replace(" ", "").length();
-                mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
+                if (toTranslateCount > 0) {
+                    mClearButton.setVisibility(View.VISIBLE);
+                    mMicFab.hide();
+                }
+                else {
+                    mClearButton.setVisibility(View.GONE);
+                    mMicFab.show();
+                }
                 if (toTranslateCount > 2) {
                     updateTranslation();
                 } else {
