@@ -219,8 +219,7 @@ public class MainFragment extends Fragment implements
                 mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
                 if (toTranslateCount > 2) {
                     updateTranslation();
-                }
-                else {
+                } else {
                     mTranslatedTextView.setText("");
                     mAlternativesLabel.setVisibility(View.GONE);
                     mAlternativesLinearLayout.removeAllViews();
@@ -391,24 +390,21 @@ public class MainFragment extends Fragment implements
                 mTranslationInProgress = false;
                 mTranslatedTextView.setText("");
 
-                if (mRetrySnackBar != null) {
-                    mRetrySnackBar.dismiss();
-                    mRetrySnackBar = null;
+                if (mRetrySnackBar == null) {
+                    View view = getView();
+                    if (view != null) {
+                        mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
+                                .setAction(R.string.snack_bar_retry_button, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        mRetrySnackBar.dismiss();
+                                        mRetrySnackBar = null;
+                                        updateTranslation();
+                                    }
+                                });
+                        mRetrySnackBar.show();
+                    }
                 }
-                View view = getView();
-                if (view != null) {
-                    mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.snack_bar_retry_button, new View.OnClickListener() {
-                                @Override
-                                public void onClick(View view) {
-                                    mRetrySnackBar.dismiss();
-                                    mRetrySnackBar = null;
-                                    updateTranslation();
-                                }
-                            });
-                    mRetrySnackBar.show();
-                }
-
                 Timber.e(t);
             }
         });
