@@ -9,4 +9,12 @@
         <key>launch_dialog_content</key>
         <value/>
     </entry>
+    <entry>
+        <key>launch_dialog_url</key>
+        <value/>
+    </entry>
+    <entry>
+        <key>launch_dialog_url_label</key>
+        <value/>
+    </entry>
 </defaultsMap>
