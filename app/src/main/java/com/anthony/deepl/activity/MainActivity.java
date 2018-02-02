@@ -7,7 +7,9 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     private static final int SPEECH_TO_TEXT_REQUEST_CODE = 32;
     private static final String LAUNCH_DIALOG_TITLE_KEY = "launch_dialog_title";
     private static final String LAUNCH_DIALOG_CONTENT_KEY = "launch_dialog_content";
+    private static final String LAUNCH_DIALOG_URL_KEY = "launch_dialog_url";
+    private static final String LAUNCH_DIALOG_URL_LABEL_KEY = "launch_dialog_url_label";
 
     private MainFragment mMainFragment;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
@@ -120,15 +124,26 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                             mFirebaseRemoteConfig.activateFetched();
                             String launchDialogTitle = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_TITLE_KEY);
                             String launchDialogContent = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_CONTENT_KEY);
+                            final String launchDialogUrl = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_URL_KEY);
+                            String launchDialogUrlLabel = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_URL_LABEL_KEY);
                             if (launchDialogContent != null && launchDialogContent.length() > 0) {
                                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
                                 alertDialogBuilder
                                         .setTitle(launchDialogTitle)
                                         .setMessage(launchDialogContent.replace("\\n", "\n"))
                                         .setCancelable(true)
-                                        .setPositiveButton(getString(R.string.ok), null)
-                                        .create()
-                                        .show();
+                                        .setPositiveButton(getString(R.string.ok), null);
+                                if (launchDialogUrl != null && launchDialogUrl.length() > 0 &&
+                                        launchDialogUrlLabel != null && launchDialogUrlLabel.length() > 0) {
+                                    alertDialogBuilder.setNeutralButton(launchDialogUrlLabel, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(launchDialogUrl));
+                                            startActivity(browserIntent);
+                                        }
+                                    });
+                                }
+                                alertDialogBuilder.create().show();
                                 logEvent("launch_dialog_displayed", null);
                             }
                         }
