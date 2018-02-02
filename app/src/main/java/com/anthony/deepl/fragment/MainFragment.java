@@ -28,7 +28,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
@@ -37,8 +36,6 @@ import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
 import com.anthony.deepl.model.TranslationResponse;
 import com.anthony.deepl.util.AndroidUtils;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -74,7 +71,6 @@ public class MainFragment extends Fragment implements
 
     private DeepLService mDeepLService;
     private ShrinkSpinnerAdapter mTranslateFromAdapter;
-    private FirebaseAnalytics mFirebaseAnalytics;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
     private String mLastTranslatedSentence;
@@ -96,7 +92,6 @@ public class MainFragment extends Fragment implements
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mDeepLService = retrofit.create(DeepLService.class);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
     }
 
     @Override
@@ -130,7 +125,8 @@ public class MainFragment extends Fragment implements
                 clearTextTapped();
                 break;
             case R.id.mic_fab_button:
-                Toast.makeText(getContext(), "MIC", Toast.LENGTH_SHORT).show();
+                String translateFrom = mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()];
+                mListener.onSpeechToTextTapped(LanguageManager.getLanguageValue(translateFrom, getContext()));
                 break;
             case R.id.copy_to_clipboard_button:
                 copyTranslatedTextToClipboard();
@@ -383,7 +379,7 @@ public class MainFragment extends Fragment implements
                 Bundle params = new Bundle();
                 params.putString("translate_from", mLastTranslatedFrom);
                 params.putString("translate_to", mLastTranslatedTo);
-                mFirebaseAnalytics.logEvent("translation", params);
+                mListener.logEvent("translation", params);
 
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
@@ -405,6 +401,7 @@ public class MainFragment extends Fragment implements
                 if (mRetrySnackBar == null) {
                     View view = getView();
                     if (view != null) {
+                        mListener.logEvent("retry_snack_bar_displayed", null);
                         mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
                                 .setAction(R.string.snack_bar_retry_button, new View.OnClickListener() {
                                     @Override
@@ -412,6 +409,7 @@ public class MainFragment extends Fragment implements
                                         mRetrySnackBar.dismiss();
                                         mRetrySnackBar = null;
                                         updateTranslation();
+                                        mListener.logEvent("retry_snack_bar_tapped", null);
                                     }
                                 });
                         mRetrySnackBar.show();
@@ -465,7 +463,7 @@ public class MainFragment extends Fragment implements
             hideDetectedLanguage();
             updateTranslateToSpinner();
         }
-        mFirebaseAnalytics.logEvent("clear_text", null);
+        mListener.logEvent("clear_text", null);
     }
 
     private void copyTranslatedTextToClipboard() {
@@ -487,7 +485,7 @@ public class MainFragment extends Fragment implements
                     R.string.copied_to_clipboard_text,
                     Snackbar.LENGTH_SHORT).show();
 
-            mFirebaseAnalytics.logEvent("copy_to_clipboard", null);
+            mListener.logEvent("copy_to_clipboard", null);
         } else {
             Timber.w("Clipboard is null and shouldn't be");
         }
@@ -524,7 +522,7 @@ public class MainFragment extends Fragment implements
                 }).
                 setStartDelay(75);
 
-        mFirebaseAnalytics.logEvent("invert_languages", null);
+        mListener.logEvent("invert_languages", null);
     }
 
     private void checkTranslateFromLabelVisibility() {
@@ -538,13 +536,16 @@ public class MainFragment extends Fragment implements
 
     // region Public Methods
 
-    public void setSharedText(String text) {
+    public void setToTranslateText(String text) {
         mToTranslateEditText.setText(text);
+        mToTranslateEditText.setSelection(text != null ? text.length() : 0);
     }
 
     // endregion
 
 
     public interface OnFragmentInteractionListener {
+        void onSpeechToTextTapped(String selectedLocale);
+        void logEvent(String event, Bundle bundle);
     }
 }

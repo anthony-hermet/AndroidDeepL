@@ -18,6 +18,8 @@
     <string name="alternatives_label">Alternativen :</string>
     <string name="snack_bar_retry_label">Netzwerkfehler</string>
     <string name="snack_bar_retry_button">Wiederholungsversuch</string>
+    <string name="speech_to_text_hint">Sprechen Sie jetzt</string>
+    <string name="speech_to_text_error">Diese Funktion wird von Ihrem Gerät nicht unterstützt</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Text entfernen</string>

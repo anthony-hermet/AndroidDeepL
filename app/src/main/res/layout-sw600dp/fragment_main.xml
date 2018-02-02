@@ -50,7 +50,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/clear_to_translate_button"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/translate_from_text_view"
-                        style="@style/TranslationTextTabletStyle"/>
+                        style="@style/TranslationTextStyle"/>
 
                 <ImageButton
                         android:id="@+id/clear_to_translate_button"
@@ -66,6 +66,19 @@
                         app:layout_constraintTop_toTopOf="@id/to_translate_edit_text"
                         app:srcCompat="@drawable/ic_clear_black_24dp"
                         tools:visibility="visible"/>
+
+                <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/mic_fab_button"
+                        android:layout_marginLeft="6dp"
+                        android:layout_marginStart="6dp"
+                        android:layout_marginBottom="6dp"
+                        android:contentDescription="@string/speech_to_text_description"
+                        app:backgroundTint="@color/colorPrimary"
+                        app:srcCompat="@drawable/ic_mic_white_16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        style="@style/FabMiniMini"/>
 
             </android.support.constraint.ConstraintLayout>
 
@@ -131,7 +144,7 @@
                         app:layout_constraintEnd_toStartOf="@+id/copy_to_clipboard_button"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
-                        style="@style/TranslationTextTabletStyle"
+                        style="@style/TranslationTextStyle"
                         tools:text="Bonjour le monde"/>
 
                 <android.support.design.widget.FloatingActionButton

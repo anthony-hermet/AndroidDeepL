@@ -18,6 +18,8 @@
     <string name="alternatives_label">Alternative :</string>
     <string name="snack_bar_retry_label">Errore di rete</string>
     <string name="snack_bar_retry_button">Prova</string>
+    <string name="speech_to_text_hint">Parla ora</string>
+    <string name="speech_to_text_error">Questa funzione non è supportata dal dispositivo</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Rimuovere testo</string>

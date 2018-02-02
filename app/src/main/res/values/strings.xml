@@ -21,10 +21,14 @@
     <string name="alternatives_label">Alternatives :</string>
     <string name="snack_bar_retry_label">Network error</string>
     <string name="snack_bar_retry_button">Retry</string>
+    <string name="speech_to_text_hint">Speak now</string>
+    <string name="speech_to_text_error">This feature is not supported by your device</string>
+
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Clear text</string>
     <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
     <string name="invert_languages_button_description">Invert languages</string>
+    <string name="speech_to_text_description">Speech to text</string>
 
 </resources>
