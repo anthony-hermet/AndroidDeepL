@@ -1,7 +1,6 @@
 package com.anthony.deepl.fragment;
 
 import android.app.Activity;
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -13,7 +12,6 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.AppCompatSpinner;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,8 +36,6 @@ import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
 import com.anthony.deepl.model.TranslationResponse;
 import com.anthony.deepl.util.AndroidUtils;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +62,7 @@ public class MainFragment extends Fragment implements
     private TextView mTranslatedTextView;
     private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
+    private FloatingActionButton mMicFab;
     private FloatingActionButton mCopyToClipboardFab;
     private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
@@ -74,7 +71,6 @@ public class MainFragment extends Fragment implements
 
     private DeepLService mDeepLService;
     private ShrinkSpinnerAdapter mTranslateFromAdapter;
-    private FirebaseAnalytics mFirebaseAnalytics;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
     private String mLastTranslatedSentence;
@@ -96,7 +92,6 @@ public class MainFragment extends Fragment implements
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mDeepLService = retrofit.create(DeepLService.class);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
     }
 
     @Override
@@ -128,6 +123,10 @@ public class MainFragment extends Fragment implements
         switch (viewId) {
             case R.id.clear_to_translate_button:
                 clearTextTapped();
+                break;
+            case R.id.mic_fab_button:
+                String translateFrom = mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()];
+                mListener.onSpeechToTextTapped(LanguageManager.getLanguageValue(translateFrom, getContext()));
                 break;
             case R.id.copy_to_clipboard_button:
                 copyTranslatedTextToClipboard();
@@ -174,6 +173,7 @@ public class MainFragment extends Fragment implements
         mTranslatedTextView = view.findViewById(R.id.translated_edit_text);
         mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
+        mMicFab = view.findViewById(R.id.mic_fab_button);
         mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
         mInvertLanguagesFab = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
@@ -204,6 +204,7 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner.setOnItemSelectedListener(this);
         mTranslateToSpinner.setOnItemSelectedListener(this);
         mClearButton.setOnClickListener(this);
+        mMicFab.setOnClickListener(this);
         mCopyToClipboardFab.setOnClickListener(this);
         mInvertLanguagesFab.setOnClickListener(this);
         mCopyToClipboardFab.hide();
@@ -216,7 +217,14 @@ public class MainFragment extends Fragment implements
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int toTranslateCount = mToTranslateEditText.getText().toString().replace(" ", "").length();
-                mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
+                if (toTranslateCount > 0) {
+                    mClearButton.setVisibility(View.VISIBLE);
+                    mMicFab.hide();
+                }
+                else {
+                    mClearButton.setVisibility(View.GONE);
+                    mMicFab.show();
+                }
                 if (toTranslateCount > 2) {
                     updateTranslation();
                 } else {
@@ -371,7 +379,7 @@ public class MainFragment extends Fragment implements
                 Bundle params = new Bundle();
                 params.putString("translate_from", mLastTranslatedFrom);
                 params.putString("translate_to", mLastTranslatedTo);
-                mFirebaseAnalytics.logEvent("translation", params);
+                mListener.logEvent("translation", params);
 
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
@@ -393,6 +401,7 @@ public class MainFragment extends Fragment implements
                 if (mRetrySnackBar == null) {
                     View view = getView();
                     if (view != null) {
+                        mListener.logEvent("retry_snack_bar_displayed", null);
                         mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
                                 .setAction(R.string.snack_bar_retry_button, new View.OnClickListener() {
                                     @Override
@@ -400,6 +409,7 @@ public class MainFragment extends Fragment implements
                                         mRetrySnackBar.dismiss();
                                         mRetrySnackBar = null;
                                         updateTranslation();
+                                        mListener.logEvent("retry_snack_bar_tapped", null);
                                     }
                                 });
                         mRetrySnackBar.show();
@@ -453,7 +463,7 @@ public class MainFragment extends Fragment implements
             hideDetectedLanguage();
             updateTranslateToSpinner();
         }
-        mFirebaseAnalytics.logEvent("clear_text", null);
+        mListener.logEvent("clear_text", null);
     }
 
     private void copyTranslatedTextToClipboard() {
@@ -475,7 +485,7 @@ public class MainFragment extends Fragment implements
                     R.string.copied_to_clipboard_text,
                     Snackbar.LENGTH_SHORT).show();
 
-            mFirebaseAnalytics.logEvent("copy_to_clipboard", null);
+            mListener.logEvent("copy_to_clipboard", null);
         } else {
             Timber.w("Clipboard is null and shouldn't be");
         }
@@ -512,7 +522,7 @@ public class MainFragment extends Fragment implements
                 }).
                 setStartDelay(75);
 
-        mFirebaseAnalytics.logEvent("invert_languages", null);
+        mListener.logEvent("invert_languages", null);
     }
 
     private void checkTranslateFromLabelVisibility() {
@@ -526,13 +536,16 @@ public class MainFragment extends Fragment implements
 
     // region Public Methods
 
-    public void setSharedText(String text) {
+    public void setToTranslateText(String text) {
         mToTranslateEditText.setText(text);
+        mToTranslateEditText.setSelection(text != null ? text.length() : 0);
     }
 
     // endregion
 
 
     public interface OnFragmentInteractionListener {
+        void onSpeechToTextTapped(String selectedLocale);
+        void logEvent(String event, Bundle bundle);
     }
 }

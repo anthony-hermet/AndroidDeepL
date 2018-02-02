@@ -25,17 +25,13 @@
         <item name="android:paddingTop">3dp</item>
     </style>
 
-    <style name="TranslationTextTabletStyle">
-        <item name="android:background">@android:color/transparent</item>
-        <item name="android:gravity">top</item>
-        <item name="android:minLines">6</item>
-        <item name="android:textSize">22sp</item>
-        <item name="android:paddingLeft">12dp</item>
-        <item name="android:paddingStart">12dp</item>
-        <item name="android:paddingRight">12dp</item>
-        <item name="android:paddingEnd">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
-        <item name="android:paddingTop">6dp</item>
+    <!--We set elevation to 0dp for pre API 21 devices to avoid strange shadows-->
+    <style name="FabMiniMini" parent="Widget.Design.FloatingActionButton">
+        <item name="android:layout_width">30dp</item>
+        <item name="android:layout_height">30dp</item>
+        <item name="android:scaleType">center</item>
+        <item name="elevation">0dp</item>
+        <item name="pressedTranslationZ">0dp</item>
     </style>
 
 </resources>

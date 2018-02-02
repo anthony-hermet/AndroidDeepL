@@ -18,6 +18,8 @@
     <string name="alternatives_label">Autres traductions :</string>
     <string name="snack_bar_retry_label">Erreur de réseau</string>
     <string name="snack_bar_retry_button">Réessayer</string>
+    <string name="speech_to_text_hint">Parlez maintenant</string>
+    <string name="speech_to_text_error">Cette fonctionnalité n\'est pas prise en charge par votre appareil</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Supprimer le texte</string>

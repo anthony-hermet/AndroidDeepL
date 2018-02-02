@@ -18,6 +18,8 @@
     <string name="alternatives_label">Alternatieven :</string>
     <string name="snack_bar_retry_label">Netwerk fout</string>
     <string name="snack_bar_retry_button">Opnieuw proberen</string>
+    <string name="speech_to_text_hint">Spreek nu</string>
+    <string name="speech_to_text_error">Deze functie wordt niet ondersteund door uw apparaat</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Tekst verwijderen</string>

@@ -18,6 +18,8 @@
     <string name="alternatives_label">Alternativas :</string>
     <string name="snack_bar_retry_label">Error de red</string>
     <string name="snack_bar_retry_button">Reintentar</string>
+    <string name="speech_to_text_hint">Habla ahora</string>
+    <string name="speech_to_text_error">Esta función no es compatible con su dispositivo</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Borrar texto</string>
