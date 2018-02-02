@@ -25,5 +25,7 @@
     <string name="clear_to_translate_button_description">Rimuovere testo</string>
     <string name="copy_to_clipboard_button_description">Copia negli Appunti</string>
     <string name="invert_languages_button_description">Inverti lingue</string>
+    <string name="speech_to_text_description">Parlare per tradurre</string>
+    <string name="paste_description">Incolla</string>
 
 </resources>

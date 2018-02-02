@@ -79,6 +79,19 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         style="@style/FabMiniMini"/>
 
+                <android.support.design.widget.FloatingActionButton
+                        android:id="@+id/paste_fab_button"
+                        android:layout_marginLeft="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="6dp"
+                        android:contentDescription="@string/paste_description"
+                        app:backgroundTint="@color/colorPrimary"
+                        app:srcCompat="@drawable/ic_paste_white_16dp"
+                        app:layout_constraintStart_toEndOf="@id/mic_fab_button"
+                        app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        style="@style/FabMiniMini"/>
+
             </android.support.constraint.ConstraintLayout>
 
         </android.support.v7.widget.CardView>
