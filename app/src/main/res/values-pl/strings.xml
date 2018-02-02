@@ -25,5 +25,7 @@
     <string name="clear_to_translate_button_description">Usunięcie</string>
     <string name="copy_to_clipboard_button_description">Kopiowanie do schowka</string>
     <string name="invert_languages_button_description">Języki inwersyjne</string>
+    <string name="speech_to_text_description">Mów do przekładu</string>
+    <string name="paste_description">Wklej</string>
 
 </resources>
