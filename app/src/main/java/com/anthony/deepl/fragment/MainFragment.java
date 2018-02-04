@@ -562,10 +562,13 @@ public class MainFragment extends Fragment implements
     }
 
     private void checkTranslateFromLabelVisibility() {
-        int[] textViewLocation = new int[2];
-        int eightDpToPixelValue = (int) AndroidUtils.convertDpToPixel(8, getContext());
-        mTranslateFromTextView.getLocationOnScreen(textViewLocation);
-        mTranslateFromTextView.setVisibility(textViewLocation[0] > eightDpToPixelValue ? View.VISIBLE : View.INVISIBLE);
+        Context context = getContext();
+        if (context != null) {
+            int[] textViewLocation = new int[2];
+            int eightDpToPixelValue = (int) AndroidUtils.convertDpToPixel(8, context);
+            mTranslateFromTextView.getLocationOnScreen(textViewLocation);
+            mTranslateFromTextView.setVisibility(textViewLocation[0] > eightDpToPixelValue ? View.VISIBLE : View.INVISIBLE);
+        }
     }
 
     // endregion
