@@ -107,6 +107,9 @@ public class MainFragment extends Fragment implements
                 mToTranslateEditText.getText().length() <= 0) {
             mPasteFab.show();
         }
+        else {
+            mPasteFab.hide();
+        }
     }
 
     @Override
