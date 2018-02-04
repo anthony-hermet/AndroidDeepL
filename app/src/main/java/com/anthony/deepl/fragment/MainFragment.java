@@ -167,9 +167,11 @@ public class MainFragment extends Fragment implements
             case R.id.translate_from_spinner:
                 hideDetectedLanguage();
                 updateTranslateToSpinner();
+                mListener.logEvent("changed_translate_from_language", null);
                 break;
             case R.id.translate_to_spinner:
                 updateTranslation();
+                mListener.logEvent("changed_translate_to_language", null);
                 break;
             default:
                 break;
