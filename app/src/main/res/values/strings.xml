@@ -2,6 +2,7 @@
 
     <!--GLOBAL-->
     <string name="app_name" translatable="false">DeepL</string>
+    <string name="ok" translatable="false">OK</string>
 
     <!--MAIN ACTIVITY-->
     <string name="translate_from_label">Translate from</string>
@@ -18,10 +19,16 @@
     <string name="to_translate_hint">Type or paste text here.\n(English, French, German, Spanish, Italian, Dutch, Polish)</string>
     <string name="copied_to_clipboard_text">Text copied to clipboard</string>
     <string name="alternatives_label">Alternatives :</string>
+    <string name="snack_bar_retry_label">Network error</string>
+    <string name="snack_bar_retry_button">Retry</string>
+    <string name="speech_to_text_hint">Speak now</string>
+    <string name="speech_to_text_error">This feature is not supported by your device</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Clear text</string>
     <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
     <string name="invert_languages_button_description">Invert languages</string>
+    <string name="speech_to_text_description">Speak to translate</string>
+    <string name="paste_description">Paste</string>
 
 </resources>

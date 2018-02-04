@@ -2,6 +2,7 @@ package com.anthony.deepl.fragment;
 
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -36,7 +37,6 @@ import com.anthony.deepl.manager.LanguageManager;
 import com.anthony.deepl.model.TranslationRequest;
 import com.anthony.deepl.model.TranslationResponse;
 import com.anthony.deepl.util.AndroidUtils;
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,14 +63,17 @@ public class MainFragment extends Fragment implements
     private TextView mTranslatedTextView;
     private ProgressBar mTranslateProgressbar;
     private ImageButton mClearButton;
+    private FloatingActionButton mMicFab;
+    private FloatingActionButton mPasteFab;
     private FloatingActionButton mCopyToClipboardFab;
     private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
     private LinearLayout mAlternativesLinearLayout;
+    private Snackbar mRetrySnackBar;
 
-    private DeepLService mDeepLService;
     private ShrinkSpinnerAdapter mTranslateFromAdapter;
-    private FirebaseAnalytics mFirebaseAnalytics;
+    private DeepLService mDeepLService;
+    private ClipboardManager mClipboardManager;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
     private String mLastTranslatedSentence;
@@ -79,7 +82,8 @@ public class MainFragment extends Fragment implements
     private String mDetectedLanguage;
     private boolean mTranslationInProgress;
 
-    public MainFragment() {}
+    public MainFragment() {
+    }
 
     // region Overridden methods
 
@@ -91,7 +95,18 @@ public class MainFragment extends Fragment implements
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mDeepLService = retrofit.create(DeepLService.class);
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
+        mClipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mClipboardManager != null &&
+                mClipboardManager.hasPrimaryClip() &&
+                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) &&
+                mToTranslateEditText.getText().length() <= 0) {
+            mPasteFab.show();
+        }
     }
 
     @Override
@@ -124,6 +139,13 @@ public class MainFragment extends Fragment implements
             case R.id.clear_to_translate_button:
                 clearTextTapped();
                 break;
+            case R.id.mic_fab_button:
+                String translateFrom = mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()];
+                mListener.onSpeechToTextTapped(LanguageManager.getLanguageValue(translateFrom, getContext()));
+                break;
+            case R.id.paste_fab_button:
+                pasteTextFromClipboard();
+                break;
             case R.id.copy_to_clipboard_button:
                 copyTranslatedTextToClipboard();
                 break;
@@ -152,7 +174,8 @@ public class MainFragment extends Fragment implements
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {}
+    public void onNothingSelected(AdapterView<?> parent) {
+    }
 
     // endregion
 
@@ -168,6 +191,8 @@ public class MainFragment extends Fragment implements
         mTranslatedTextView = view.findViewById(R.id.translated_edit_text);
         mTranslateProgressbar = view.findViewById(R.id.translate_progressbar);
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
+        mMicFab = view.findViewById(R.id.mic_fab_button);
+        mPasteFab = view.findViewById(R.id.paste_fab_button);
         mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
         mInvertLanguagesFab = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
@@ -198,6 +223,8 @@ public class MainFragment extends Fragment implements
         mTranslateFromSpinner.setOnItemSelectedListener(this);
         mTranslateToSpinner.setOnItemSelectedListener(this);
         mClearButton.setOnClickListener(this);
+        mMicFab.setOnClickListener(this);
+        mPasteFab.setOnClickListener(this);
         mCopyToClipboardFab.setOnClickListener(this);
         mInvertLanguagesFab.setOnClickListener(this);
         mCopyToClipboardFab.hide();
@@ -210,8 +237,30 @@ public class MainFragment extends Fragment implements
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int toTranslateCount = mToTranslateEditText.getText().toString().replace(" ", "").length();
-                mClearButton.setVisibility(toTranslateCount > 0 ? View.VISIBLE : View.GONE);
-                updateTranslation();
+                if (toTranslateCount > 0) {
+                    mClearButton.setVisibility(View.VISIBLE);
+                    mMicFab.hide();
+                    mPasteFab.hide();
+                } else {
+                    mClearButton.setVisibility(View.GONE);
+                    mMicFab.show();
+                    if (mClipboardManager != null &&
+                            mClipboardManager.hasPrimaryClip() &&
+                            mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                        mPasteFab.show();
+                    }
+                }
+                if (toTranslateCount > 2) {
+                    updateTranslation();
+                } else {
+                    mTranslatedTextView.setText("");
+                    mAlternativesLabel.setVisibility(View.GONE);
+                    mAlternativesLinearLayout.removeAllViews();
+                    if (mRetrySnackBar != null) {
+                        mRetrySnackBar.dismiss();
+                        mRetrySnackBar = null;
+                    }
+                }
             }
 
             @Override
@@ -228,8 +277,7 @@ public class MainFragment extends Fragment implements
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count > 0) {
                     mCopyToClipboardFab.show();
-                }
-                else {
+                } else {
                     mCopyToClipboardFab.hide();
                 }
             }
@@ -253,8 +301,7 @@ public class MainFragment extends Fragment implements
         // We hide invert button if translateFrom is AUTO but language isn't detected
         if (selectedLanguage.equals(AUTO) && mDetectedLanguage == null) {
             mInvertLanguagesFab.hide();
-        }
-        else {
+        } else {
             mInvertLanguagesFab.show();
         }
 
@@ -319,9 +366,17 @@ public class MainFragment extends Fragment implements
             public void onResponse(@NonNull Call<TranslationResponse> call, @NonNull Response<TranslationResponse> response) {
                 Context context = getContext();
                 if (context == null) return;
+                TranslationResponse translationResponse = response.body();
+                if (translationResponse == null) {
+                    onFailure(call, new Exception("Translation response body is null"));
+                    return;
+                }
 
                 // Main translation
-                TranslationResponse translationResponse = response.body();
+                if (mRetrySnackBar != null) {
+                    mRetrySnackBar.dismiss();
+                    mRetrySnackBar = null;
+                }
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
                 mTranslatedTextView.setText(translationResponse.getBestTranslation());
@@ -349,7 +404,7 @@ public class MainFragment extends Fragment implements
                 Bundle params = new Bundle();
                 params.putString("translate_from", mLastTranslatedFrom);
                 params.putString("translate_to", mLastTranslatedTo);
-                mFirebaseAnalytics.logEvent("translation", params);
+                mListener.logEvent("translation", params);
 
                 // We call the method again to check if something has changed since we've launched the network call
                 updateTranslation();
@@ -363,7 +418,28 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onFailure(@NonNull Call<TranslationResponse> call, @NonNull Throwable t) {
+                mTranslateProgressbar.setVisibility(View.GONE);
+                mLastTranslatedSentence = "";
                 mTranslationInProgress = false;
+                mTranslatedTextView.setText("");
+
+                if (mRetrySnackBar == null) {
+                    View view = getView();
+                    if (view != null) {
+                        mListener.logEvent("retry_snack_bar_displayed", null);
+                        mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
+                                .setAction(R.string.snack_bar_retry_button, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        mRetrySnackBar.dismiss();
+                                        mRetrySnackBar = null;
+                                        updateTranslation();
+                                        mListener.logEvent("retry_snack_bar_tapped", null);
+                                    }
+                                });
+                        mRetrySnackBar.show();
+                    }
+                }
                 Timber.e(t);
             }
         });
@@ -404,6 +480,7 @@ public class MainFragment extends Fragment implements
     }
 
     private void clearTextTapped() {
+        mLastTranslatedSentence = "";
         mToTranslateEditText.setText("");
         mTranslatedTextView.setText("");
         mAlternativesLabel.setVisibility(View.GONE);
@@ -412,13 +489,12 @@ public class MainFragment extends Fragment implements
             hideDetectedLanguage();
             updateTranslateToSpinner();
         }
-        mFirebaseAnalytics.logEvent("clear_text", null);
+        mListener.logEvent("clear_text", null);
     }
 
     private void copyTranslatedTextToClipboard() {
         String translatedText = mTranslatedTextView.getText().toString();
-        ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        if (clipboard != null) {
+        if (mClipboardManager != null) {
             // First we close the keyboard
             Activity mainActivity = getActivity();
             View view = mainActivity.getCurrentFocus();
@@ -429,15 +505,25 @@ public class MainFragment extends Fragment implements
 
             // Then we clip the translated text and display confirmation Snackbar
             ClipData clip = ClipData.newPlainText(translatedText, translatedText);
-            clipboard.setPrimaryClip(clip);
+            mClipboardManager.setPrimaryClip(clip);
             Snackbar.make(mClearButton,
                     R.string.copied_to_clipboard_text,
                     Snackbar.LENGTH_SHORT).show();
-
-            mFirebaseAnalytics.logEvent("copy_to_clipboard", null);
-        }
-        else {
+            mListener.logEvent("copy_to_clipboard", null);
+        } else {
             Timber.w("Clipboard is null and shouldn't be");
+        }
+    }
+
+    private void pasteTextFromClipboard() {
+        if (mClipboardManager != null &&
+                mClipboardManager.hasPrimaryClip() &&
+                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+            setToTranslateText(mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+            mListener.logEvent("paste_from_clipboard", null);
+        } else {
+            mPasteFab.hide();
+            Timber.w(mClipboardManager != null ? "Clipboard primary clip is empty, paste fab should be hidden" : "Clipboard is null and shouldn't be");
         }
     }
 
@@ -472,17 +558,32 @@ public class MainFragment extends Fragment implements
                 }).
                 setStartDelay(75);
 
-        mFirebaseAnalytics.logEvent("invert_languages", null);
+        mListener.logEvent("invert_languages", null);
     }
 
     private void checkTranslateFromLabelVisibility() {
         int[] textViewLocation = new int[2];
+        int eightDpToPixelValue = (int) AndroidUtils.convertDpToPixel(8, getContext());
         mTranslateFromTextView.getLocationOnScreen(textViewLocation);
-        mTranslateFromTextView.setVisibility(textViewLocation[0] > 0 ? View.VISIBLE : View.INVISIBLE);
+        mTranslateFromTextView.setVisibility(textViewLocation[0] > eightDpToPixelValue ? View.VISIBLE : View.INVISIBLE);
     }
 
     // endregion
 
+
+    // region Public Methods
+
+    public void setToTranslateText(String text) {
+        mToTranslateEditText.setText(text);
+        mToTranslateEditText.setSelection(text != null ? text.length() : 0);
+    }
+
+    // endregion
+
+
     public interface OnFragmentInteractionListener {
+        void onSpeechToTextTapped(String selectedLocale);
+
+        void logEvent(String event, Bundle bundle);
     }
 }

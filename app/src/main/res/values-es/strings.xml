@@ -16,10 +16,16 @@
     <string name="to_translate_hint">Escribe o pega el texto aquí.\n(Inglés, Alemán, Francés, Español, Italiano, Neerlandés, Polaco)</string>
     <string name="copied_to_clipboard_text">Texto copiado en el portapapeles</string>
     <string name="alternatives_label">Alternativas :</string>
+    <string name="snack_bar_retry_label">Error de red</string>
+    <string name="snack_bar_retry_button">Reintentar</string>
+    <string name="speech_to_text_hint">Habla ahora</string>
+    <string name="speech_to_text_error">Esta función no es compatible con su dispositivo</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Borrar texto</string>
     <string name="copy_to_clipboard_button_description">Copiar al portapapeles</string>
     <string name="invert_languages_button_description">Invertir idiomas</string>
+    <string name="speech_to_text_description">Hable para traducir</string>
+    <string name="paste_description">Pegar</string>
 
 </resources>
