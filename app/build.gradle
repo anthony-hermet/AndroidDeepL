@@ -11,8 +11,8 @@ android {
         applicationId "com.anthony.deepl"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 3
-        versionName "1.1.1"
+        versionCode 4
+        versionName "2.0.0 DEV1"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

@@ -29,6 +29,7 @@
     <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
     <string name="invert_languages_button_description">Invert languages</string>
     <string name="speech_to_text_description">Speak to translate</string>
+    <string name="text_to_speech_description">Translation to speech</string>
     <string name="paste_description">Paste</string>
 
 </resources>

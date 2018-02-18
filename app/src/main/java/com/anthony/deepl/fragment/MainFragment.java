@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
@@ -40,6 +42,7 @@ import com.anthony.deepl.util.AndroidUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -65,6 +68,7 @@ public class MainFragment extends Fragment implements
     private ImageButton mClearButton;
     private FloatingActionButton mMicFab;
     private FloatingActionButton mPasteFab;
+    private FloatingActionButton mSpeakerFab;
     private FloatingActionButton mCopyToClipboardFab;
     private FloatingActionButton mInvertLanguagesFab;
     private TextView mAlternativesLabel;
@@ -74,6 +78,7 @@ public class MainFragment extends Fragment implements
     private ShrinkSpinnerAdapter mTranslateFromAdapter;
     private DeepLService mDeepLService;
     private ClipboardManager mClipboardManager;
+    private TextToSpeech mTextToSpeech;
     private String mTranslateFromLanguages[];
     private String mTranslateToLanguages[];
     private String mLastTranslatedSentence;
@@ -81,6 +86,7 @@ public class MainFragment extends Fragment implements
     private String mLastTranslatedTo;
     private String mDetectedLanguage;
     private boolean mTranslationInProgress;
+    private boolean mTextToSpeechInitialized;
 
     public MainFragment() {
     }
@@ -96,6 +102,15 @@ public class MainFragment extends Fragment implements
                 .build();
         mDeepLService = retrofit.create(DeepLService.class);
         mClipboardManager = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        mTextToSpeech = new TextToSpeech(getContext(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status != TextToSpeech.ERROR) {
+                    mTextToSpeechInitialized = true;
+                }
+            }
+        });
+        mTextToSpeechInitialized = false;
     }
 
     @Override
@@ -145,6 +160,9 @@ public class MainFragment extends Fragment implements
             case R.id.mic_fab_button:
                 String translateFrom = mTranslateFromLanguages[mTranslateFromSpinner.getSelectedItemPosition()];
                 mListener.onSpeechToTextTapped(LanguageManager.getLanguageValue(translateFrom, getContext()));
+                break;
+            case R.id.text_to_speech_fab_button:
+                onTextToSpeechTapped();
                 break;
             case R.id.paste_fab_button:
                 pasteTextFromClipboard();
@@ -198,6 +216,7 @@ public class MainFragment extends Fragment implements
         mClearButton = view.findViewById(R.id.clear_to_translate_button);
         mMicFab = view.findViewById(R.id.mic_fab_button);
         mPasteFab = view.findViewById(R.id.paste_fab_button);
+        mSpeakerFab = view.findViewById(R.id.text_to_speech_fab_button);
         mCopyToClipboardFab = view.findViewById(R.id.copy_to_clipboard_button);
         mInvertLanguagesFab = view.findViewById(R.id.invert_languages_button);
         mAlternativesLabel = view.findViewById(R.id.alternatives_label);
@@ -230,8 +249,10 @@ public class MainFragment extends Fragment implements
         mClearButton.setOnClickListener(this);
         mMicFab.setOnClickListener(this);
         mPasteFab.setOnClickListener(this);
+        mSpeakerFab.setOnClickListener(this);
         mCopyToClipboardFab.setOnClickListener(this);
         mInvertLanguagesFab.setOnClickListener(this);
+        mSpeakerFab.hide();
         mCopyToClipboardFab.hide();
         mInvertLanguagesFab.hide();
         mToTranslateEditText.addTextChangedListener(new TextWatcher() {
@@ -281,8 +302,10 @@ public class MainFragment extends Fragment implements
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count > 0) {
+                    if (mTextToSpeechInitialized) mSpeakerFab.show();
                     mCopyToClipboardFab.show();
                 } else {
+                    mSpeakerFab.hide();
                     mCopyToClipboardFab.hide();
                 }
             }
@@ -574,6 +597,12 @@ public class MainFragment extends Fragment implements
             mTranslateFromTextView.getLocationOnScreen(textViewLocation);
             mTranslateFromTextView.setVisibility(textViewLocation[0] > eightDpToPixelValue ? View.VISIBLE : View.INVISIBLE);
         }
+    }
+
+    private void onTextToSpeechTapped() {
+        if (!mTextToSpeechInitialized) return;
+        mTextToSpeech.setLanguage(Locale.UK);
+        mTextToSpeech.speak("This is crazy", TextToSpeech.QUEUE_FLUSH, null );
     }
 
     // endregion
