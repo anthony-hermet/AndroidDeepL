@@ -85,7 +85,7 @@ public class LanguageManager {
         Locale locale;
         switch (language) {
             case ENGLISH :
-                locale = Locale.UK;
+                locale = Locale.ENGLISH;
                 break;
             case GERMAN :
                 locale = Locale.GERMAN;

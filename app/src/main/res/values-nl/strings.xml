@@ -20,12 +20,14 @@
     <string name="snack_bar_retry_button">Opnieuw proberen</string>
     <string name="speech_to_text_hint">Spreek nu</string>
     <string name="speech_to_text_error">Deze functie wordt niet ondersteund door uw apparaat</string>
+    <string name="volume_off_label">Volume is uit</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Tekst verwijderen</string>
     <string name="copy_to_clipboard_button_description">Kopiëren naar klembord</string>
     <string name="invert_languages_button_description">Omkerende talen</string>
     <string name="speech_to_text_description">Spreken om te vertalen</string>
+    <string name="text_to_speech_description">Naar vertaling luisteren</string>
     <string name="paste_description">Plakken</string>
 
 </resources>

@@ -308,9 +308,11 @@ public class MainFragment extends Fragment implements
                         mSpeakerFab.show();
                     }
                     mCopyToClipboardFab.show();
+                    mTranslatedTextView.setMinLines(3);
                 } else {
                     mSpeakerFab.hide();
                     mCopyToClipboardFab.hide();
+                    mTranslatedTextView.setMinLines(4);
                 }
             }
 
@@ -612,9 +614,7 @@ public class MainFragment extends Fragment implements
             mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
         }
         else {
-            Snackbar.make(mClearButton,
-                    R.string.volume_off_label,
-                    Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(mClearButton, R.string.volume_off_label, Snackbar.LENGTH_SHORT).show();
         }
         mListener.logEvent("text_to_speech", null);
     }
