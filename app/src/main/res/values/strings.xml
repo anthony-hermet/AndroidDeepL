@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
     <!--GLOBAL-->
@@ -23,12 +24,14 @@
     <string name="snack_bar_retry_button">Retry</string>
     <string name="speech_to_text_hint">Speak now</string>
     <string name="speech_to_text_error">This feature is not supported by your device</string>
+    <string name="volume_off_label">Volume is off</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Clear text</string>
     <string name="copy_to_clipboard_button_description">Copy to clipboard</string>
     <string name="invert_languages_button_description">Invert languages</string>
     <string name="speech_to_text_description">Speak to translate</string>
+    <string name="text_to_speech_description">Listen to translation</string>
     <string name="paste_description">Paste</string>
 
 </resources>
