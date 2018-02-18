@@ -9,6 +9,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initViews();
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
         // We handle possible share text intent
         Intent intent = getIntent();
