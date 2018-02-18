@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -78,6 +79,36 @@ public class LanguageManager {
             }
         }
         return AUTO;
+    }
+
+    public static Locale getLocaleFromLanguageValue(@Language String language) {
+        Locale locale;
+        switch (language) {
+            case ENGLISH :
+                locale = Locale.UK;
+                break;
+            case GERMAN :
+                locale = Locale.GERMAN;
+                break;
+            case FRENCH :
+                locale = Locale.FRENCH;
+                break;
+            case SPANISH :
+                locale = new Locale("es");
+                break;
+            case ITALIAN :
+                locale = Locale.ITALIAN;
+                break;
+            case DUTCH :
+                locale = new Locale("nl");
+                break;
+            case POLISH :
+                locale = new Locale("pl");
+                break;
+            default :
+                locale = Locale.UK;
+        }
+        return locale;
     }
 
     public static String[] getLanguagesStringArray(Context context, @Language String languageToRemove, boolean addAuto) {

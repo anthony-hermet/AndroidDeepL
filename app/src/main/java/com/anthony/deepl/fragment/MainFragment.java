@@ -30,7 +30,6 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
@@ -302,7 +301,10 @@ public class MainFragment extends Fragment implements
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (count > 0) {
-                    if (mTextToSpeechInitialized) mSpeakerFab.show();
+                    Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
+                    if (mTextToSpeechInitialized && mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                        mSpeakerFab.show();
+                    }
                     mCopyToClipboardFab.show();
                 } else {
                     mSpeakerFab.hide();
@@ -600,9 +602,11 @@ public class MainFragment extends Fragment implements
     }
 
     private void onTextToSpeechTapped() {
-        if (!mTextToSpeechInitialized) return;
-        mTextToSpeech.setLanguage(Locale.UK);
-        mTextToSpeech.speak("This is crazy", TextToSpeech.QUEUE_FLUSH, null );
+        if (!mTextToSpeechInitialized || mTextToSpeech.isSpeaking() || mTranslatedTextView.getText().toString().isEmpty() || mLastTranslatedTo == null) {
+            return;
+        }
+        mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo));
+        mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
     }
 
     // endregion
