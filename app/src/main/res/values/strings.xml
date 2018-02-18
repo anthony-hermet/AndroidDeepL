@@ -31,5 +31,6 @@
     <string name="speech_to_text_description">Speak to translate</string>
     <string name="text_to_speech_description">Translation to speech</string>
     <string name="paste_description">Paste</string>
+    <string name="volume_off_label">Volume is off</string>
 
 </resources>

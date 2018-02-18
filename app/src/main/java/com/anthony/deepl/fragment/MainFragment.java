@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -30,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.Toast;
 
 import com.anthony.deepl.R;
 import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
@@ -605,8 +607,16 @@ public class MainFragment extends Fragment implements
         if (!mTextToSpeechInitialized || mTextToSpeech.isSpeaking() || mTranslatedTextView.getText().toString().isEmpty() || mLastTranslatedTo == null) {
             return;
         }
-        mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo));
-        mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
+        if (mListener.getCurrentMediaVolume() > 0) {
+            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo));
+            mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
+        }
+        else {
+            Snackbar.make(mClearButton,
+                    R.string.volume_off_label,
+                    Snackbar.LENGTH_SHORT).show();
+        }
+        mListener.logEvent("text_to_speech", null);
     }
 
     // endregion
@@ -624,7 +634,7 @@ public class MainFragment extends Fragment implements
 
     public interface OnFragmentInteractionListener {
         void onSpeechToTextTapped(String selectedLocale);
-
+        int getCurrentMediaVolume();
         void logEvent(String event, Bundle bundle);
     }
 }

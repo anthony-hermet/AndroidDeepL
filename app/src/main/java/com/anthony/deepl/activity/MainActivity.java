@@ -7,6 +7,7 @@ import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings;
 
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioManager;
@@ -101,6 +102,12 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
             }
             Timber.e(e);
         }
+    }
+
+    @Override
+    public int getCurrentMediaVolume() {
+        AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        return audio != null ? audio.getStreamVolume(AudioManager.STREAM_MUSIC) : -1;
     }
 
     @Override
