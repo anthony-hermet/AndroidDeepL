@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="min_lines">4</integer>
+    <integer name="min_lines_with_buttons">4</integer>
+</resources>

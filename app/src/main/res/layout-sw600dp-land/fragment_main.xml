@@ -83,7 +83,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
-                    app:srcCompat="@drawable/ic_mic_white_16dp" />
+                    app:srcCompat="@drawable/ic_mic_white_16dp"
+                        tools:visibility="gone"/>
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/paste_fab_button"
@@ -96,7 +97,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/mic_fab_button"
                     app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
-                    app:srcCompat="@drawable/ic_paste_white_16dp" />
+                    app:srcCompat="@drawable/ic_paste_white_16dp"
+                    tools:visibility="gone" />
 
             </android.support.constraint.ConstraintLayout>
 
@@ -170,7 +172,6 @@
                     android:layout_height="wrap_content"
                     android:inputType="none"
                     android:textIsSelectable="true"
-                    app:layout_constraintBottom_toTopOf="@+id/text_to_speech_fab_button"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
@@ -187,7 +188,8 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/translated_edit_text"
-                    app:srcCompat="@drawable/ic_speaker_white_16dp" />
+                    app:srcCompat="@drawable/ic_speaker_white_16dp"
+                    tools:visibility="gone" />
 
                 <android.support.design.widget.FloatingActionButton
                     android:id="@+id/copy_to_clipboard_button"
@@ -200,7 +202,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/text_to_speech_fab_button"
                     app:layout_constraintTop_toBottomOf="@+id/translated_edit_text"
-                    app:srcCompat="@drawable/ic_content_copy_white_16dp" />
+                    app:srcCompat="@drawable/ic_content_copy_white_16dp"/>
 
             </android.support.constraint.ConstraintLayout>
 

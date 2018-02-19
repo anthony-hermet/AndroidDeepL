@@ -19,7 +19,7 @@
     <style name="TranslationTextStyle">
         <item name="android:background">@android:color/transparent</item>
         <item name="android:gravity">top</item>
-        <item name="android:minLines">4</item>
+        <item name="android:minLines">@integer/min_lines</item>
         <item name="android:textSize">18sp</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingStart">8dp</item>

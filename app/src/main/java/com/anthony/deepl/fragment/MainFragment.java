@@ -308,11 +308,11 @@ public class MainFragment extends Fragment implements
                         mSpeakerFab.show();
                     }
                     mCopyToClipboardFab.show();
-                    mTranslatedTextView.setMinLines(3);
+                    mTranslatedTextView.setMinLines(getResources().getInteger(R.integer.min_lines_with_buttons));
                 } else {
                     mSpeakerFab.hide();
                     mCopyToClipboardFab.hide();
-                    mTranslatedTextView.setMinLines(4);
+                    mTranslatedTextView.setMinLines(getResources().getInteger(R.integer.min_lines));
                 }
             }
 
