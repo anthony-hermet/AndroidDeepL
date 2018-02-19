@@ -554,7 +554,8 @@ public class MainFragment extends Fragment implements
     private void pasteTextFromClipboard() {
         if (mClipboardManager != null &&
                 mClipboardManager.hasPrimaryClip() &&
-                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) &&
+                mClipboardManager.getPrimaryClip().getItemAt(0).getText() != null) {
             setToTranslateText(mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
             mListener.logEvent("paste_from_clipboard", null);
         } else {
