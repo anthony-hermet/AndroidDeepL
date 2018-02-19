@@ -17,4 +17,8 @@
         <key>launch_dialog_url_label</key>
         <value/>
     </entry>
+    <entry>
+        <key>launch_dialog_max_version</key>
+        <value/>
+    </entry>
 </defaultsMap>
