@@ -10,6 +10,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.speech.RecognizerIntent;
@@ -37,6 +39,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
     private static final String LAUNCH_DIALOG_CONTENT_KEY = "launch_dialog_content";
     private static final String LAUNCH_DIALOG_URL_KEY = "launch_dialog_url";
     private static final String LAUNCH_DIALOG_URL_LABEL_KEY = "launch_dialog_url_label";
+    private static final String LAUNCH_DIALOG_MAX_VERSION_KEY = "launch_dialog_max_version";
 
     private MainFragment mMainFragment;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
@@ -131,11 +134,21 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
                             mFirebaseRemoteConfig.activateFetched();
+                            long currentAppVersionCode;
+                            try {
+                                PackageInfo pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+                                currentAppVersionCode = pInfo.versionCode;
+                            } catch (PackageManager.NameNotFoundException e) {
+                                Timber.e(e);
+                                return;
+                            }
                             String launchDialogTitle = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_TITLE_KEY);
                             String launchDialogContent = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_CONTENT_KEY);
                             final String launchDialogUrl = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_URL_KEY);
                             String launchDialogUrlLabel = mFirebaseRemoteConfig.getString(LAUNCH_DIALOG_URL_LABEL_KEY);
-                            if (launchDialogContent != null && launchDialogContent.length() > 0) {
+                            long maxAppVersion = mFirebaseRemoteConfig.getLong(LAUNCH_DIALOG_MAX_VERSION_KEY);
+
+                            if (launchDialogContent != null && launchDialogContent.length() > 0 && currentAppVersionCode <= maxAppVersion) {
                                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(MainActivity.this);
                                 alertDialogBuilder
                                         .setTitle(launchDialogTitle)
