@@ -22,6 +22,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "mode"
+    productFlavors {
+        deepl {
+            dimension "mode"
+        }
+        openl {
+            dimension "mode"
+        }
+    }
 }
 
 dependencies {
