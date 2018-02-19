@@ -2,4 +2,6 @@
 <resources>
     <dimen name="default_toolbar_elevation">8dp</dimen>
     <dimen name="translate_label_size">15sp</dimen>
+    <dimen name="min_lines">4</dimen>
+    <dimen name="min_lines_with_buttons">3</dimen>
 </resources>
