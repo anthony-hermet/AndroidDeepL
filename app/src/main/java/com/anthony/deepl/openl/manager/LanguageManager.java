@@ -1,10 +1,10 @@
-package com.anthony.deepl.manager;
+package com.anthony.deepl.openl.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.StringDef;
 
-import com.anthony.deepl.R;
+import com.anthony.deepl.openl.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

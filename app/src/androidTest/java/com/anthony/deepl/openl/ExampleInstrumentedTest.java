@@ -1,4 +1,4 @@
-package com.anthony.deepl;
+package com.anthony.deepl.openl;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

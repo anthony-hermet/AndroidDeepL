@@ -1,7 +1,7 @@
-package com.anthony.deepl.backend;
+package com.anthony.deepl.openl.backend;
 
-import com.anthony.deepl.model.TranslationRequest;
-import com.anthony.deepl.model.TranslationResponse;
+import com.anthony.deepl.openl.model.TranslationRequest;
+import com.anthony.deepl.openl.model.TranslationResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

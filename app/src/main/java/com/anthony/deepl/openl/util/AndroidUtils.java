@@ -1,4 +1,4 @@
-package com.anthony.deepl.util;
+package com.anthony.deepl.openl.util;
 
 import android.content.Context;
 import android.content.res.Resources;

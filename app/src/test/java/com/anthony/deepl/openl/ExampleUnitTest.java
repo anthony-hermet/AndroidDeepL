@@ -1,4 +1,4 @@
-package com.anthony.deepl;
+package com.anthony.deepl.openl;
 
 import org.junit.Test;
 
