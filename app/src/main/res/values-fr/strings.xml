@@ -20,12 +20,14 @@
     <string name="snack_bar_retry_button">Réessayer</string>
     <string name="speech_to_text_hint">Parlez maintenant</string>
     <string name="speech_to_text_error">Cette fonctionnalité n\'est pas prise en charge par votre appareil</string>
+    <string name="volume_off_label">Le son est coupé</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Supprimer le texte</string>
     <string name="copy_to_clipboard_button_description">Copier dans le presse-papier</string>
     <string name="invert_languages_button_description">Inverser les langues</string>
     <string name="speech_to_text_description">Parler pour traduire</string>
+    <string name="text_to_speech_description">Écouter la traduction</string>
     <string name="paste_description">Coller</string>
 
 </resources>

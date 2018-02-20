@@ -20,12 +20,14 @@
     <string name="snack_bar_retry_button">Retoryczny</string>
     <string name="speech_to_text_hint">Mówić teraz</string>
     <string name="speech_to_text_error">Ta funkcja nie jest obsługiwana przez urządzenie</string>
+    <string name="volume_off_label">Wolumen wyłączony</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Usunięcie</string>
     <string name="copy_to_clipboard_button_description">Kopiowanie do schowka</string>
     <string name="invert_languages_button_description">Języki inwersyjne</string>
     <string name="speech_to_text_description">Mów do przekładu</string>
+    <string name="text_to_speech_description">Posłuchaj tłumaczeń</string>
     <string name="paste_description">Wklej</string>
 
 </resources>

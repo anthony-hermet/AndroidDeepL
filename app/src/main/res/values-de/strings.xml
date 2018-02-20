@@ -20,12 +20,14 @@
     <string name="snack_bar_retry_button">Wiederholungsversuch</string>
     <string name="speech_to_text_hint">Sprechen Sie jetzt</string>
     <string name="speech_to_text_error">Diese Funktion wird von Ihrem Gerät nicht unterstützt</string>
+    <string name="volume_off_label">Lautstärke ist ausgeschaltet</string>
 
     <!--BUTTON DESCRIPTIONS-->
     <string name="clear_to_translate_button_description">Text entfernen</string>
     <string name="copy_to_clipboard_button_description">In die Zwischenablage kopieren</string>
     <string name="invert_languages_button_description">Sprachen invertieren</string>
     <string name="speech_to_text_description">Sprechen Sie, um zu übersetzen</string>
+    <string name="text_to_speech_description">Hören Sie sich die Übersetzung an</string>
     <string name="paste_description">Einfügen</string>
 
 </resources>
