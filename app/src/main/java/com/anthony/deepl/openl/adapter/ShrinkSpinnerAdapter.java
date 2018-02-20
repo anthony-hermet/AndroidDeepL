@@ -1,4 +1,4 @@
-package com.anthony.deepl.adapter;
+package com.anthony.deepl.openl.adapter;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.anthony.deepl.R;
+import com.anthony.deepl.openl.R;
 
 public class ShrinkSpinnerAdapter<T> extends ArrayAdapter<T> {
 

@@ -1,11 +1,10 @@
-package com.anthony.deepl.fragment;
+package com.anthony.deepl.openl.fragment;
 
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.speech.tts.TextToSpeech;
@@ -31,15 +30,14 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.Toast;
 
-import com.anthony.deepl.R;
-import com.anthony.deepl.adapter.ShrinkSpinnerAdapter;
-import com.anthony.deepl.backend.DeepLService;
-import com.anthony.deepl.manager.LanguageManager;
-import com.anthony.deepl.model.TranslationRequest;
-import com.anthony.deepl.model.TranslationResponse;
-import com.anthony.deepl.util.AndroidUtils;
+import com.anthony.deepl.openl.adapter.ShrinkSpinnerAdapter;
+import com.anthony.deepl.openl.backend.DeepLService;
+import com.anthony.deepl.openl.manager.LanguageManager;
+import com.anthony.deepl.openl.model.TranslationRequest;
+import com.anthony.deepl.openl.model.TranslationResponse;
+import com.anthony.deepl.openl.R;
+import com.anthony.deepl.openl.util.AndroidUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +50,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
-import static com.anthony.deepl.manager.LanguageManager.AUTO;
+import static com.anthony.deepl.openl.manager.LanguageManager.AUTO;
 
 public class MainFragment extends Fragment implements
         View.OnClickListener,

@@ -8,11 +8,11 @@ ext {
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.anthony.deepl"
+        applicationId "com.anthony.deepl.openl"
         minSdkVersion 14
         targetSdkVersion 27
         versionCode 4
-        versionName "2.0.0 DEV1"
+        versionName "2.0.0"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

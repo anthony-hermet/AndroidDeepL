@@ -1,4 +1,4 @@
-package com.anthony.deepl;
+package com.anthony.deepl.openl;
 
 import android.app.Application;
 import android.support.annotation.Nullable;

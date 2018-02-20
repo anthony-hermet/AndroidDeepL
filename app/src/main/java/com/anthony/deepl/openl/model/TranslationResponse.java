@@ -1,4 +1,4 @@
-package com.anthony.deepl.model;
+package com.anthony.deepl.openl.model;
 
 import com.google.gson.annotations.SerializedName;
 

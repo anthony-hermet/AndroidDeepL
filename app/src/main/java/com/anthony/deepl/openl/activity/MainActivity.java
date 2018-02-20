@@ -1,4 +1,4 @@
-package com.anthony.deepl.activity;
+package com.anthony.deepl.openl.activity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,10 +23,10 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import com.anthony.deepl.BuildConfig;
-import com.anthony.deepl.R;
-import com.anthony.deepl.fragment.MainFragment;
-import com.anthony.deepl.manager.LanguageManager;
+import com.anthony.deepl.openl.fragment.MainFragment;
+import com.anthony.deepl.openl.manager.LanguageManager;
+import com.anthony.deepl.openl.BuildConfig;
+import com.anthony.deepl.openl.R;
 
 import java.util.Locale;
 
