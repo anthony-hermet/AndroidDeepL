@@ -21,4 +21,24 @@
         <key>launch_dialog_max_version</key>
         <value/>
     </entry>
+    <entry>
+        <key>launch_dialog_title_test</key>
+        <value/>
+    </entry>
+    <entry>
+        <key>launch_dialog_content_test</key>
+        <value/>
+    </entry>
+    <entry>
+        <key>launch_dialog_url_test</key>
+        <value/>
+    </entry>
+    <entry>
+        <key>launch_dialog_url_label_test</key>
+        <value/>
+    </entry>
+    <entry>
+        <key>launch_dialog_max_version_test</key>
+        <value/>
+    </entry>
 </defaultsMap>
