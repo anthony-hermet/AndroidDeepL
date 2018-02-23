@@ -35,11 +35,11 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity implements MainFragment.OnFragmentInteractionListener {
 
     private static final int SPEECH_TO_TEXT_REQUEST_CODE = 32;
-    private static final String LAUNCH_DIALOG_TITLE_KEY = "launch_dialog_title";
-    private static final String LAUNCH_DIALOG_CONTENT_KEY = "launch_dialog_content";
-    private static final String LAUNCH_DIALOG_URL_KEY = "launch_dialog_url";
-    private static final String LAUNCH_DIALOG_URL_LABEL_KEY = "launch_dialog_url_label";
-    private static final String LAUNCH_DIALOG_MAX_VERSION_KEY = "launch_dialog_max_version";
+    private static final String LAUNCH_DIALOG_TITLE_KEY = BuildConfig.DEBUG ? "launch_dialog_title_test" : "launch_dialog_title";
+    private static final String LAUNCH_DIALOG_CONTENT_KEY = BuildConfig.DEBUG ? "launch_dialog_content_test" : "launch_dialog_content";
+    private static final String LAUNCH_DIALOG_URL_KEY = BuildConfig.DEBUG ? "launch_dialog_url_test" : "launch_dialog_url";
+    private static final String LAUNCH_DIALOG_URL_LABEL_KEY = BuildConfig.DEBUG ? "launch_dialog_url_label_test" : "launch_dialog_url_label";
+    private static final String LAUNCH_DIALOG_MAX_VERSION_KEY = BuildConfig.DEBUG ? "launch_dialog_max_version_test" : "launch_dialog_max_version";
 
     private MainFragment mMainFragment;
     private FirebaseRemoteConfig mFirebaseRemoteConfig;
@@ -115,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
 
     @Override
     public void logEvent(String event, Bundle bundle) {
+        if (BuildConfig.DEBUG) return;
         mFirebaseAnalytics.logEvent(event, bundle);
     }
 
