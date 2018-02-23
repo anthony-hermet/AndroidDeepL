@@ -16,8 +16,6 @@ public class DeepLApplication extends Application {
         setupLogTool();
     }
 
-    // region Log enhancements
-
     private void setupLogTool() {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
@@ -25,6 +23,4 @@ public class DeepLApplication extends Application {
             Timber.plant(new FirebaseManager(this).getProductionTimberTree());
         }
     }
-
-    // endregion
 }
