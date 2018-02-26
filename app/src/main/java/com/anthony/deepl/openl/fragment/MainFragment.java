@@ -2,7 +2,6 @@ package com.anthony.deepl.openl.fragment;
 
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -115,10 +114,7 @@ public class MainFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        if (mClipboardManager != null &&
-                mClipboardManager.hasPrimaryClip() &&
-                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) &&
-                mToTranslateEditText.getText().length() <= 0) {
+        if (AndroidUtils.getClipboardText(mClipboardManager) != null) {
             mPasteFab.show();
         }
         else {
@@ -269,9 +265,7 @@ public class MainFragment extends Fragment implements
                 } else {
                     mClearButton.setVisibility(View.GONE);
                     mMicFab.show();
-                    if (mClipboardManager != null &&
-                            mClipboardManager.hasPrimaryClip() &&
-                            mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                    if (AndroidUtils.getClipboardText(mClipboardManager) != null) {
                         mPasteFab.show();
                     }
                 }
@@ -550,11 +544,9 @@ public class MainFragment extends Fragment implements
     }
 
     private void pasteTextFromClipboard() {
-        if (mClipboardManager != null &&
-                mClipboardManager.hasPrimaryClip() &&
-                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) &&
-                mClipboardManager.getPrimaryClip().getItemAt(0).getText() != null) {
-            setToTranslateText(mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+        String clipboardText = AndroidUtils.getClipboardText(mClipboardManager);
+        if (clipboardText != null) {
+            setToTranslateText(clipboardText);
             mListener.logEvent("paste_from_clipboard", null);
         } else {
             mPasteFab.hide();
