@@ -2,6 +2,9 @@ package com.anthony.deepl.openl.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import com.anthony.deepl.openl.manager.LanguageManager;
+
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,10 +21,13 @@ public class TranslationRequest {
 
     public TranslationRequest(String sentence, String fromLanguage, String toLanguage, List<String> userPreferredLanguages) {
         List<TranslationRequestJob> jobList = new ArrayList<>();
-        String[] sentences = sentence.split("\n");
-        for (int i = 0, size = sentences.length; i < size; i++) {
+        BreakIterator sentenceIterator = BreakIterator.getSentenceInstance(LanguageManager.getLocaleFromLanguageValue(fromLanguage));
+        int sentenceStart, sentenceEnd;
+
+        sentenceIterator.setText(sentence);
+        for (sentenceStart = sentenceIterator.first(), sentenceEnd = sentenceIterator.next(); sentenceEnd != BreakIterator.DONE; sentenceStart = sentenceEnd, sentenceEnd = sentenceIterator.next()) {
             TranslationRequestJob job = new TranslationRequestJob();
-            job.setSentence(sentences[i]);
+            job.setSentence(sentence.substring(sentenceStart, sentenceEnd));
             jobList.add(job);
         }
 
