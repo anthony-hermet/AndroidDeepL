@@ -4,6 +4,7 @@
         package="com.anthony.deepl.openl">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:name=".DeepLApplication"

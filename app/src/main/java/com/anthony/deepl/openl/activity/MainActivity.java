@@ -9,6 +9,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 
 import com.anthony.deepl.openl.fragment.MainFragment;
@@ -52,6 +54,13 @@ public class MainActivity extends AppCompatActivity implements MainFragment.OnFr
         // We init and fetch values from Firebase analytics and remote config
         mFirebaseManager = new FirebaseManager(MainActivity.this);
         mFirebaseManager.fetchRemoteConfigValues();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_activity_menu, menu);
+        return true;
     }
 
     @Override

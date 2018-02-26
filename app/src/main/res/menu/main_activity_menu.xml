@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/translation_fab"
+        android:titleCondensed="Persist"
+        android:title="Translation FAB"
+        android:contentDescription="Display translation bubble overlay when you copy some text"
+        android:checkable="true" />
+</menu>
