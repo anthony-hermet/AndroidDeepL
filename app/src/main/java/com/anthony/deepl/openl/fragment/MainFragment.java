@@ -55,6 +55,10 @@ public class MainFragment extends Fragment implements
         View.OnClickListener,
         AdapterView.OnItemSelectedListener {
 
+    private static final String INSTANCE_TRANSLATED_FROM_KEY = "last_translated_from";
+    private static final String INSTANCE_TRANSLATED_TO_KEY = "last_translated_to";
+    private static final String INSTANCE_TRANSLATED_SENTENCE_KEY = "last_translated_sentence";
+
     private OnFragmentInteractionListener mListener;
 
     private AppCompatSpinner mTranslateFromSpinner;
@@ -109,6 +113,13 @@ public class MainFragment extends Fragment implements
             }
         });
         mTextToSpeechInitialized = false;
+
+        // Restore instance state if needed
+        if (savedInstanceState != null) {
+            mLastTranslatedFrom = savedInstanceState.getString(INSTANCE_TRANSLATED_FROM_KEY, null);
+            mLastTranslatedTo = savedInstanceState.getString(INSTANCE_TRANSLATED_TO_KEY, null);
+            mLastTranslatedSentence = savedInstanceState.getString(INSTANCE_TRANSLATED_SENTENCE_KEY, null);
+        }
     }
 
     @Override
@@ -120,6 +131,14 @@ public class MainFragment extends Fragment implements
         else {
             mPasteFab.hide();
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(INSTANCE_TRANSLATED_FROM_KEY, mLastTranslatedFrom);
+        outState.putString(INSTANCE_TRANSLATED_TO_KEY, mLastTranslatedTo);
+        outState.putString(INSTANCE_TRANSLATED_SENTENCE_KEY, mLastTranslatedSentence);
     }
 
     @Override
