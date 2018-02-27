@@ -58,6 +58,7 @@ public class MainFragment extends Fragment implements
     private static final String INSTANCE_TRANSLATED_FROM_KEY = "last_translated_from";
     private static final String INSTANCE_TRANSLATED_TO_KEY = "last_translated_to";
     private static final String INSTANCE_TRANSLATED_SENTENCE_KEY = "last_translated_sentence";
+    private static final String INSTANCE_DETECTED_LANGUAGE_KEY = "detected_language";
 
     private OnFragmentInteractionListener mListener;
 
@@ -109,6 +110,12 @@ public class MainFragment extends Fragment implements
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     mTextToSpeechInitialized = true;
+                    if (mLastTranslatedTo != null && !mTranslatedTextView.getText().toString().isEmpty()) {
+                        Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
+                        if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                            mSpeakerFab.show();
+                        }
+                    }
                 }
             }
         });
@@ -119,6 +126,7 @@ public class MainFragment extends Fragment implements
             mLastTranslatedFrom = savedInstanceState.getString(INSTANCE_TRANSLATED_FROM_KEY, null);
             mLastTranslatedTo = savedInstanceState.getString(INSTANCE_TRANSLATED_TO_KEY, null);
             mLastTranslatedSentence = savedInstanceState.getString(INSTANCE_TRANSLATED_SENTENCE_KEY, null);
+            mDetectedLanguage = savedInstanceState.getString(INSTANCE_DETECTED_LANGUAGE_KEY, null);
         }
     }
 
@@ -140,12 +148,20 @@ public class MainFragment extends Fragment implements
         outState.putString(INSTANCE_TRANSLATED_FROM_KEY, mLastTranslatedFrom);
         outState.putString(INSTANCE_TRANSLATED_TO_KEY, mLastTranslatedTo);
         outState.putString(INSTANCE_TRANSLATED_SENTENCE_KEY, mLastTranslatedSentence);
+        outState.putString(INSTANCE_DETECTED_LANGUAGE_KEY, mDetectedLanguage);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         initViews(view);
+
+        // If state has been restored, we may need to display the last detected language
+        if (mLastTranslatedFrom != null && mLastTranslatedFrom.equals(LanguageManager.AUTO) &&
+                mDetectedLanguage != null &&  mTranslateFromSpinner.getSelectedItemPosition() == 0) {
+            displayDetectedLanguage();
+        }
+
         return view;
     }
 
@@ -198,7 +214,12 @@ public class MainFragment extends Fragment implements
         int parentId = parent.getId();
         switch (parentId) {
             case R.id.translate_from_spinner:
-                hideDetectedLanguage();
+                if (mLastTranslatedFrom != null && !mLastTranslatedFrom.equals(LanguageManager.AUTO)) {
+                    hideDetectedLanguage();
+                }
+                else {
+                    checkTranslateFromLabelVisibility();
+                }
                 updateTranslateToSpinner();
                 mListener.logEvent("changed_translate_from_language", null);
                 break;
@@ -336,11 +357,14 @@ public class MainFragment extends Fragment implements
     }
 
     private void updateTranslateToSpinner() {
+        Context context = getContext();
+        if (context == null) return;
+
         // We update the translateTo spinner based on translateFrom selected language
         String selectedLanguage = mDetectedLanguage != null ?
                 mDetectedLanguage :
                 LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
-        mTranslateToLanguages = LanguageManager.getLanguagesStringArray(getContext(), selectedLanguage, false);
+        mTranslateToLanguages = LanguageManager.getLanguagesStringArray(context, selectedLanguage, false);
         ShrinkSpinnerAdapter<String> translateToAdapter = new ShrinkSpinnerAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
@@ -353,7 +377,6 @@ public class MainFragment extends Fragment implements
         }
 
         // We select the last used translateTo
-        Context context = getContext();
         String lastUsedTranslateTo = LanguageManager.getLastUsedTranslateTo(getContext());
         for (int i = 0, size = mTranslateToLanguages.length; i < size; i++) {
             if (LanguageManager.getLanguageValue(mTranslateToLanguages[i], context).equals(lastUsedTranslateTo)) {
@@ -499,7 +522,9 @@ public class MainFragment extends Fragment implements
         String detectedLanguage = LanguageManager.getLanguageString(mDetectedLanguage, getContext());
         detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
         TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
-        spinnerTextView.setText(detectedLanguage);
+        if (spinnerTextView != null) {
+            spinnerTextView.setText(detectedLanguage);
+        }
         mTranslateFromAdapter.setDetectedLanguage(detectedLanguage);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
