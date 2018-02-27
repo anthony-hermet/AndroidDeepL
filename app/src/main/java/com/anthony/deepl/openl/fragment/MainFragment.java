@@ -112,12 +112,7 @@ public class MainFragment extends Fragment implements
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     mTextToSpeechInitialized = true;
-                    if (mLastTranslatedTo != null && !mTranslatedTextView.getText().toString().isEmpty()) {
-                        Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
-                        if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
-                            mSpeakerFab.show();
-                        }
-                    }
+                    updateTextToSpeechVisibility();
                 }
             }
         });
@@ -342,17 +337,13 @@ public class MainFragment extends Fragment implements
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (!isAdded()) return;
                 if (count > 0) {
-                    Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
-                    if (mTextToSpeechInitialized && mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
-                        mSpeakerFab.show();
-                    }
                     mCopyToClipboardFab.show();
                     mTranslatedTextView.setMinLines(getResources().getInteger(R.integer.min_lines_with_buttons));
                 } else {
-                    mSpeakerFab.hide();
                     mCopyToClipboardFab.hide();
                     mTranslatedTextView.setMinLines(getResources().getInteger(R.integer.min_lines));
                 }
+                updateTextToSpeechVisibility();
             }
 
             @Override
@@ -650,6 +641,22 @@ public class MainFragment extends Fragment implements
             int eightDpToPixelValue = (int) AndroidUtils.convertDpToPixel(8, context);
             mTranslateFromTextView.getLocationOnScreen(textViewLocation);
             mTranslateFromTextView.setVisibility(textViewLocation[0] > eightDpToPixelValue ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    private void updateTextToSpeechVisibility() {
+        boolean displayFab = false;
+        if (mTextToSpeechInitialized && mLastTranslatedTo != null && !mTranslatedTextView.getText().toString().isEmpty()) {
+            Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
+            if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                displayFab = true;
+            }
+        }
+        if (displayFab) {
+            mSpeakerFab.show();
+        }
+        else {
+            mSpeakerFab.hide();
         }
     }
 
