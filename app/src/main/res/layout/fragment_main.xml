@@ -35,9 +35,9 @@
                     android:id="@+id/translate_from_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/translate_from_text_view"
                     app:layout_constraintBottom_toBottomOf="@id/translate_from_text_view"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/translate_from_text_view" />
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <EditText
                     android:id="@+id/to_translate_edit_text"
@@ -124,9 +124,7 @@
                     android:text="@string/translate_to_label"
                     android:textSize="@dimen/translate_label_size"
                     app:layout_constraintEnd_toStartOf="@+id/translate_to_spinner"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/translated_edit_text"
-                    app:layout_constraintVertical_chainStyle="packed"/>
+                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <ProgressBar
                     android:id="@+id/translate_progressbar"
@@ -157,7 +155,6 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
-                    app:layout_constraintBottom_toTopOf="@+id/text_to_speech_fab_button"
                     tools:text="Bonjour le monde" />
 
                 <android.support.design.widget.FloatingActionButton
