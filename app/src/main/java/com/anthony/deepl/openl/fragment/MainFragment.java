@@ -125,7 +125,8 @@ public class MainFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        if (AndroidUtils.getClipboardText(mClipboardManager) != null) {
+        if (AndroidUtils.getClipboardText(mClipboardManager) != null &&
+                mToTranslateEditText.getText().length() <= 0) {
             mPasteFab.show();
         }
         else {
@@ -313,6 +314,7 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!isAdded()) return;
                 if (count > 0) {
                     Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
                     if (mTextToSpeechInitialized && mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
