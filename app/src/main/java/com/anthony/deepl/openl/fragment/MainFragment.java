@@ -420,7 +420,7 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(context));
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
-        TranslationRequest request = new TranslationRequest(
+        final TranslationRequest request = new TranslationRequest(
                 toTranslate,
                 translateFrom,
                 translateTo,
@@ -445,7 +445,7 @@ public class MainFragment extends Fragment implements
                 }
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedTextView.setText(translationResponse.getBestTranslation());
+                mTranslatedTextView.setText(translationResponse.getBestTranslation(request.getLineBreakPositions()));
 
                 // Alternative translations
                 mLastAlternatives = translationResponse.getOtherResults();
