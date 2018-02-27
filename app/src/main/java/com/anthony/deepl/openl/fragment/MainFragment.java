@@ -214,7 +214,7 @@ public class MainFragment extends Fragment implements
         int parentId = parent.getId();
         switch (parentId) {
             case R.id.translate_from_spinner:
-                if (mLastTranslatedFrom != null && !mLastTranslatedFrom.equals(LanguageManager.AUTO)) {
+                if (mLastTranslatedFrom != null && position != 0 && mLastTranslatedFrom.equals(LanguageManager.AUTO)) {
                     hideDetectedLanguage();
                 }
                 else {
@@ -464,6 +464,9 @@ public class MainFragment extends Fragment implements
                 if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
                     mDetectedLanguage = translationResponse.getSourceLanguage();
                     displayDetectedLanguage();
+                }
+                else {
+                    mDetectedLanguage = null;
                 }
             }
 
