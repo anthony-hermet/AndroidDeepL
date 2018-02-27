@@ -59,6 +59,7 @@ public class MainFragment extends Fragment implements
     private static final String INSTANCE_TRANSLATED_TO_KEY = "last_translated_to";
     private static final String INSTANCE_TRANSLATED_SENTENCE_KEY = "last_translated_sentence";
     private static final String INSTANCE_DETECTED_LANGUAGE_KEY = "detected_language";
+    private static final String INSTANCE_LAST_ALTERNATIVES_KEY = "last_alternatives";
 
     private OnFragmentInteractionListener mListener;
 
@@ -87,6 +88,7 @@ public class MainFragment extends Fragment implements
     private String mLastTranslatedSentence;
     private String mLastTranslatedFrom;
     private String mLastTranslatedTo;
+    private List<String> mLastAlternatives;
     private String mDetectedLanguage;
     private boolean mTranslationInProgress;
     private boolean mTextToSpeechInitialized;
@@ -127,6 +129,7 @@ public class MainFragment extends Fragment implements
             mLastTranslatedTo = savedInstanceState.getString(INSTANCE_TRANSLATED_TO_KEY, null);
             mLastTranslatedSentence = savedInstanceState.getString(INSTANCE_TRANSLATED_SENTENCE_KEY, null);
             mDetectedLanguage = savedInstanceState.getString(INSTANCE_DETECTED_LANGUAGE_KEY, null);
+            mLastAlternatives = savedInstanceState.getStringArrayList(INSTANCE_LAST_ALTERNATIVES_KEY);
         }
     }
 
@@ -149,10 +152,11 @@ public class MainFragment extends Fragment implements
         outState.putString(INSTANCE_TRANSLATED_TO_KEY, mLastTranslatedTo);
         outState.putString(INSTANCE_TRANSLATED_SENTENCE_KEY, mLastTranslatedSentence);
         outState.putString(INSTANCE_DETECTED_LANGUAGE_KEY, mDetectedLanguage);
+        outState.putStringArrayList(INSTANCE_LAST_ALTERNATIVES_KEY, (ArrayList<String>) mLastAlternatives);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         initViews(view);
 
@@ -161,6 +165,7 @@ public class MainFragment extends Fragment implements
                 mDetectedLanguage != null &&  mTranslateFromSpinner.getSelectedItemPosition() == 0) {
             displayDetectedLanguage();
         }
+        updateAlternatives(inflater.getContext());
 
         return view;
     }
@@ -452,23 +457,8 @@ public class MainFragment extends Fragment implements
                 mTranslatedTextView.setText(translationResponse.getBestTranslation());
 
                 // Alternative translations
-                List<String> alternatives = translationResponse.getOtherResults();
-                mAlternativesLinearLayout.removeAllViews();
-                mAlternativesLabel.setVisibility((alternatives != null && alternatives.size() > 0) ? View.VISIBLE : View.GONE);
-                if (alternatives != null) {
-                    int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
-                    for (int i = 0, size = alternatives.size(); i < size; i++) {
-                        TextView textView = new TextView(context);
-                        textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
-                        textView.setText(alternatives.get(i));
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
-                        textView.setTextIsSelectable(true);
-                        LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                        textViewParams.setMargins(0, margin4dp, 0, margin4dp);
-                        textView.setLayoutParams(textViewParams);
-                        mAlternativesLinearLayout.addView(textView);
-                    }
-                }
+                mLastAlternatives = translationResponse.getOtherResults();
+                updateAlternatives(context);
 
                 // Reporting
                 Bundle params = new Bundle();
@@ -551,6 +541,25 @@ public class MainFragment extends Fragment implements
                 checkTranslateFromLabelVisibility();
             }
         }, 50);
+    }
+
+    private void updateAlternatives(Context context) {
+        mAlternativesLinearLayout.removeAllViews();
+        mAlternativesLabel.setVisibility((mLastAlternatives != null && mLastAlternatives.size() > 0) ? View.VISIBLE : View.GONE);
+        if (mLastAlternatives != null) {
+            int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
+            for (int i = 0, size = mLastAlternatives.size(); i < size; i++) {
+                TextView textView = new TextView(context);
+                textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
+                textView.setText(mLastAlternatives.get(i));
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+                textView.setTextIsSelectable(true);
+                LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                textViewParams.setMargins(0, margin4dp, 0, margin4dp);
+                textView.setLayoutParams(textViewParams);
+                mAlternativesLinearLayout.addView(textView);
+            }
+        }
     }
 
     private void clearTextTapped() {
