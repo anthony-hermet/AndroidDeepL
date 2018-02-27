@@ -21,7 +21,7 @@ public class TranslationRequest {
 
     public TranslationRequest(String sentence, String fromLanguage, String toLanguage, List<String> userPreferredLanguages) {
         List<TranslationRequestJob> jobList = new ArrayList<>();
-        BreakIterator sentenceIterator = BreakIterator.getSentenceInstance(LanguageManager.getLocaleFromLanguageValue(fromLanguage));
+        BreakIterator sentenceIterator = BreakIterator.getSentenceInstance(LanguageManager.getLocaleFromLanguageValue(fromLanguage, null));
         int sentenceStart, sentenceEnd;
 
         sentenceIterator.setText(sentence);

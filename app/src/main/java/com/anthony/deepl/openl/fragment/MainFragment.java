@@ -647,7 +647,7 @@ public class MainFragment extends Fragment implements
     private void updateTextToSpeechVisibility() {
         boolean displayFab = false;
         if (mTextToSpeechInitialized && mLastTranslatedTo != null && !mTranslatedTextView.getText().toString().isEmpty()) {
-            Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
+            Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech);
             if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
                 displayFab = true;
             }
@@ -665,7 +665,7 @@ public class MainFragment extends Fragment implements
             return;
         }
         if (mListener.getCurrentMediaVolume() > 0) {
-            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo));
+            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech));
             mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
         }
         else {

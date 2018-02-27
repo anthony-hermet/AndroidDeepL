@@ -2,6 +2,7 @@ package com.anthony.deepl.openl.manager;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.StringDef;
 
 import com.anthony.deepl.openl.R;
@@ -81,7 +82,7 @@ public class LanguageManager {
         return AUTO;
     }
 
-    public static Locale getLocaleFromLanguageValue(@Language String language) {
+    public static Locale getLocaleFromLanguageValue(@Language String language, TextToSpeech textToSpeech) {
         Locale locale;
         switch (language) {
             case ENGLISH :
@@ -101,12 +102,33 @@ public class LanguageManager {
                 break;
             case DUTCH :
                 locale = new Locale("nl");
+                if (textToSpeech == null || textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                    break;
+                }
+
+                locale = new Locale("nl_NL");
+                if (textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                    break;
+                }
+
+                locale = new Locale("de_NL");
+                if (textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                    break;
+                }
+
+                locale = new Locale("fy_NL");
                 break;
             case POLISH :
                 locale = new Locale("pl");
+                if (textToSpeech == null || textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                    break;
+                }
+
+                locale = new Locale("pl_PL");
                 break;
             default :
                 locale = Locale.UK;
+                break;
         }
         return locale;
     }
