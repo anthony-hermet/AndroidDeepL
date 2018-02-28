@@ -214,7 +214,7 @@ public class MainFragment extends Fragment implements
         int parentId = parent.getId();
         switch (parentId) {
             case R.id.translate_from_spinner:
-                if (mLastTranslatedFrom != null && !mLastTranslatedFrom.equals(LanguageManager.AUTO)) {
+                if (mLastTranslatedFrom != null && position != 0 && mLastTranslatedFrom.equals(LanguageManager.AUTO)) {
                     hideDetectedLanguage();
                 }
                 else {
@@ -420,7 +420,7 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(context));
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
-        TranslationRequest request = new TranslationRequest(
+        final TranslationRequest request = new TranslationRequest(
                 toTranslate,
                 translateFrom,
                 translateTo,
@@ -445,7 +445,7 @@ public class MainFragment extends Fragment implements
                 }
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedTextView.setText(translationResponse.getBestTranslation());
+                mTranslatedTextView.setText(translationResponse.getBestTranslation(request.getLineBreakPositions()));
 
                 // Alternative translations
                 mLastAlternatives = translationResponse.getOtherResults();
@@ -464,6 +464,9 @@ public class MainFragment extends Fragment implements
                 if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
                     mDetectedLanguage = translationResponse.getSourceLanguage();
                     displayDetectedLanguage();
+                }
+                else {
+                    mDetectedLanguage = null;
                 }
             }
 
@@ -647,7 +650,7 @@ public class MainFragment extends Fragment implements
     private void updateTextToSpeechVisibility() {
         boolean displayFab = false;
         if (mTextToSpeechInitialized && mLastTranslatedTo != null && !mTranslatedTextView.getText().toString().isEmpty()) {
-            Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
+            Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech);
             if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
                 displayFab = true;
             }
@@ -665,7 +668,7 @@ public class MainFragment extends Fragment implements
             return;
         }
         if (mListener.getCurrentMediaVolume() > 0) {
-            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo));
+            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech));
             mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
         }
         else {

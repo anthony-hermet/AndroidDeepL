@@ -19,16 +19,25 @@ public class TranslationRequest {
     @SerializedName("params")
     private TranslationRequestParams mParams;
 
+    private List<Integer> mLineBreakPositions;
+
     public TranslationRequest(String sentence, String fromLanguage, String toLanguage, List<String> userPreferredLanguages) {
         List<TranslationRequestJob> jobList = new ArrayList<>();
-        BreakIterator sentenceIterator = BreakIterator.getSentenceInstance(LanguageManager.getLocaleFromLanguageValue(fromLanguage));
+        BreakIterator sentenceIterator = BreakIterator.getSentenceInstance(LanguageManager.getLocaleFromLanguageValue(fromLanguage, null));
         int sentenceStart, sentenceEnd;
+        int jobCount = 0;
+        mLineBreakPositions = new ArrayList<>();
 
         sentenceIterator.setText(sentence);
         for (sentenceStart = sentenceIterator.first(), sentenceEnd = sentenceIterator.next(); sentenceEnd != BreakIterator.DONE; sentenceStart = sentenceEnd, sentenceEnd = sentenceIterator.next()) {
             TranslationRequestJob job = new TranslationRequestJob();
-            job.setSentence(sentence.substring(sentenceStart, sentenceEnd));
+            String detectedSentence = sentence.substring(sentenceStart, sentenceEnd);
+            job.setSentence(detectedSentence);
             jobList.add(job);
+            if (detectedSentence.contains("\n")) {
+                mLineBreakPositions.add(jobCount);
+            }
+            jobCount++;
         }
 
         mParams = new TranslationRequestParams();
@@ -36,6 +45,9 @@ public class TranslationRequest {
         mParams.setRequestLanguages(new TranslationRequestLanguage(fromLanguage, toLanguage, userPreferredLanguages));
     }
 
+    public List<Integer> getLineBreakPositions() {
+        return mLineBreakPositions;
+    }
 }
 
 class TranslationRequestParams {

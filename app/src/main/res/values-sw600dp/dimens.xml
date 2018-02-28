@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--TRANSLATION TEXT-->
+    <dimen name="translation_text_size">22sp</dimen>
+    <dimen name="translation_top_padding">8dp</dimen>
+    <dimen name="translation_bottom_padding">12dp</dimen>
+    <dimen name="translation_horizontal_padding">12dp</dimen>
+
+</resources>

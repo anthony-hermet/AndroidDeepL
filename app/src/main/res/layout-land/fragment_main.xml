@@ -106,13 +106,12 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/invert_languages_button"
+            style="@style/FabMini"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="3dp"
             android:contentDescription="@string/invert_languages_button_description"
             app:backgroundTint="@color/colorAccentLight"
-            app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="@id/to_translate_card_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
