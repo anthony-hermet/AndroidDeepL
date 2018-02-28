@@ -2,7 +2,6 @@ package com.anthony.deepl.openl.fragment;
 
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.ClipDescription;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.os.Bundle;
@@ -56,6 +55,12 @@ public class MainFragment extends Fragment implements
         View.OnClickListener,
         AdapterView.OnItemSelectedListener {
 
+    private static final String INSTANCE_TRANSLATED_FROM_KEY = "last_translated_from";
+    private static final String INSTANCE_TRANSLATED_TO_KEY = "last_translated_to";
+    private static final String INSTANCE_TRANSLATED_SENTENCE_KEY = "last_translated_sentence";
+    private static final String INSTANCE_DETECTED_LANGUAGE_KEY = "detected_language";
+    private static final String INSTANCE_LAST_ALTERNATIVES_KEY = "last_alternatives";
+
     private OnFragmentInteractionListener mListener;
 
     private AppCompatSpinner mTranslateFromSpinner;
@@ -83,6 +88,7 @@ public class MainFragment extends Fragment implements
     private String mLastTranslatedSentence;
     private String mLastTranslatedFrom;
     private String mLastTranslatedTo;
+    private List<String> mLastAlternatives;
     private String mDetectedLanguage;
     private boolean mTranslationInProgress;
     private boolean mTextToSpeechInitialized;
@@ -106,18 +112,26 @@ public class MainFragment extends Fragment implements
             public void onInit(int status) {
                 if (status != TextToSpeech.ERROR) {
                     mTextToSpeechInitialized = true;
+                    updateTextToSpeechVisibility();
                 }
             }
         });
         mTextToSpeechInitialized = false;
+
+        // Restore instance state if needed
+        if (savedInstanceState != null) {
+            mLastTranslatedFrom = savedInstanceState.getString(INSTANCE_TRANSLATED_FROM_KEY, null);
+            mLastTranslatedTo = savedInstanceState.getString(INSTANCE_TRANSLATED_TO_KEY, null);
+            mLastTranslatedSentence = savedInstanceState.getString(INSTANCE_TRANSLATED_SENTENCE_KEY, null);
+            mDetectedLanguage = savedInstanceState.getString(INSTANCE_DETECTED_LANGUAGE_KEY, null);
+            mLastAlternatives = savedInstanceState.getStringArrayList(INSTANCE_LAST_ALTERNATIVES_KEY);
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mClipboardManager != null &&
-                mClipboardManager.hasPrimaryClip() &&
-                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) &&
+        if (AndroidUtils.getClipboardText(mClipboardManager) != null &&
                 mToTranslateEditText.getText().length() <= 0) {
             mPasteFab.show();
         }
@@ -127,9 +141,27 @@ public class MainFragment extends Fragment implements
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(INSTANCE_TRANSLATED_FROM_KEY, mLastTranslatedFrom);
+        outState.putString(INSTANCE_TRANSLATED_TO_KEY, mLastTranslatedTo);
+        outState.putString(INSTANCE_TRANSLATED_SENTENCE_KEY, mLastTranslatedSentence);
+        outState.putString(INSTANCE_DETECTED_LANGUAGE_KEY, mDetectedLanguage);
+        outState.putStringArrayList(INSTANCE_LAST_ALTERNATIVES_KEY, (ArrayList<String>) mLastAlternatives);
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         initViews(view);
+
+        // If state has been restored, we may need to display the last detected language
+        if (mLastTranslatedFrom != null && mLastTranslatedFrom.equals(LanguageManager.AUTO) &&
+                mDetectedLanguage != null &&  mTranslateFromSpinner.getSelectedItemPosition() == 0) {
+            displayDetectedLanguage();
+        }
+        updateAlternatives(inflater.getContext());
+
         return view;
     }
 
@@ -182,7 +214,12 @@ public class MainFragment extends Fragment implements
         int parentId = parent.getId();
         switch (parentId) {
             case R.id.translate_from_spinner:
-                hideDetectedLanguage();
+                if (mLastTranslatedFrom != null && position != 0 && mLastTranslatedFrom.equals(LanguageManager.AUTO)) {
+                    hideDetectedLanguage();
+                }
+                else {
+                    checkTranslateFromLabelVisibility();
+                }
                 updateTranslateToSpinner();
                 mListener.logEvent("changed_translate_from_language", null);
                 break;
@@ -269,9 +306,7 @@ public class MainFragment extends Fragment implements
                 } else {
                     mClearButton.setVisibility(View.GONE);
                     mMicFab.show();
-                    if (mClipboardManager != null &&
-                            mClipboardManager.hasPrimaryClip() &&
-                            mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                    if (AndroidUtils.getClipboardText(mClipboardManager) != null) {
                         mPasteFab.show();
                     }
                 }
@@ -300,18 +335,15 @@ public class MainFragment extends Fragment implements
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!isAdded()) return;
                 if (count > 0) {
-                    Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo);
-                    if (mTextToSpeechInitialized && mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
-                        mSpeakerFab.show();
-                    }
                     mCopyToClipboardFab.show();
                     mTranslatedTextView.setMinLines(getResources().getInteger(R.integer.min_lines_with_buttons));
                 } else {
-                    mSpeakerFab.hide();
                     mCopyToClipboardFab.hide();
                     mTranslatedTextView.setMinLines(getResources().getInteger(R.integer.min_lines));
                 }
+                updateTextToSpeechVisibility();
             }
 
             @Override
@@ -321,11 +353,14 @@ public class MainFragment extends Fragment implements
     }
 
     private void updateTranslateToSpinner() {
+        Context context = getContext();
+        if (context == null) return;
+
         // We update the translateTo spinner based on translateFrom selected language
         String selectedLanguage = mDetectedLanguage != null ?
                 mDetectedLanguage :
                 LanguageManager.getLanguageValue(mTranslateFromSpinner.getSelectedItem().toString(), getContext());
-        mTranslateToLanguages = LanguageManager.getLanguagesStringArray(getContext(), selectedLanguage, false);
+        mTranslateToLanguages = LanguageManager.getLanguagesStringArray(context, selectedLanguage, false);
         ShrinkSpinnerAdapter<String> translateToAdapter = new ShrinkSpinnerAdapter<>(getContext(), R.layout.item_language_spinner, mTranslateToLanguages);
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown);
         mTranslateToSpinner.setAdapter(translateToAdapter);
@@ -338,7 +373,6 @@ public class MainFragment extends Fragment implements
         }
 
         // We select the last used translateTo
-        Context context = getContext();
         String lastUsedTranslateTo = LanguageManager.getLastUsedTranslateTo(getContext());
         for (int i = 0, size = mTranslateToLanguages.length; i < size; i++) {
             if (LanguageManager.getLanguageValue(mTranslateToLanguages[i], context).equals(lastUsedTranslateTo)) {
@@ -386,7 +420,7 @@ public class MainFragment extends Fragment implements
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(context));
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(context));
 
-        TranslationRequest request = new TranslationRequest(
+        final TranslationRequest request = new TranslationRequest(
                 toTranslate,
                 translateFrom,
                 translateTo,
@@ -411,26 +445,11 @@ public class MainFragment extends Fragment implements
                 }
                 mTranslateProgressbar.setVisibility(View.GONE);
                 mTranslationInProgress = false;
-                mTranslatedTextView.setText(translationResponse.getBestTranslation());
+                mTranslatedTextView.setText(translationResponse.getBestTranslation(request.getLineBreakPositions()));
 
                 // Alternative translations
-                List<String> alternatives = translationResponse.getOtherResults();
-                mAlternativesLinearLayout.removeAllViews();
-                mAlternativesLabel.setVisibility((alternatives != null && alternatives.size() > 0) ? View.VISIBLE : View.GONE);
-                if (alternatives != null) {
-                    int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
-                    for (int i = 0, size = alternatives.size(); i < size; i++) {
-                        TextView textView = new TextView(context);
-                        textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
-                        textView.setText(alternatives.get(i));
-                        textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
-                        textView.setTextIsSelectable(true);
-                        LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-                        textViewParams.setMargins(0, margin4dp, 0, margin4dp);
-                        textView.setLayoutParams(textViewParams);
-                        mAlternativesLinearLayout.addView(textView);
-                    }
-                }
+                mLastAlternatives = translationResponse.getOtherResults();
+                updateAlternatives(context);
 
                 // Reporting
                 Bundle params = new Bundle();
@@ -445,6 +464,9 @@ public class MainFragment extends Fragment implements
                 if (isAdded() && mTranslateFromSpinner.getSelectedItemPosition() == 0) {
                     mDetectedLanguage = translationResponse.getSourceLanguage();
                     displayDetectedLanguage();
+                }
+                else {
+                    mDetectedLanguage = null;
                 }
             }
 
@@ -484,7 +506,9 @@ public class MainFragment extends Fragment implements
         String detectedLanguage = LanguageManager.getLanguageString(mDetectedLanguage, getContext());
         detectedLanguage = detectedLanguage.concat(" ").concat(getString(R.string.detected_language_label));
         TextView spinnerTextView = (TextView) mTranslateFromSpinner.getSelectedView();
-        spinnerTextView.setText(detectedLanguage);
+        if (spinnerTextView != null) {
+            spinnerTextView.setText(detectedLanguage);
+        }
         mTranslateFromAdapter.setDetectedLanguage(detectedLanguage);
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
@@ -511,6 +535,25 @@ public class MainFragment extends Fragment implements
                 checkTranslateFromLabelVisibility();
             }
         }, 50);
+    }
+
+    private void updateAlternatives(Context context) {
+        mAlternativesLinearLayout.removeAllViews();
+        mAlternativesLabel.setVisibility((mLastAlternatives != null && mLastAlternatives.size() > 0) ? View.VISIBLE : View.GONE);
+        if (mLastAlternatives != null) {
+            int margin4dp = (int) AndroidUtils.convertDpToPixel(4, context);
+            for (int i = 0, size = mLastAlternatives.size(); i < size; i++) {
+                TextView textView = new TextView(context);
+                textView.setTextColor(ContextCompat.getColor(context, R.color.textBlackColor));
+                textView.setText(mLastAlternatives.get(i));
+                textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f);
+                textView.setTextIsSelectable(true);
+                LayoutParams textViewParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+                textViewParams.setMargins(0, margin4dp, 0, margin4dp);
+                textView.setLayoutParams(textViewParams);
+                mAlternativesLinearLayout.addView(textView);
+            }
+        }
     }
 
     private void clearTextTapped() {
@@ -550,11 +593,9 @@ public class MainFragment extends Fragment implements
     }
 
     private void pasteTextFromClipboard() {
-        if (mClipboardManager != null &&
-                mClipboardManager.hasPrimaryClip() &&
-                mClipboardManager.getPrimaryClip().getDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) &&
-                mClipboardManager.getPrimaryClip().getItemAt(0).getText() != null) {
-            setToTranslateText(mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString());
+        String clipboardText = AndroidUtils.getClipboardText(mClipboardManager);
+        if (clipboardText != null) {
+            setToTranslateText(clipboardText);
             mListener.logEvent("paste_from_clipboard", null);
         } else {
             mPasteFab.hide();
@@ -606,12 +647,28 @@ public class MainFragment extends Fragment implements
         }
     }
 
+    private void updateTextToSpeechVisibility() {
+        boolean displayFab = false;
+        if (mTextToSpeechInitialized && mLastTranslatedTo != null && !mTranslatedTextView.getText().toString().isEmpty()) {
+            Locale locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech);
+            if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+                displayFab = true;
+            }
+        }
+        if (displayFab) {
+            mSpeakerFab.show();
+        }
+        else {
+            mSpeakerFab.hide();
+        }
+    }
+
     private void onTextToSpeechTapped() {
         if (!mTextToSpeechInitialized || mTextToSpeech.isSpeaking() || mTranslatedTextView.getText().toString().isEmpty() || mLastTranslatedTo == null) {
             return;
         }
         if (mListener.getCurrentMediaVolume() > 0) {
-            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo));
+            mTextToSpeech.setLanguage(LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech));
             mTextToSpeech.speak(mTranslatedTextView.getText().toString(), TextToSpeech.QUEUE_FLUSH, null );
         }
         else {

@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!--GLOBAL DIMEN-->
     <dimen name="default_toolbar_elevation">8dp</dimen>
     <dimen name="translate_label_size">15sp</dimen>
-    <dimen name="min_lines">4</dimen>
-    <dimen name="min_lines_with_buttons">3</dimen>
+
+    <!--TRANSLATION TEXT-->
+    <dimen name="translation_text_size">18sp</dimen>
+    <dimen name="translation_top_padding">3dp</dimen>
+    <dimen name="translation_bottom_padding">8dp</dimen>
+    <dimen name="translation_horizontal_padding">8dp</dimen>
+
 </resources>

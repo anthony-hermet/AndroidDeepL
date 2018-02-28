@@ -2,6 +2,9 @@ package com.anthony.deepl.openl.model;
 
 import com.google.gson.annotations.SerializedName;
 
+import com.anthony.deepl.openl.manager.LanguageManager;
+
+import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,13 +19,25 @@ public class TranslationRequest {
     @SerializedName("params")
     private TranslationRequestParams mParams;
 
+    private List<Integer> mLineBreakPositions;
+
     public TranslationRequest(String sentence, String fromLanguage, String toLanguage, List<String> userPreferredLanguages) {
         List<TranslationRequestJob> jobList = new ArrayList<>();
-        String[] sentences = sentence.split("\n");
-        for (int i = 0, size = sentences.length; i < size; i++) {
+        BreakIterator sentenceIterator = BreakIterator.getSentenceInstance(LanguageManager.getLocaleFromLanguageValue(fromLanguage, null));
+        int sentenceStart, sentenceEnd;
+        int jobCount = 0;
+        mLineBreakPositions = new ArrayList<>();
+
+        sentenceIterator.setText(sentence);
+        for (sentenceStart = sentenceIterator.first(), sentenceEnd = sentenceIterator.next(); sentenceEnd != BreakIterator.DONE; sentenceStart = sentenceEnd, sentenceEnd = sentenceIterator.next()) {
             TranslationRequestJob job = new TranslationRequestJob();
-            job.setSentence(sentences[i]);
+            String detectedSentence = sentence.substring(sentenceStart, sentenceEnd);
+            job.setSentence(detectedSentence);
             jobList.add(job);
+            if (detectedSentence.contains("\n")) {
+                mLineBreakPositions.add(jobCount);
+            }
+            jobCount++;
         }
 
         mParams = new TranslationRequestParams();
@@ -30,6 +45,9 @@ public class TranslationRequest {
         mParams.setRequestLanguages(new TranslationRequestLanguage(fromLanguage, toLanguage, userPreferredLanguages));
     }
 
+    public List<Integer> getLineBreakPositions() {
+        return mLineBreakPositions;
+    }
 }
 
 class TranslationRequestParams {

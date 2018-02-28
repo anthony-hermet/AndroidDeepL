@@ -20,9 +20,13 @@ public class TranslationResponse {
         return mResult.getSourceLanguage();
     }
 
-    public String getBestTranslation() {
+    public String getBestTranslation(List<Integer> lineBreakPositions) {
         String bestTranslation = "";
         List<TranslationResponseTranslations> translations = mResult.getTranslations();
+        if (lineBreakPositions == null) {
+            lineBreakPositions = new ArrayList<>();
+        }
+
         for (int i = 0, translationSize = translations != null ? translations.size() : 0; i < translationSize; i++) {
             String bestResultSentence = null;
             Float bestResultScore = null;
@@ -38,7 +42,7 @@ public class TranslationResponse {
                 bestTranslation = bestTranslation.concat(bestResultSentence);
             }
             if (i + 1 < translationSize) {
-                bestTranslation = bestTranslation.concat("\n");
+                bestTranslation = bestTranslation.concat(lineBreakPositions.contains(i) ? "\n" : " ");
             }
         }
         return bestTranslation;

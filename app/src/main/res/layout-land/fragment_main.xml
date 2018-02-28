@@ -1,4 +1,5 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -105,13 +106,12 @@
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/invert_languages_button"
+            style="@style/FabMini"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_margin="3dp"
             android:contentDescription="@string/invert_languages_button_description"
             app:backgroundTint="@color/colorAccentLight"
-            app:fabSize="mini"
             app:layout_constraintBottom_toBottomOf="@id/to_translate_card_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -159,9 +159,9 @@
                     android:id="@+id/translate_to_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="@id/translate_to_text_view"
                     app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/translate_to_text_view" />
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:id="@+id/translated_edit_text"
@@ -171,7 +171,6 @@
                     android:inputType="none"
                     android:textIsSelectable="true"
                     android:textSize="15sp"
-                    app:layout_constraintBottom_toTopOf="@+id/text_to_speech_fab_button"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
