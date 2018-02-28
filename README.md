@@ -4,18 +4,29 @@
 </br>
 DeepL Android application is the unofficial Android application of deepl.com website. Try out the world’s best
 machine translation. DeepL trains artificial intelligence to understand and translate texts. </br>
-<a href="https://play.google.com/store/apps/details?id=com.anthony.deepl">
+<a href="https://play.google.com/store/apps/details?id=com.anthony.deepl.openl">
     <img alt="Get it on Google Play"
         height="75"
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
 </a>
 
+<a href="https://github.com/Anthony-Reboul/AndroidDeepL/releases">
+    <img alt="Get it on Github"
+        height="75"
+        src="https://github.com/Anthony-Reboul/AndroidDeepL/blob/master/assets/badges/get-it-on-github.png" />
+</a>
+
 </br></br>
 ## Screenshots
-[![](https://lh3.googleusercontent.com/_Y7KBVXi62KSjIsvWBB2eWvpEktlyceNAiyCo0Y2n0gPESIsVZK125_52y19DoO8LNc=h310)](https://play.google.com/store/apps/details?id=com.anthony.deepl)   [![](https://lh3.googleusercontent.com/3hVHnY2qcHg35BQ1_FJn4R92A9g6s3hv1ntmZCAUjX2LQo8s5kQo2BafvsLVpvxYfQI=h310)](https://play.google.com/store/apps/details?id=com.anthony.deepl)   [![](https://lh3.googleusercontent.com/lI3ihvIYYIKBbnJoUrKka91htC7lY37uIeEAjipvvEzbQ7v2flVdYZwKX-_uFQdrreI=h310)](https://play.google.com/store/apps/details?id=com.anthony.deepl)
+[![](https://lh3.googleusercontent.com/OTxCsvgILpPoxZdBEZXAzfReDYOheEeK82dBN8TRimI1hVMQcCPxVO58FrotIOEpijM=h900)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)   [![](https://lh3.googleusercontent.com/40_8WYWWgIe2OUU5Q5SaFCbUle2xNRHUU_rn0C7ocOopPwxPOeX0xv7eQ9yYHRKMSw=h900)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)   [![](https://lh3.googleusercontent.com/82JBhR2MbQR6mqcJlW9Th4vahPcM-rYS-PSIgxc5P1SO9qw_wP3sKCQBBFUswo019g=h900)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)
+
 
 ## Disclaimer
 This is not the official DeepL app. Deepl and Linguee are registered trademarks owned by DeepL GmbH, and used under license. For more informations : https://www.deepl.com/publisher.html
+
+
+## Product flavors
+The application contains two product flavors dimensions: "mode" and "service". With the "mode" dimension, you can build the app using the DeepL or the OpenL mode. This will only change the application name and icon. The "service" dimension allow you to build the application with or without the Google Play Services. This is mainly used to be able to provide a build to F-Droid. 
 
 
 ## Contributors
