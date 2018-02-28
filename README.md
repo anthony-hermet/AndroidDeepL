@@ -3,22 +3,22 @@
 <img src="https://lh3.googleusercontent.com/BL0P8TR4Rnk9QOD2F-quWKluCqiLXoPysDqSblfaDs-LXs8ti97bBzbvXA12-igo844=w300" align="left" width="200" hspace="10" vspace="10"/>
 </br>
 DeepL Android application is the unofficial Android application of deepl.com website. Try out the world’s best
-machine translation. DeepL trains artificial intelligence to understand and translate texts. </br>
+machine translation. DeepL trains artificial intelligence to understand and translate texts. </br></br>
 <a href="https://play.google.com/store/apps/details?id=com.anthony.deepl.openl">
     <img alt="Get it on Google Play"
-        height="75"
+        height="85"
         src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
 </a>
 
 <a href="https://github.com/Anthony-Reboul/AndroidDeepL/releases">
     <img alt="Get it on Github"
-        height="75"
+        height="85"
         src="https://github.com/Anthony-Reboul/AndroidDeepL/blob/master/assets/badges/get-it-on-github.png" />
 </a>
 
 </br></br>
 ## Screenshots
-[![](https://lh3.googleusercontent.com/OTxCsvgILpPoxZdBEZXAzfReDYOheEeK82dBN8TRimI1hVMQcCPxVO58FrotIOEpijM=h900)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)   [![](https://lh3.googleusercontent.com/40_8WYWWgIe2OUU5Q5SaFCbUle2xNRHUU_rn0C7ocOopPwxPOeX0xv7eQ9yYHRKMSw=h900)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)   [![](https://lh3.googleusercontent.com/82JBhR2MbQR6mqcJlW9Th4vahPcM-rYS-PSIgxc5P1SO9qw_wP3sKCQBBFUswo019g=h900)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)
+[![](https://lh3.googleusercontent.com/OTxCsvgILpPoxZdBEZXAzfReDYOheEeK82dBN8TRimI1hVMQcCPxVO58FrotIOEpijM=h310)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)   [![](https://lh3.googleusercontent.com/40_8WYWWgIe2OUU5Q5SaFCbUle2xNRHUU_rn0C7ocOopPwxPOeX0xv7eQ9yYHRKMSw=h310)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)   [![](https://lh3.googleusercontent.com/82JBhR2MbQR6mqcJlW9Th4vahPcM-rYS-PSIgxc5P1SO9qw_wP3sKCQBBFUswo019g=h310)](https://play.google.com/store/apps/details?id=com.anthony.deepl.openl)
 
 
 ## Disclaimer
