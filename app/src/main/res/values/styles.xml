@@ -29,6 +29,16 @@
         <item name="android:paddingTop">@dimen/translation_top_padding</item>
     </style>
 
+    <!--We set elevation to 0dp for pre API 21 devices to big margins -->
+    <style name="FabMini" parent="Widget.Design.FloatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">0dp</item>
+        <item name="fabSize">mini</item>
+        <item name="elevation">4dp</item>
+        <item name="pressedTranslationZ">1dp</item>
+    </style>
+
     <!--We set elevation to 0dp for pre API 21 devices to avoid strange shadows-->
     <style name="FabMiniMini" parent="Widget.Design.FloatingActionButton">
         <item name="android:layout_width">30dp</item>
