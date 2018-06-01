@@ -39,7 +39,7 @@ Various libraries are used in the application project :
 - [Android Support Libraries v4 and v7](https://developer.android.com/topic/libraries/support-library/index.html)
 - [Android Design Support Library](https://developer.android.com/training/material/design-library.html)
 - [Constraint Layout](https://developer.android.com/training/constraint-layout/index.html)
-- [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics/) (You'll need to add you own google-services.json)
+- [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics/) (You'll need to add your own google-services.json)
 - [Retrofit 2](http://square.github.io/retrofit/)
 - [Timber](https://github.com/JakeWharton/timber)
 
