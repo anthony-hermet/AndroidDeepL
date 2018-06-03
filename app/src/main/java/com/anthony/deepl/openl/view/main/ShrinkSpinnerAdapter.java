@@ -1,4 +1,4 @@
-package com.anthony.deepl.openl.adapter;
+package com.anthony.deepl.openl.view.main;
 
 import android.content.Context;
 import android.support.annotation.NonNull;

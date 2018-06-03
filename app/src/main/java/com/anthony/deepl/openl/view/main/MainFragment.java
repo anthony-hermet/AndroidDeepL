@@ -1,4 +1,4 @@
-package com.anthony.deepl.openl.fragment;
+package com.anthony.deepl.openl.view.main;
 
 import android.app.Activity;
 import android.content.ClipData;
@@ -30,7 +30,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.anthony.deepl.openl.adapter.ShrinkSpinnerAdapter;
 import com.anthony.deepl.openl.backend.DeepLService;
 import com.anthony.deepl.openl.manager.LanguageManager;
 import com.anthony.deepl.openl.model.TranslationRequest;
@@ -102,7 +101,7 @@ public class MainFragment extends Fragment implements
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(DeepLService.BASE_URL)
+                .baseUrl(DeepLService.Companion.getBASE_URL())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         mDeepLService = retrofit.create(DeepLService.class);
@@ -424,7 +423,9 @@ public class MainFragment extends Fragment implements
                 toTranslate,
                 translateFrom,
                 translateTo,
-                preferredLanguages);
+                preferredLanguages,
+                "2.0",
+                "LMT_handle_jobs");
         mTranslateProgressbar.setVisibility(View.VISIBLE);
         Call<TranslationResponse> call = mDeepLService.translateText(request);
         call.enqueue(new Callback<TranslationResponse>() {
@@ -448,7 +449,7 @@ public class MainFragment extends Fragment implements
                 mTranslatedTextView.setText(translationResponse.getBestTranslation(request.getLineBreakPositions()));
 
                 // Alternative translations
-                mLastAlternatives = translationResponse.getOtherResults();
+                mLastAlternatives = translationResponse.getAlternateTranslations();
                 updateAlternatives(context);
 
                 // Reporting
