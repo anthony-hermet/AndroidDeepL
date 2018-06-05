@@ -4,10 +4,10 @@
 </br>
 DeepL Android application is the unofficial Android application of deepl.com website. Try out the world’s best
 machine translation. DeepL trains artificial intelligence to understand and translate texts. </br></br>
-<a href="https://play.google.com/store/apps/details?id=com.anthony.deepl.openl">
-    <img alt="Get it on Google Play"
+<a href="https://f-droid.org/fr/packages/com.anthony.deepl.openl/">
+    <img alt="Get it on F-Droid"
         height="85"
-        src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" />
+        src="https://f-droid.org/badge/get-it-on.png" />
 </a>
 
 <a href="https://github.com/Anthony-Reboul/AndroidDeepL/releases">
