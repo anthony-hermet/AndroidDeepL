@@ -26,8 +26,14 @@ class MainActivity : AppCompatActivity(), MainFragment.OnFragmentInteractionList
         private const val SPEECH_TO_TEXT_REQUEST_CODE = 32
     }
 
-    private var mMainFragment: MainFragment? = null
-    private var mFirebaseManager: FirebaseManager? = null
+    private lateinit var mMainFragment: MainFragment
+    private lateinit var mFirebaseManager: FirebaseManager
+
+    override val currentMediaVolume: Int
+        get() {
+            val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+            return audio.getStreamVolume(AudioManager.STREAM_MUSIC)
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // We remove splash screen theme before on create
@@ -42,13 +48,13 @@ class MainActivity : AppCompatActivity(), MainFragment.OnFragmentInteractionList
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
             if (sharedText != null) {
-                mMainFragment?.setToTranslateText(sharedText)
+                mMainFragment.setToTranslateText(sharedText)
             }
         }
 
         // We init and fetch values from Firebase analytics and remote config
-        mFirebaseManager = FirebaseManager(this@MainActivity)
-        mFirebaseManager?.fetchRemoteConfigValues()
+        mFirebaseManager = FirebaseManager()
+        mFirebaseManager.fetchRemoteConfigValues()
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -56,7 +62,7 @@ class MainActivity : AppCompatActivity(), MainFragment.OnFragmentInteractionList
 
         if (requestCode == SPEECH_TO_TEXT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)[0]
-            mMainFragment?.setToTranslateText(text)
+            mMainFragment.setToTranslateText(text)
             logEvent("speech_to_text_success", null)
         }
     }
@@ -71,20 +77,15 @@ class MainActivity : AppCompatActivity(), MainFragment.OnFragmentInteractionList
             startActivityForResult(intent, SPEECH_TO_TEXT_REQUEST_CODE)
             logEvent("speech_to_text_displayed", null)
         } catch (e: ActivityNotFoundException) {
-            mMainFragment?.view?.let {
+            mMainFragment.view?.let {
                 Snackbar.make(it, R.string.speech_to_text_error, Snackbar.LENGTH_SHORT).show()
             }
             Timber.e(e)
         }
     }
 
-    override fun getCurrentMediaVolume(): Int {
-        val audio = getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        return audio.getStreamVolume(AudioManager.STREAM_MUSIC)
-    }
-
     override fun logEvent(event: String, bundle: Bundle?) {
-        mFirebaseManager?.logEvent(event, bundle)
+        mFirebaseManager.logEvent(event, bundle)
     }
 
     private fun initViews() {

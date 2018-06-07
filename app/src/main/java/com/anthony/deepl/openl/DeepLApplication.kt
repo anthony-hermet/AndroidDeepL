@@ -6,9 +6,12 @@ import com.anthony.deepl.openl.util.FirebaseManager
 
 import timber.log.Timber
 
-const val ENABLE_CRASHLYTICS = true
 
 class DeepLApplication : Application() {
+
+    companion object {
+        private const val ENABLE_CRASHLYTICS = true
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -19,7 +22,7 @@ class DeepLApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else if (ENABLE_CRASHLYTICS) {
-            Timber.plant(FirebaseManager(this).productionTimberTree)
+            Timber.plant(FirebaseManager().productionTimberTree)
         }
     }
 
