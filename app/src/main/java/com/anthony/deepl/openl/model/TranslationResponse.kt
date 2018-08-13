@@ -57,7 +57,6 @@ data class TranslationResponse (
 
         return otherSentences
     }
-
 }
 
 internal data class TranslationResponseResult(
