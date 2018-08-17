@@ -2,7 +2,6 @@ package com.anthony.deepl.openl.manager
 
 import android.content.Context
 import android.speech.tts.TextToSpeech
-import android.support.annotation.StringDef
 
 import com.anthony.deepl.openl.R
 
@@ -14,6 +13,7 @@ import java.util.LinkedList
 import java.util.Locale
 
 import android.content.Context.MODE_PRIVATE
+import androidx.annotation.StringDef
 
 object LanguageManager {
 

@@ -19,7 +19,6 @@ import android.widget.TextView
 import android.widget.LinearLayout.LayoutParams
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import com.anthony.deepl.openl.R
 
 import com.anthony.deepl.openl.manager.LanguageManager
@@ -33,7 +32,7 @@ import timber.log.Timber
 import com.anthony.deepl.openl.manager.LanguageManager.AUTO
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
-import org.koin.android.architecture.ext.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 
 class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -44,7 +43,6 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         private const val INSTANCE_DETECTED_LANGUAGE_KEY = "detected_language"
         private const val INSTANCE_LAST_ALTERNATIVES_KEY = "last_alternatives"
     }
-
 
     private val viewModel by sharedViewModel<TranslationViewModel>()
 
@@ -90,16 +88,16 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     override fun onStart() {
         super.onStart()
-        viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
-            translationResponse?.let {
-                displayTranslationResponse(it)
-            }
-        })
-        viewModel.liveStatus.observe(this, Observer { status ->
-            status?.let {
-                handleViewModelStatusChange(it)
-            }
-        })
+//        viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
+//            translationResponse?.let {
+//                displayTranslationResponse(it)
+//            }
+//        })
+//        viewModel.liveStatus.observe(this, Observer { status ->
+//            status?.let {
+//                handleViewModelStatusChange(it)
+//            }
+//        })
     }
 
     override fun onResume() {
@@ -121,6 +119,11 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater.inflate(R.layout.fragment_main, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         initViews()
 
         // If state has been restored, we may need to display the last detected language
@@ -128,9 +131,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
                 mDetectedLanguage != null && translate_from_spinner.selectedItemPosition == 0) {
             displayDetectedLanguage()
         }
-        updateAlternatives(inflater.context)
-
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        updateAlternatives(view.context)
     }
 
     override fun onAttach(context: Context?) {
@@ -300,7 +301,10 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     private fun displayTranslationResponse(translationResponse: TranslationResponse) {
         val safeContext = context ?: return
 
-        translated_edit_text.text = translationResponse.getBestTranslation(request.lineBreakPositions)
+        // TO DO
+//        translated_edit_text.text = translationResponse.getBestTranslation(request.lineBreakPositions)
+
+        translated_edit_text.text = translationResponse.getBestTranslation(emptyList())
 
         // Alternative translations
         mLastAlternatives = translationResponse.getAlternateTranslations()
@@ -375,7 +379,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(safeContext))
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(safeContext))
 
-        viewModel.translate(toTranslate, translateFrom, translateTo, preferredLanguages)
+//        viewModel.translate(toTranslate, translateFrom, translateTo, preferredLanguages)
 //            override fun onResponse(call: Call<TranslationResponse>, response: Response<TranslationResponse>) {
 //                val translationResponse = response.body()
 //                if (translationResponse == null) {
@@ -513,8 +517,8 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
             }
         }
 
-        val interpolator = OvershootInterpolator()
-        ViewCompat.animate(invert_languages_button).rotation(180f).withLayer().setDuration(350).setInterpolator(interpolator).withEndAction { invert_languages_button.rotation = 0f }.startDelay = 75
+//        val interpolator = OvershootInterpolator()
+//        ViewCompat.animate(invert_languages_button).rotation(180f).withLayer().setDuration(350).setInterpolator(interpolator).withEndAction { invert_languages_button.rotation = 0f }.startDelay = 75
 
         mListener.logEvent("invert_languages", null)
     }

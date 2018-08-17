@@ -24,7 +24,7 @@ class DeepLApplication : Application() {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else if (ENABLE_CRASHLYTICS) {
-            Timber.plant(FirebaseManager(applicationContext).productionTimberTree)
+            Timber.plant(FirebaseManager().productionTimberTree)
         }
     }
 

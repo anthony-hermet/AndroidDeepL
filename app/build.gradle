@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 ext {
-    koin_version = "0.9.3"
+    koin_version = "1.0.0-beta-5"
     androidArchitectureVersion = "2.0.0-rc01"
 }
 
@@ -57,7 +57,6 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:0.24.0'
 
     // Google & Android libraries
-    implementation "androidx.legacy:legacy-support-v4:1.0.0-alpha1"
     implementation "androidx.appcompat:appcompat:1.0.0-rc01"
     implementation "com.google.android.material:material:1.0.0-rc01"
     implementation "androidx.cardview:cardview:1.0.0-rc01"
@@ -65,21 +64,23 @@ dependencies {
     withPlayServicesImplementation('com.crashlytics.sdk.android:crashlytics:2.9.4@aar') {
         transitive = true
     }
-    withPlayServicesImplementation 'com.google.firebase:firebase-core:16.0.1'
-    withPlayServicesImplementation 'com.google.firebase:firebase-config:16.0.0'
+    withPlayServicesImplementation('com.google.firebase:firebase-core:16.0.1') {
+        exclude group: 'android.support.v4.app'
+        exclude module: 'support-v4'
+    }
+    withPlayServicesImplementation('com.google.firebase:firebase-config:16.0.0') {
+        exclude group: 'com.android.support'
+        exclude module: 'support-v4'
+    }
 
     // Other libraries
     implementation "com.squareup.retrofit2:retrofit:2.4.0"
     implementation "com.squareup.retrofit2:converter-gson:2.4.0"
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
-    // To check
-
     // Koin
     implementation "org.koin:koin-android:$koin_version"
-    implementation "org.koin:koin-android-architecture:$koin_version"
-    testImplementation "org.koin:koin-test:$koin_version"
-    androidTestImplementation "org.koin:koin-test:$koin_version"
+    implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
     // ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$androidArchitectureVersion"
@@ -88,8 +89,10 @@ dependencies {
 
     // Tests
     testImplementation "junit:junit:4.12"
+    testImplementation "org.koin:koin-test:$koin_version"
     androidTestImplementation "androidx.test:runner:1.1.0-alpha4"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.1.0-alpha4"
+    androidTestImplementation "org.koin:koin-test:$koin_version"
 }
 
 apply plugin: 'com.google.gms.google-services'

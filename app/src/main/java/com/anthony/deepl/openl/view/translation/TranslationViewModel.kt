@@ -1,7 +1,7 @@
 package com.anthony.deepl.openl.view.translation
 
-import android.arch.lifecycle.ViewModel
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import com.anthony.deepl.openl.backend.DeepLService
 import com.anthony.deepl.openl.model.TranslationRequest
 import com.anthony.deepl.openl.model.TranslationResponse
