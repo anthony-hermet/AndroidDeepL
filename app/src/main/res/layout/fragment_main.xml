@@ -76,8 +76,18 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
-                    app:srcCompat="@drawable/ic_mic_white_16dp" />
+                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintStart_toStartOf="@id/mic_fab_button"
+                    app:layout_constraintEnd_toEndOf="@id/mic_fab_button"
+                    app:layout_constraintTop_toTopOf="@id/mic_fab_button"
+                    app:layout_constraintBottom_toBottomOf="@id/mic_fab_button"
+                    app:srcCompat="@drawable/ic_mic_white_16dp"/>
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/paste_fab_button"
@@ -89,8 +99,18 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/mic_fab_button"
-                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
-                    app:srcCompat="@drawable/ic_paste_white_16dp" />
+                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"/>
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintStart_toStartOf="@id/paste_fab_button"
+                    app:layout_constraintEnd_toEndOf="@id/paste_fab_button"
+                    app:layout_constraintTop_toTopOf="@id/paste_fab_button"
+                    app:layout_constraintBottom_toBottomOf="@id/paste_fab_button"
+                    app:srcCompat="@drawable/ic_paste_white_16dp"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -167,8 +187,18 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/translated_edit_text"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:srcCompat="@drawable/ic_speaker_white_16dp" />
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintStart_toStartOf="@id/text_to_speech_fab_button"
+                    app:layout_constraintEnd_toEndOf="@id/text_to_speech_fab_button"
+                    app:layout_constraintTop_toTopOf="@id/text_to_speech_fab_button"
+                    app:layout_constraintBottom_toBottomOf="@id/text_to_speech_fab_button"
+                    app:srcCompat="@drawable/ic_speaker_white_16dp"/>
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/copy_to_clipboard_button"
@@ -180,8 +210,18 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintStart_toEndOf="@id/text_to_speech_fab_button"
                     app:layout_constraintTop_toBottomOf="@+id/translated_edit_text"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:srcCompat="@drawable/ic_content_copy_white_16dp" />
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintStart_toStartOf="@id/copy_to_clipboard_button"
+                    app:layout_constraintEnd_toEndOf="@id/copy_to_clipboard_button"
+                    app:layout_constraintTop_toTopOf="@id/copy_to_clipboard_button"
+                    app:layout_constraintBottom_toBottomOf="@id/copy_to_clipboard_button"
+                    app:srcCompat="@drawable/ic_content_copy_white_16dp"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

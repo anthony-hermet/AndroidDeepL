@@ -18,6 +18,7 @@ import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.LinearLayout.LayoutParams
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import com.anthony.deepl.openl.R
 
@@ -517,8 +518,12 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
             }
         }
 
-//        val interpolator = OvershootInterpolator()
-//        ViewCompat.animate(invert_languages_button).rotation(180f).withLayer().setDuration(350).setInterpolator(interpolator).withEndAction { invert_languages_button.rotation = 0f }.startDelay = 75
+        ViewCompat.animate(invert_languages_button)
+                .rotation(180f)
+                .withLayer().setDuration(350)
+                .setInterpolator(OvershootInterpolator())
+                .withEndAction { invert_languages_button.rotation = 0f }
+                .startDelay = 75
 
         mListener.logEvent("invert_languages", null)
     }
