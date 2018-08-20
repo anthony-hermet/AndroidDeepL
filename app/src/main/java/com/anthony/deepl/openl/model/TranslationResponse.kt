@@ -10,11 +10,12 @@ data class TranslationResponse (
 
     @SerializedName("result")
     private val mResult: TranslationResponseResult? = null
+    var lineBreakPositions: MutableList<Int> = mutableListOf()
 
     val sourceLanguage: String?
         get() = mResult?.sourceLanguage
 
-    fun getBestTranslation(lineBreakPositions: List<Int>?): String {
+    fun getBestTranslation(): String {
         var bestTranslation = ""
 
         mResult?.translations?.forEachIndexed { index, sentence ->
@@ -28,7 +29,7 @@ data class TranslationResponse (
             }
             if (bestResultSentence != null) {
                 bestTranslation += bestResultSentence
-                bestTranslation += if (lineBreakPositions?.contains(index) == true) "\n" else " "
+                bestTranslation += if (lineBreakPositions.contains(index) == true) "\n" else " "
             }
         }
 

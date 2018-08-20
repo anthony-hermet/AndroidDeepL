@@ -1,7 +1,5 @@
 package com.anthony.deepl.openl.view.translation
 
-import android.content.ClipData
-import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.os.Handler
@@ -13,24 +11,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.OvershootInterpolator
-import android.view.inputmethod.InputMethodManager
 import android.widget.AdapterView
 import android.widget.TextView
 import android.widget.LinearLayout.LayoutParams
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import com.anthony.deepl.openl.R
 
 import com.anthony.deepl.openl.manager.LanguageManager
 import com.anthony.deepl.openl.model.TranslationResponse
-import com.anthony.deepl.openl.util.AndroidUtils
 
 import java.util.ArrayList
 
 import timber.log.Timber
 
 import com.anthony.deepl.openl.manager.LanguageManager.AUTO
+import com.anthony.deepl.openl.util.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -48,7 +46,6 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     private val viewModel by sharedViewModel<TranslationViewModel>()
 
     private var mRetrySnackBar: Snackbar? = null
-    private var mClipboardManager: ClipboardManager? = null
     private var mTranslateFromLanguages: Array<String> = arrayOf()
     private var mTranslateToLanguages: Array<String> = arrayOf()
     private var mLastTranslatedSentence: String? = null
@@ -56,8 +53,8 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     private var mLastTranslatedTo: String? = null
     private var mLastAlternatives: List<String>? = null
     private var mDetectedLanguage: String? = null
-    private var mTranslationInProgress: Boolean = false
     private var mTextToSpeechInitialized: Boolean = false
+    private var lastKnownStatus: TranslationViewModel.Status? = null
 
     private lateinit var mListener: OnFragmentInteractionListener
     private lateinit var mTranslateFromAdapter: ShrinkSpinnerAdapter<*>
@@ -68,7 +65,6 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mClipboardManager = context?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         mTextToSpeech = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
             if (status != TextToSpeech.ERROR) {
                 mTextToSpeechInitialized = true
@@ -89,21 +85,21 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     override fun onStart() {
         super.onStart()
-//        viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
-//            translationResponse?.let {
-//                displayTranslationResponse(it)
-//            }
-//        })
-//        viewModel.liveStatus.observe(this, Observer { status ->
-//            status?.let {
-//                handleViewModelStatusChange(it)
-//            }
-//        })
+        viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
+            translationResponse?.let {
+                displayTranslationResponse(it)
+            }
+        })
+        viewModel.liveStatus.observe(this, Observer { status ->
+            status?.let {
+                handleViewModelStatusChange(it)
+            }
+        })
     }
 
     override fun onResume() {
         super.onResume()
-        if (AndroidUtils.getClipboardText(mClipboardManager) != null && to_translate_edit_text.text.isEmpty()) {
+        if (getClipboardText() != null && to_translate_edit_text.text.isEmpty()) {
             paste_fab_button.show()
         } else {
             paste_fab_button.hide()
@@ -231,7 +227,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
                 } else {
                     clear_to_translate_button.visibility = View.GONE
                     mic_fab_button.show()
-                    if (AndroidUtils.getClipboardText(mClipboardManager) != null) {
+                    if (getClipboardText() != null) {
                         paste_fab_button.show()
                     }
                 }
@@ -301,11 +297,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     private fun displayTranslationResponse(translationResponse: TranslationResponse) {
         val safeContext = context ?: return
-
-        // TO DO
-//        translated_edit_text.text = translationResponse.getBestTranslation(request.lineBreakPositions)
-
-        translated_edit_text.text = translationResponse.getBestTranslation(emptyList())
+        translated_edit_text.text = translationResponse.getBestTranslation()
 
         // Alternative translations
         mLastAlternatives = translationResponse.getAlternateTranslations()
@@ -319,6 +311,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     }
 
     private fun handleViewModelStatusChange(status: TranslationViewModel.Status) {
+        lastKnownStatus = status
         if (status != TranslationViewModel.Status.ERROR) {
             mRetrySnackBar?.let {
                 it.dismiss()
@@ -331,8 +324,8 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
             translated_edit_text.text = ""
 
             if (mRetrySnackBar == null) {
-                view?.let {
-                    mRetrySnackBar = Snackbar.make(it, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
+                view?.let { view ->
+                    mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
                             .setAction(R.string.snack_bar_retry_button) {
                                 updateTranslation()
                                 mListener.logEvent("retry_snack_bar_tapped", null)
@@ -346,7 +339,8 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     private fun updateTranslation() {
         // If a translation is in progress, we return directly
-        if (mTranslationInProgress || to_translate_edit_text.text.toString().replace(" ", "").length <= 2) {
+        if (lastKnownStatus?.equals(TranslationViewModel.Status.LOADING) == true ||
+                to_translate_edit_text.text.toString().replace(" ", "").length <= 2) {
             return
         }
 
@@ -359,7 +353,8 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         translateTo = LanguageManager.getLanguageValue(translateTo, safeContext)
         if (toTranslate == mLastTranslatedSentence &&
                 translateFrom == mLastTranslatedFrom &&
-                translateTo == mLastTranslatedTo) {
+                translateTo == mLastTranslatedTo &&
+                lastKnownStatus?.equals(TranslationViewModel.Status.ERROR) == false) {
             return
         }
 
@@ -372,7 +367,6 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         }
 
         // If fields have changed, we launch a new translation
-        mTranslationInProgress = true
         mLastTranslatedSentence = toTranslate
         mLastTranslatedFrom = translateFrom
         mLastTranslatedTo = translateTo
@@ -380,41 +374,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(safeContext))
         preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(safeContext))
 
-//        viewModel.translate(toTranslate, translateFrom, translateTo, preferredLanguages)
-//            override fun onResponse(call: Call<TranslationResponse>, response: Response<TranslationResponse>) {
-//                val translationResponse = response.body()
-//                if (translationResponse == null) {
-//                    onFailure(call, Exception("Translation response body is null"))
-//                    return
-//                }
-//
-//                // Main translation
-//                mRetrySnackBar?.let {
-//                    it.dismiss()
-//                    mRetrySnackBar = null
-//                }
-//                mTranslationInProgress = false
-//
-//                // We call the method again to check if something has changed since we've launched the network call
-//                updateTranslation()
-//
-//                // If AUTO is selected, we update the label with the detected language and the translateTo spinner
-//                if (isAdded && translate_from_spinner.selectedItemPosition == 0) {
-//                    mDetectedLanguage = translationResponse.sourceLanguage
-//                    displayDetectedLanguage()
-//                } else {
-//                    mDetectedLanguage = null
-//                }
-//            }
-//
-//            override fun onFailure(call: Call<TranslationResponse>, t: Throwable) {
-//                translate_progressbar.visibility = View.GONE
-//                mLastTranslatedSentence = ""
-//                mTranslationInProgress = false
-
-//                Timber.e(t)
-//            }
-//        })
+        viewModel.translate(toTranslate, translateFrom, translateTo, preferredLanguages)
     }
 
     private fun displayDetectedLanguage() {
@@ -440,14 +400,14 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         alternatives_linear_layout.removeAllViews()
         alternatives_label.visibility = if (mLastAlternatives?.isNotEmpty() == true) View.VISIBLE else View.GONE
         mLastAlternatives?.let {
-            val margin4dp = AndroidUtils.convertDpToPixel(4f, context).toInt()
+            val margin4dp = 4.dpToPx
             val textViewColor = ContextCompat.getColor(context, R.color.textBlackColor)
             val textViewParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             textViewParams.setMargins(0, margin4dp, 0, margin4dp)
-            it.forEach {
+            it.forEach { alternative ->
                 val textView = TextView(context)
                 textView.setTextColor(textViewColor)
-                textView.text = it
+                textView.text = alternative
                 textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
                 textView.setTextIsSelectable(true)
                 textView.layoutParams = textViewParams
@@ -471,32 +431,22 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     private fun copyTranslatedTextToClipboard() {
         val translatedText = translated_edit_text.text.toString()
-        if (mClipboardManager != null) {
-            // First we close the keyboard
-            val view = activity?.currentFocus
-            val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-            view?.let { imm.hideSoftInputFromWindow(it.windowToken, 0) }
-
-            // Then we clip the translated text and display confirmation Snackbar
-            val clip = ClipData.newPlainText(translatedText, translatedText)
-            mClipboardManager?.primaryClip = clip
-            Snackbar.make(clear_to_translate_button,
-                    R.string.copied_to_clipboard_text,
-                    Snackbar.LENGTH_SHORT).show()
-            mListener.logEvent("copy_to_clipboard", null)
-        } else {
-            Timber.w("Clipboard is null and shouldn't be")
-        }
+        hideKeyboard()
+        copyToClipboard(translatedText)
+        Snackbar.make(clear_to_translate_button,
+                R.string.copied_to_clipboard_text,
+                Snackbar.LENGTH_SHORT).show()
+        mListener.logEvent("copy_to_clipboard", null)
     }
 
     private fun pasteTextFromClipboard() {
-        val clipboardText = AndroidUtils.getClipboardText(mClipboardManager)
+        val clipboardText = getClipboardText()
         if (clipboardText != null) {
             setToTranslateText(clipboardText)
             mListener.logEvent("paste_from_clipboard", null)
         } else {
             paste_fab_button.hide()
-            Timber.w(if (mClipboardManager != null) "Clipboard primary clip is empty, paste fab should be hidden" else "Clipboard is null and shouldn't be")
+            Timber.w("Clipboard is null or primary clip is empty")
         }
     }
 
@@ -529,11 +479,9 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     }
 
     private fun checkTranslateFromLabelVisibility() {
-        val safeContext = context ?: return
         val textViewLocation = IntArray(2)
-        val eightDpToPixelValue = AndroidUtils.convertDpToPixel(8f, safeContext).toInt()
         translate_from_text_view.getLocationOnScreen(textViewLocation)
-        translate_from_text_view.visibility = if (textViewLocation[0] > eightDpToPixelValue) View.VISIBLE else View.INVISIBLE
+        translate_from_text_view.visibility = if (textViewLocation[0] > 8.dpToPx) View.VISIBLE else View.INVISIBLE
     }
 
     private fun updateTextToSpeechVisibility() {

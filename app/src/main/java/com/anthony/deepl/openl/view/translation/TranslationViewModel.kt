@@ -22,6 +22,7 @@ class TranslationViewModel(private val deepLService: DeepLService) : ViewModel()
     val liveStatus = MutableLiveData<Status>()
 
     fun translate(toTranslate: String, translateFrom: String, translateTo: String, preferredLanguages: List<String>) {
+        liveStatus.value = Status.LOADING
         val request = TranslationRequest(
                 toTranslate,
                 translateFrom,
@@ -30,24 +31,24 @@ class TranslationViewModel(private val deepLService: DeepLService) : ViewModel()
                 "2.0",
                 "LMT_handle_jobs")
         val call = deepLService.translateText(request)
-        liveStatus.value = Status.LOADING
-        call.enqueue(object : Callback<TranslationResponse> {
-            override fun onFailure(call: Call<TranslationResponse>?, t: Throwable?) {
-                Timber.e(t.toString())
-                liveStatus.value = Status.ERROR
-            }
+//        call.enqueue(object : Callback<TranslationResponse> {
+//            override fun onFailure(call: Call<TranslationResponse>?, t: Throwable?) {
+//                Timber.e(t.toString())
+//                liveStatus.value = Status.ERROR
+//            }
+//
+//            override fun onResponse(call: Call<TranslationResponse>, response: Response<TranslationResponse>) {
+//                val translationResponse = response.body()
+//                if (translationResponse == null) {
+//                    onFailure(call, Exception("Translation response body is null"))
+//                    return
+//                }
+//                translationResponse.lineBreakPositions = request.lineBreakPositions
+//                liveTranslationResponse.value = translationResponse
+//                liveStatus.value = Status.IDLE
+//            }
+//        })
+        liveStatus.value = Status.ERROR
 
-            override fun onResponse(call: Call<TranslationResponse>, response: Response<TranslationResponse>) {
-                val translationResponse = response.body()
-                if (translationResponse == null) {
-                    onFailure(call, Exception("Translation response body is null"))
-                    return
-                }
-                liveTranslationResponse.value = translationResponse
-                liveStatus.value = Status.IDLE
-            }
-
-        })
     }
-
 }
