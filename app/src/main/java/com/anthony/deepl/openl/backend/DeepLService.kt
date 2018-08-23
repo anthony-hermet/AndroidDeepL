@@ -11,7 +11,7 @@ import retrofit2.http.POST
 interface DeepLService {
 
     companion object {
-        val BASE_URL = "https://www.deepl.com"
+        const val BASE_URL = "https://www2.deepl.com"
     }
 
     @Headers("accept-language: en,de,fr,es,it,nl,pl")
