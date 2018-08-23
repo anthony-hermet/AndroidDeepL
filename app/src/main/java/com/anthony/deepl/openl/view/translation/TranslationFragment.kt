@@ -83,6 +83,12 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mTextToSpeech.stop()
+        mTextToSpeech.shutdown()
+    }
+
     override fun onStart() {
         super.onStart()
         viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
@@ -390,7 +396,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         updateTranslateToSpinner()
         var detectedLanguage = LanguageManager.getLanguageString(mDetectedLanguage, safeContext)
         detectedLanguage = detectedLanguage + " " + getString(R.string.detected_language_label)
-        (translate_from_spinner.selectedView as TextView).text = detectedLanguage
+        (translate_from_spinner.selectedView as TextView?)?.text = detectedLanguage
         mTranslateFromAdapter.setDetectedLanguage(detectedLanguage)
         Handler().postDelayed({ checkTranslateFromLabelVisibility() }, 50)
     }
