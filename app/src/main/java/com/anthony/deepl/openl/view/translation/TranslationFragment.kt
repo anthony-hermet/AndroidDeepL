@@ -155,7 +155,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         }
     }
 
-    override fun onItemSelected(parent: AdapterView<*>, view: View, position: Int, id: Long) {
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
         when (parent.id) {
             R.id.translate_from_spinner -> {
                 if (mLastTranslatedFrom != null && position != 0 && mLastTranslatedFrom == LanguageManager.AUTO) {
@@ -346,7 +346,9 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     private fun updateTranslation() {
         // If a translation is in progress, we return directly
         if (lastKnownStatus?.equals(TranslationViewModel.Status.LOADING) == true ||
-                to_translate_edit_text.text.toString().replace(" ", "").length <= 2) {
+                to_translate_edit_text.text.toString().replace(" ", "").length <= 2 ||
+                translate_from_spinner.selectedItemPosition == -1 ||
+                translate_to_spinner.selectedItemPosition == -1) {
             return
         }
 
