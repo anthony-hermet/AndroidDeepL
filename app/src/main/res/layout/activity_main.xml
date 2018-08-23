@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activity.MainActivity">
+    tools:context=".view.translation.TranslationActivity">
 
     <include
         android:id="@+id/toolbar"
@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/main_fragment"
-        android:name="com.anthony.deepl.openl.fragment.MainFragment"
+        android:name="com.anthony.deepl.openl.view.translation.TranslationFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:layout="@layout/fragment_main"/>
