@@ -5,7 +5,7 @@ import com.anthony.deepl.openl.view.translation.TranslationViewModel
 import org.koin.androidx.viewmodel.ext.koin.viewModel
 import org.koin.dsl.module.module
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 val deeplAppModule = module {
 
@@ -21,7 +21,7 @@ val deeplAppModule = module {
 fun createDeepLService(): DeepLService {
     val retrofit = Retrofit.Builder()
             .baseUrl(DeepLService.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create())
             .build()
     return retrofit.create(DeepLService::class.java)
 }

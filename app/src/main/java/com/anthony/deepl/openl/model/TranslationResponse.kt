@@ -1,14 +1,13 @@
 package com.anthony.deepl.openl.model
 
-import com.google.gson.annotations.SerializedName
-
+import com.squareup.moshi.Json
 import java.util.ArrayList
 
 data class TranslationResponse (
-        @SerializedName("id") val id: String?,
-        @SerializedName("jsonrpc") val jsonRpc: String?) {
+        @field:Json(name="id") val id: String?,
+        @field:Json(name="jsonrpc") val jsonRpc: String?) {
 
-    @SerializedName("result")
+    @field:Json(name="result")
     private val mResult: TranslationResponseResult? = null
     var lineBreakPositions: MutableList<Int> = mutableListOf()
 
@@ -61,23 +60,23 @@ data class TranslationResponse (
 }
 
 internal data class TranslationResponseResult(
-        @SerializedName("source_lang") val sourceLanguage: String?,
-        @SerializedName("source_lang_is_confident") val sourceLanguageConfidence: Float?,
-        @SerializedName("target_lang") val targetLanguage: String?,
-        @SerializedName("translations") val translations: List<TranslationResponseTranslations>?
+        @field:Json(name="source_lang") val sourceLanguage: String?,
+        @field:Json(name="source_lang_is_confident") val sourceLanguageConfidence: Float?,
+        @field:Json(name="target_lang") val targetLanguage: String?,
+        @field:Json(name="translations") val translations: List<TranslationResponseTranslations>?
 )
 
 internal data class TranslationResponseTranslations(
-        @SerializedName("timeAfterPreprocessing") val afterPreprocessingTime: Double?,
-        @SerializedName("timeReceivedFromEndpoint") val receivedFromEndpointTime: String?,
-        @SerializedName("timeSentToEndpoint") val sendToEndpointTime: Float?,
-        @SerializedName("total_time_endpoint") val mTotalEndpointTime: Float?,
-        @SerializedName("beams") val beams: List<TranslationResponseBeam>?
+        @field:Json(name="timeAfterPreprocessing") val afterPreprocessingTime: Double?,
+        @field:Json(name="timeReceivedFromEndpoint") val receivedFromEndpointTime: String?,
+        @field:Json(name="timeSentToEndpoint") val sendToEndpointTime: Float?,
+        @field:Json(name="total_time_endpoint") val mTotalEndpointTime: Float?,
+        @field:Json(name="beams") val beams: List<TranslationResponseBeam>?
 )
 
 internal data class TranslationResponseBeam(
-        @SerializedName("num_symbols") val translationLength: Int,
-        @SerializedName("postprocessed_sentence") val translatedSentence: String,
-        @SerializedName("score") val translationScore: Float?,
-        @SerializedName("totalLogProb") val totalProbability: Float
+        @field:Json(name="num_symbols") val translationLength: Int,
+        @field:Json(name="postprocessed_sentence") val translatedSentence: String,
+        @field:Json(name="score") val translationScore: Float?,
+        @field:Json(name="totalLogProb") val totalProbability: Float
 )
