@@ -303,6 +303,12 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         mLastAlternatives = translationResponse.getAlternateTranslations()
         updateAlternatives(safeContext)
 
+        // Detected language
+        if (translate_from_spinner.selectedItemPosition == 0) {
+            mDetectedLanguage = translationResponse.sourceLanguage
+            displayDetectedLanguage()
+        }
+
         // Reporting
         val params = Bundle()
         params.putString("translate_from", mLastTranslatedFrom)
