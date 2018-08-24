@@ -1,18 +1,17 @@
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.MainFragment">
+    tools:context=".view.translation.TranslationFragment">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:focusableInTouchMode="true"
         android:paddingBottom="10dp">
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/to_translate_card_view"
             style="@style/TranslationCardViewStyle"
             android:layout_width="0dp"
@@ -24,7 +23,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -39,7 +38,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/translate_from_spinner"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/translate_from_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -74,7 +73,7 @@
                     app:srcCompat="@drawable/ic_clear_black_24dp"
                     tools:visibility="visible" />
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/mic_fab_button"
                     style="@style/FabMiniMini"
                     android:layout_marginBottom="6dp"
@@ -84,10 +83,20 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
+                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintBottom_toBottomOf="@id/mic_fab_button"
+                    app:layout_constraintEnd_toEndOf="@id/mic_fab_button"
+                    app:layout_constraintStart_toStartOf="@id/mic_fab_button"
+                    app:layout_constraintTop_toTopOf="@id/mic_fab_button"
                     app:srcCompat="@drawable/ic_mic_white_16dp" />
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/paste_fab_button"
                     style="@style/FabMiniMini"
                     android:layout_marginBottom="6dp"
@@ -97,14 +106,24 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/mic_fab_button"
-                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text"
+                    app:layout_constraintTop_toBottomOf="@+id/to_translate_edit_text" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintBottom_toBottomOf="@id/paste_fab_button"
+                    app:layout_constraintEnd_toEndOf="@id/paste_fab_button"
+                    app:layout_constraintStart_toStartOf="@id/paste_fab_button"
+                    app:layout_constraintTop_toTopOf="@id/paste_fab_button"
                     app:srcCompat="@drawable/ic_paste_white_16dp" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
-        <android.support.design.widget.FloatingActionButton
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/invert_languages_button"
             style="@style/FabMini"
             android:layout_width="wrap_content"
@@ -118,7 +137,7 @@
             app:layout_constraintTop_toTopOf="@id/to_translate_card_view"
             app:srcCompat="@drawable/ic_swap_horiz_black_24dp" />
 
-        <android.support.v7.widget.CardView
+        <androidx.cardview.widget.CardView
             android:id="@+id/translated_card_view"
             style="@style/TranslationCardViewStyle"
             android:layout_width="0dp"
@@ -129,7 +148,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.0">
 
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -155,13 +174,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="@id/translate_to_text_view" />
 
-                <android.support.v7.widget.AppCompatSpinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/translate_to_spinner"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="@id/translate_to_text_view"
                     app:layout_constraintBottom_toBottomOf="@id/translate_to_text_view"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/translate_to_text_view" />
 
                 <TextView
                     android:id="@+id/translated_edit_text"
@@ -176,7 +195,7 @@
                     app:layout_constraintTop_toBottomOf="@id/translate_to_text_view"
                     tools:text="Bonjour le monde" />
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/text_to_speech_fab_button"
                     style="@style/FabMiniMini"
                     android:layout_marginBottom="6dp"
@@ -186,10 +205,20 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/translated_edit_text"
+                    app:layout_constraintTop_toBottomOf="@+id/translated_edit_text" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintBottom_toBottomOf="@id/text_to_speech_fab_button"
+                    app:layout_constraintEnd_toEndOf="@id/text_to_speech_fab_button"
+                    app:layout_constraintStart_toStartOf="@id/text_to_speech_fab_button"
+                    app:layout_constraintTop_toTopOf="@id/text_to_speech_fab_button"
                     app:srcCompat="@drawable/ic_speaker_white_16dp" />
 
-                <android.support.design.widget.FloatingActionButton
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/copy_to_clipboard_button"
                     style="@style/FabMiniMini"
                     android:layout_marginBottom="6dp"
@@ -199,12 +228,22 @@
                     app:backgroundTint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/text_to_speech_fab_button"
-                    app:layout_constraintTop_toBottomOf="@+id/translated_edit_text"
+                    app:layout_constraintTop_toBottomOf="@+id/translated_edit_text" />
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_margin="6dp"
+                    android:elevation="8dp"
+                    app:layout_constraintBottom_toBottomOf="@id/copy_to_clipboard_button"
+                    app:layout_constraintEnd_toEndOf="@id/copy_to_clipboard_button"
+                    app:layout_constraintStart_toStartOf="@id/copy_to_clipboard_button"
+                    app:layout_constraintTop_toTopOf="@id/copy_to_clipboard_button"
                     app:srcCompat="@drawable/ic_content_copy_white_16dp" />
 
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </android.support.v7.widget.CardView>
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/alternatives_label"
@@ -232,6 +271,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/alternatives_label" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </ScrollView>
