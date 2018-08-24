@@ -36,11 +36,13 @@ For more informations, read this great article by Vincent Driessen : http://nvie
 
 ## Libraries
 Various libraries are used in the application project :
-- [Android Support Libraries v4 and v7](https://developer.android.com/topic/libraries/support-library/index.html)
-- [Android Design Support Library](https://developer.android.com/training/material/design-library.html)
+- [AndroidX Appcompat Library](https://developer.android.com/topic/libraries/support-library/index.html)
+- [AndroidX Lifecycle](https://developer.android.com/topic/libraries/architecture/viewmodel) - Used for MVVM architecture and LiveData
+- [AndroidX Material Components](https://developer.android.com/training/material/design-library.html)
 - [Constraint Layout](https://developer.android.com/training/constraint-layout/index.html)
 - [Firebase Crashlytics](https://firebase.google.com/docs/crashlytics/) (You'll need to add your own google-services.json)
-- [Retrofit 2](http://square.github.io/retrofit/)
+- [Retrofit 2](http://square.github.io/retrofit/) and [Moshi](https://github.com/square/moshi)
+- [Koin](https://insert-koin.io/) - Dependency injection
 - [Timber](https://github.com/JakeWharton/timber)
 
 ## License
