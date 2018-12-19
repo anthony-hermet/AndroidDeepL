@@ -24,7 +24,7 @@ fun Fragment.getClipboardText(): String? {
     if (clipboardManager != null && clipboardManager.hasPrimaryClip()) {
         clipboardManager.primaryClip?.let {
             if (it.description.hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN) || it.description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML)) {
-                text = it.getItemAt(0).text.toString()
+                text = it.getItemAt(0).text?.toString()
             }
         }
     }
