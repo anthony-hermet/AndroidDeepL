@@ -54,7 +54,7 @@ class TranslationActivity : AppCompatActivity(), TranslationFragment.OnFragmentI
         }
 
         // We init and fetch values from Firebase analytics and remote config
-        mFirebaseManager = FirebaseManager()
+        mFirebaseManager = FirebaseManager(this)
         mFirebaseManager.fetchRemoteConfigValues()
     }
 
