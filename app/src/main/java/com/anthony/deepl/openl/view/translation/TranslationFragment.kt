@@ -31,7 +31,7 @@ import com.anthony.deepl.openl.manager.LanguageManager.AUTO
 import com.anthony.deepl.openl.util.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.sharedViewModel
 
 class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSelectedListener {
 
@@ -137,7 +137,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         updateAlternatives(view.context)
     }
 
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
             mListener = context

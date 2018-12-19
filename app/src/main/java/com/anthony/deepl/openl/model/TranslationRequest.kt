@@ -41,6 +41,7 @@ data class TranslationRequest(
         }
 
         mParams = TranslationRequestParams(
+                timestamp = System.currentTimeMillis() / 1000,
                 jobs = jobList,
                 languages = TranslationRequestLanguage(fromLanguage, toLanguage, userPreferredLanguages))
     }
@@ -48,6 +49,7 @@ data class TranslationRequest(
 
 internal data class TranslationRequestParams(
         @field:Json(name="priority") val priority: Short = -1,
+        @field:Json(name="timestamp") val timestamp: Long,
         @field:Json(name="jobs") val jobs: List<TranslationRequestJob>?,
         @field:Json(name="lang") val languages: TranslationRequestLanguage?
 )

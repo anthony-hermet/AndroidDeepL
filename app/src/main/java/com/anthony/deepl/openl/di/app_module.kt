@@ -2,8 +2,8 @@ package com.anthony.deepl.openl.di
 
 import com.anthony.deepl.openl.backend.DeepLService
 import com.anthony.deepl.openl.view.translation.TranslationViewModel
-import org.koin.androidx.viewmodel.ext.koin.viewModel
-import org.koin.dsl.module.module
+import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
