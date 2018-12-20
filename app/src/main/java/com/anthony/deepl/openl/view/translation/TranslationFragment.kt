@@ -1,6 +1,7 @@
 package com.anthony.deepl.openl.view.translation
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.speech.tts.TextToSpeech
@@ -20,14 +21,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.anthony.deepl.openl.R
 
-import com.anthony.deepl.openl.manager.LanguageManager
-import com.anthony.deepl.openl.model.TranslationResponse
 
 import java.util.ArrayList
 
 import timber.log.Timber
 
+import com.anthony.deepl.openl.manager.LanguageManager
 import com.anthony.deepl.openl.manager.LanguageManager.AUTO
+import com.anthony.deepl.openl.model.FailureResource
+import com.anthony.deepl.openl.model.LoadingResource
+import com.anthony.deepl.openl.model.SuccessResource
 import com.anthony.deepl.openl.util.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -54,7 +57,6 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     private var mLastAlternatives: List<String>? = null
     private var mDetectedLanguage: String? = null
     private var mTextToSpeechInitialized: Boolean = false
-    private var lastKnownStatus: TranslationViewModel.Status? = null
 
     private lateinit var mListener: OnFragmentInteractionListener
     private lateinit var mTranslateFromAdapter: ShrinkSpinnerAdapter<*>
@@ -91,14 +93,53 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     override fun onStart() {
         super.onStart()
-        viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
-            translationResponse?.let {
-                displayTranslationResponse(it)
+        viewModel.liveTranslationResponse.observe(this, Observer { resource ->
+            if (resource !is FailureResource) {
+                mRetrySnackBar?.let {
+                    it.dismiss()
+                    mRetrySnackBar = null
+                }
             }
-        })
-        viewModel.liveStatus.observe(this, Observer { status ->
-            status?.let {
-                handleViewModelStatusChange(it)
+            when (resource) {
+                is FailureResource -> {
+                    translate_progressbar.visibility = View.GONE
+                    translated_edit_text.text = ""
+                    translate_progressbar.visibility = View.GONE
+
+                    if (mRetrySnackBar == null) {
+                        view?.let { view ->
+                            mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction(R.string.snack_bar_retry_button) {
+                                        updateTranslation(true)
+                                        mListener.logEvent("retry_snack_bar_tapped", null)
+                                    }
+                            mRetrySnackBar?.show()
+                        }
+                        mListener.logEvent("retry_snack_bar_displayed", null)
+                    }
+                }
+                is SuccessResource -> {
+                    translated_edit_text.text = resource.data.getBestTranslation()
+
+                    // Alternative translations
+                    mLastAlternatives = resource.data.getAlternateTranslations()
+                    updateAlternatives(requireContext())
+
+                    // Detected language
+                    if (translate_from_spinner.selectedItemPosition == 0) {
+                        mDetectedLanguage = resource.data.sourceLanguage
+                        displayDetectedLanguage()
+                    }
+
+                    // Reporting
+                    val params = Bundle()
+                    params.putString("translate_from", mLastTranslatedFrom)
+                    params.putString("translate_to", mLastTranslatedTo)
+                    mListener.logEvent("translation", params)
+                }
+                is LoadingResource -> {
+                    translate_progressbar.visibility = View.VISIBLE
+                }
             }
         })
     }
@@ -173,7 +214,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
                 mListener.logEvent("changed_translate_from_language", null)
             }
             R.id.translate_to_spinner -> {
-                updateTranslation()
+                updateTranslation(false)
                 mListener.logEvent("changed_translate_to_language", null)
             }
         }
@@ -238,7 +279,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
                     }
                 }
                 if (toTranslateCount > 2) {
-                    updateTranslation()
+                    updateTranslation(false)
                 } else {
                     translated_edit_text.text = ""
                     alternatives_label.visibility = View.GONE
@@ -301,58 +342,10 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         }
     }
 
-    private fun displayTranslationResponse(translationResponse: TranslationResponse) {
-        val safeContext = context ?: return
-        translated_edit_text.text = translationResponse.getBestTranslation()
 
-        // Alternative translations
-        mLastAlternatives = translationResponse.getAlternateTranslations()
-        updateAlternatives(safeContext)
-
-        // Detected language
-        if (translate_from_spinner.selectedItemPosition == 0) {
-            mDetectedLanguage = translationResponse.sourceLanguage
-            displayDetectedLanguage()
-        }
-
-        // Reporting
-        val params = Bundle()
-        params.putString("translate_from", mLastTranslatedFrom)
-        params.putString("translate_to", mLastTranslatedTo)
-        mListener.logEvent("translation", params)
-    }
-
-    private fun handleViewModelStatusChange(status: TranslationViewModel.Status) {
-        lastKnownStatus = status
-        if (status != TranslationViewModel.Status.ERROR) {
-            mRetrySnackBar?.let {
-                it.dismiss()
-                mRetrySnackBar = null
-            }
-            translate_progressbar.visibility = if (status == TranslationViewModel.Status.IDLE) View.GONE else View.VISIBLE
-
-        } else {
-            translate_progressbar.visibility = View.GONE
-            translated_edit_text.text = ""
-
-            if (mRetrySnackBar == null) {
-                view?.let { view ->
-                    mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.snack_bar_retry_button) {
-                                updateTranslation()
-                                mListener.logEvent("retry_snack_bar_tapped", null)
-                            }
-                    mRetrySnackBar?.show()
-                }
-                mListener.logEvent("retry_snack_bar_displayed", null)
-            }
-        }
-    }
-
-    private fun updateTranslation() {
-        // If a translation is in progress, we return directly
-        if (lastKnownStatus?.equals(TranslationViewModel.Status.LOADING) == true ||
-                to_translate_edit_text.text.toString().replace(" ", "").length <= 2 ||
+    private fun updateTranslation(retry: Boolean) {
+        // If text to translate is incorrect or languages not selected, we stop
+        if (to_translate_edit_text.text.toString().replace(" ", "").length <= 2 ||
                 translate_from_spinner.selectedItemPosition == -1 ||
                 translate_to_spinner.selectedItemPosition == -1) {
             return
@@ -368,7 +361,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         if (toTranslate == mLastTranslatedSentence &&
                 translateFrom == mLastTranslatedFrom &&
                 translateTo == mLastTranslatedTo &&
-                lastKnownStatus?.equals(TranslationViewModel.Status.ERROR) == false) {
+                !retry) {
             return
         }
 
@@ -509,13 +502,18 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         text_to_speech_fab_button.hide()
     }
 
+    @Suppress("DEPRECATION")
     private fun onTextToSpeechTapped() {
         if (!mTextToSpeechInitialized || mTextToSpeech.isSpeaking || translated_edit_text.text.toString().isEmpty() || mLastTranslatedTo == null) {
             return
         }
         if (mListener.currentMediaVolume > 0) {
             mTextToSpeech.language = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech)
-            mTextToSpeech.speak(translated_edit_text.text.toString(), TextToSpeech.QUEUE_FLUSH, null)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mTextToSpeech.speak(translated_edit_text.text.toString(), TextToSpeech.QUEUE_FLUSH, null, null)
+            } else {
+                mTextToSpeech.speak(translated_edit_text.text.toString(), TextToSpeech.QUEUE_FLUSH, null)
+            }
         } else {
             Snackbar.make(clear_to_translate_button, R.string.volume_off_label, Snackbar.LENGTH_SHORT).show()
         }
