@@ -7,10 +7,10 @@ import java.text.BreakIterator
 import java.util.ArrayList
 
 data class TranslationRequest(
-        private val sentence: String,
-        private val fromLanguage: String,
-        private val toLanguage: String,
-        private val userPreferredLanguages: List<String>,
+        val sentence: String,
+        val fromLanguage: String,
+        val toLanguage: String,
+        val userPreferredLanguages: List<String>,
         @field:Json(name="jsonrpc") private val jsonRpc: String = "2.0",
         @field:Json(name="method") private val method: String = "LMT_handle_jobs") {
 
