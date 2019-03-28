@@ -9,10 +9,7 @@ import com.anthony.deepl.openl.backend.DeepLService
 import com.anthony.deepl.openl.manager.LanguageManager
 import com.anthony.deepl.openl.model.*
 import com.anthony.deepl.openl.util.FirebaseManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -25,7 +22,7 @@ class TranslationViewModel(private val app: Application,
                            private val firebaseManager: FirebaseManager) : AndroidViewModel(app), CoroutineScope {
 
     companion object {
-        private const val REQUEST_DELAY_MS = 800L
+        private const val REQUEST_DELAY_MS = 600L
     }
 
     override val coroutineContext: CoroutineContext
@@ -54,7 +51,7 @@ class TranslationViewModel(private val app: Application,
         val lastTranslation = getLastTranslation()
 
         // We check if fields have changed since last translation
-        if (toTranslate == lastTranslation?.request?.sentence &&
+        if (toTranslate.trim() == lastTranslation?.request?.sentence?.trim() &&
                 translateFrom == lastTranslation.request.fromLanguage &&
                 translateTo == lastTranslation.request.toLanguage &&
                 !retry) {
@@ -83,9 +80,10 @@ class TranslationViewModel(private val app: Application,
             lastRequest = request
             currentRequest?.cancel()
             currentRequest = launch {
-                Thread.sleep(REQUEST_DELAY_MS)
+                delay(REQUEST_DELAY_MS)
                 sendTranslationRequest(request)
             }
+            Timber.d("TRANSLATION VIEW MODEL - ${request.sentence} canceled last job and waiting")
         }
     }
 
@@ -124,5 +122,6 @@ class TranslationViewModel(private val app: Application,
                 logEvent("translation", params)
             }
         })
+        Timber.d("TRANSLATION VIEW MODEL - ${request.sentence} launch request")
     }
 }
