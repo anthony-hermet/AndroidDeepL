@@ -13,9 +13,9 @@ import androidx.appcompat.widget.Toolbar
 
 import com.anthony.deepl.openl.manager.LanguageManager
 import com.anthony.deepl.openl.R
-import com.anthony.deepl.openl.util.FirebaseManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.androidx.viewmodel.ext.viewModel
 
 import java.util.Locale
 
@@ -27,8 +27,8 @@ class TranslationActivity : AppCompatActivity(), TranslationFragment.OnFragmentI
         private const val SPEECH_TO_TEXT_REQUEST_CODE = 32
     }
 
-    private lateinit var mTranslationFragment: TranslationFragment
-    private lateinit var mFirebaseManager: FirebaseManager
+    private val viewModel by viewModel<TranslationViewModel>()
+    private lateinit var translationFragment: TranslationFragment
 
     override val currentMediaVolume: Int
         get() {
@@ -49,13 +49,9 @@ class TranslationActivity : AppCompatActivity(), TranslationFragment.OnFragmentI
         if (intent?.action == Intent.ACTION_SEND && intent.type == "text/plain") {
             val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT)
             if (sharedText != null) {
-                mTranslationFragment.setToTranslateText(sharedText)
+                translationFragment.setToTranslateText(sharedText)
             }
         }
-
-        // We init and fetch values from Firebase analytics and remote config
-        mFirebaseManager = FirebaseManager(this)
-        mFirebaseManager.fetchRemoteConfigValues()
     }
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -63,8 +59,8 @@ class TranslationActivity : AppCompatActivity(), TranslationFragment.OnFragmentI
 
         if (requestCode == SPEECH_TO_TEXT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)[0]
-            mTranslationFragment.setToTranslateText(text)
-            logEvent("speech_to_text_success", null)
+            translationFragment.setToTranslateText(text)
+            viewModel.logEvent("speech_to_text_success", null)
         }
     }
 
@@ -76,22 +72,18 @@ class TranslationActivity : AppCompatActivity(), TranslationFragment.OnFragmentI
 
         try {
             startActivityForResult(intent, SPEECH_TO_TEXT_REQUEST_CODE)
-            logEvent("speech_to_text_displayed", null)
+            viewModel.logEvent("speech_to_text_displayed", null)
         } catch (e: ActivityNotFoundException) {
-            mTranslationFragment.view?.let {
+            translationFragment.view?.let {
                 Snackbar.make(it, R.string.speech_to_text_error, Snackbar.LENGTH_SHORT).show()
             }
             Timber.e(e)
         }
     }
 
-    override fun logEvent(event: String, bundle: Bundle?) {
-        mFirebaseManager.logEvent(event, bundle)
-    }
-
     private fun initViews() {
         setSupportActionBar(toolbar as Toolbar)
-        mTranslationFragment = supportFragmentManager.findFragmentById(R.id.main_fragment) as TranslationFragment
+        translationFragment = supportFragmentManager.findFragmentById(R.id.main_fragment) as TranslationFragment
     }
 
 }

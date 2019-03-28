@@ -1,11 +1,10 @@
 package com.anthony.deepl.openl.view.translation
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.speech.tts.TextToSpeech
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -20,14 +19,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import com.anthony.deepl.openl.R
 
-import com.anthony.deepl.openl.manager.LanguageManager
-import com.anthony.deepl.openl.model.TranslationResponse
-
-import java.util.ArrayList
-
 import timber.log.Timber
 
+import com.anthony.deepl.openl.manager.LanguageManager
 import com.anthony.deepl.openl.manager.LanguageManager.AUTO
+import com.anthony.deepl.openl.model.FailureResource
+import com.anthony.deepl.openl.model.LoadingResource
+import com.anthony.deepl.openl.model.SuccessResource
 import com.anthony.deepl.openl.util.*
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
@@ -35,70 +33,73 @@ import org.koin.androidx.viewmodel.ext.sharedViewModel
 
 class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    companion object {
-        private const val INSTANCE_TRANSLATED_FROM_KEY = "last_translated_from"
-        private const val INSTANCE_TRANSLATED_TO_KEY = "last_translated_to"
-        private const val INSTANCE_TRANSLATED_SENTENCE_KEY = "last_translated_sentence"
-        private const val INSTANCE_DETECTED_LANGUAGE_KEY = "detected_language"
-        private const val INSTANCE_LAST_ALTERNATIVES_KEY = "last_alternatives"
-    }
-
     private val viewModel by sharedViewModel<TranslationViewModel>()
 
-    private var mRetrySnackBar: Snackbar? = null
-    private var mTranslateFromLanguages: Array<String> = arrayOf()
-    private var mTranslateToLanguages: Array<String> = arrayOf()
-    private var mLastTranslatedSentence: String? = null
-    private var mLastTranslatedFrom: String? = null
-    private var mLastTranslatedTo: String? = null
-    private var mLastAlternatives: List<String>? = null
-    private var mDetectedLanguage: String? = null
-    private var mTextToSpeechInitialized: Boolean = false
-    private var lastKnownStatus: TranslationViewModel.Status? = null
+    private var retrySnackBar: Snackbar? = null
+    private var translateFromLanguages: Array<String> = arrayOf()
+    private var translateToLanguages: Array<String> = arrayOf()
+    private var textToSpeechInitialized: Boolean = false
 
-    private lateinit var mListener: OnFragmentInteractionListener
-    private lateinit var mTranslateFromAdapter: ShrinkSpinnerAdapter<*>
-    private lateinit var mTextToSpeech: TextToSpeech
+    private lateinit var listener: OnFragmentInteractionListener
+    private lateinit var translateFromAdapter: ShrinkSpinnerAdapter<*>
+    private lateinit var textToSpeech: TextToSpeech
 
     // region Overridden methods
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        mTextToSpeech = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
+        textToSpeech = TextToSpeech(context, TextToSpeech.OnInitListener { status ->
             if (status != TextToSpeech.ERROR) {
-                mTextToSpeechInitialized = true
+                textToSpeechInitialized = true
                 updateTextToSpeechVisibility()
             }
         })
-        mTextToSpeechInitialized = false
-
-        // Restore instance state if needed
-        savedInstanceState?.let {
-            mLastTranslatedFrom = it.getString(INSTANCE_TRANSLATED_FROM_KEY, null)
-            mLastTranslatedTo = it.getString(INSTANCE_TRANSLATED_TO_KEY, null)
-            mLastTranslatedSentence = it.getString(INSTANCE_TRANSLATED_SENTENCE_KEY, null)
-            mDetectedLanguage = it.getString(INSTANCE_DETECTED_LANGUAGE_KEY, null)
-            mLastAlternatives = it.getStringArrayList(INSTANCE_LAST_ALTERNATIVES_KEY)
-        }
+        textToSpeechInitialized = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mTextToSpeech.stop()
-        mTextToSpeech.shutdown()
+        textToSpeech.stop()
+        textToSpeech.shutdown()
     }
 
     override fun onStart() {
         super.onStart()
-        viewModel.liveTranslationResponse.observe(this, Observer { translationResponse ->
-            translationResponse?.let {
-                displayTranslationResponse(it)
+        viewModel.getLiveTranslationResponse().observe(this, Observer { resource ->
+            if (resource !is FailureResource) {
+                retrySnackBar?.let {
+                    it.dismiss()
+                    retrySnackBar = null
+                }
             }
-        })
-        viewModel.liveStatus.observe(this, Observer { status ->
-            status?.let {
-                handleViewModelStatusChange(it)
+            when (resource) {
+                is FailureResource -> {
+                    translate_progressbar.visibility = View.GONE
+                    translated_edit_text.text = ""
+
+                    if (retrySnackBar == null) {
+                        view?.let { view ->
+                            retrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
+                                    .setAction(R.string.snack_bar_retry_button) {
+                                        updateTranslation(true)
+                                        viewModel.logEvent("retry_snack_bar_tapped", null)
+                                    }
+                            retrySnackBar?.show()
+                        }
+                        viewModel.logEvent("retry_snack_bar_displayed", null)
+                    }
+                }
+                is SuccessResource -> {
+                    translated_edit_text.text = resource.data.response.getBestTranslation()
+                    updateAlternatives(resource.data.response.getAlternateTranslations().orEmpty())
+                    if (translate_from_spinner.selectedItemPosition == 0 && resource.data.response.sourceLanguage != null) {
+                        displayDetectedLanguage(resource.data.response.sourceLanguage!!)
+                    }
+                }
+                is LoadingResource -> {
+                    translate_progressbar.visibility = View.VISIBLE
+                }
             }
         })
     }
@@ -112,15 +113,6 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(INSTANCE_TRANSLATED_FROM_KEY, mLastTranslatedFrom)
-        outState.putString(INSTANCE_TRANSLATED_TO_KEY, mLastTranslatedTo)
-        outState.putString(INSTANCE_TRANSLATED_SENTENCE_KEY, mLastTranslatedSentence)
-        outState.putString(INSTANCE_DETECTED_LANGUAGE_KEY, mDetectedLanguage)
-        outState.putStringArrayList(INSTANCE_LAST_ALTERNATIVES_KEY, mLastAlternatives as ArrayList<String>?)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
@@ -128,21 +120,14 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initViews()
-
-        // If state has been restored, we may need to display the last detected language
-        if (mLastTranslatedFrom != null && mLastTranslatedFrom == LanguageManager.AUTO &&
-                mDetectedLanguage != null && translate_from_spinner.selectedItemPosition == 0) {
-            displayDetectedLanguage()
-        }
-        updateAlternatives(view.context)
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         if (context is OnFragmentInteractionListener) {
-            mListener = context
+            listener = context
         } else {
-            throw RuntimeException(context.toString() + " must implement OnFragmentInteractionListener")
+            throw RuntimeException("$context must implement OnFragmentInteractionListener")
         }
     }
 
@@ -151,8 +136,8 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
             R.id.clear_to_translate_button -> clearTextTapped()
             R.id.mic_fab_button -> {
                 val safeContext = context ?: return
-                val translateFrom = mTranslateFromLanguages[translate_from_spinner.selectedItemPosition]
-                mListener.onSpeechToTextTapped(LanguageManager.getLanguageValue(translateFrom, safeContext))
+                val translateFrom = translateFromLanguages[translate_from_spinner.selectedItemPosition]
+                listener.onSpeechToTextTapped(LanguageManager.getLanguageValue(translateFrom, safeContext))
             }
             R.id.text_to_speech_fab_button -> onTextToSpeechTapped()
             R.id.paste_fab_button -> pasteTextFromClipboard()
@@ -164,17 +149,17 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
         when (parent.id) {
             R.id.translate_from_spinner -> {
-                if (mLastTranslatedFrom != null && position != 0 && mLastTranslatedFrom == LanguageManager.AUTO) {
+                if (position != 0) {
                     hideDetectedLanguage()
                 } else {
                     checkTranslateFromLabelVisibility()
                 }
                 updateTranslateToSpinner()
-                mListener.logEvent("changed_translate_from_language", null)
+                viewModel.logEvent("changed_translate_from_language", null)
             }
             R.id.translate_to_spinner -> {
-                updateTranslation()
-                mListener.logEvent("changed_translate_to_language", null)
+                updateTranslation(false)
+                viewModel.logEvent("changed_translate_to_language", null)
             }
         }
     }
@@ -195,14 +180,14 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
         // Spinners setup
         // Default layouts : android.R.layout.simple_spinner_item, android.R.layout.simple_spinner_dropdown_item
-        mTranslateFromLanguages = LanguageManager.getLanguagesStringArray(safeContext, null, true)
-        mTranslateFromAdapter = ShrinkSpinnerAdapter(safeContext, R.layout.item_language_spinner, mTranslateFromLanguages)
-        mTranslateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown)
-        translate_from_spinner.adapter = mTranslateFromAdapter
+        translateFromLanguages = LanguageManager.getLanguagesStringArray(safeContext, null, true)
+        translateFromAdapter = ShrinkSpinnerAdapter(safeContext, R.layout.item_language_spinner, translateFromLanguages)
+        translateFromAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown)
+        translate_from_spinner.adapter = translateFromAdapter
 
         // We select the last used translateTo
         val lastUsedTranslateFrom = LanguageManager.getLastUsedTranslateFrom(safeContext)
-        for ((index, language) in mTranslateFromLanguages.withIndex()) {
+        for ((index, language) in translateFromLanguages.withIndex()) {
             if (LanguageManager.getLanguageValue(language, safeContext) == lastUsedTranslateFrom) {
                 translate_from_spinner.setSelection(index)
                 break
@@ -221,71 +206,59 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         text_to_speech_fab_button.hide()
         copy_to_clipboard_button.hide()
         invert_languages_button.hide()
-        to_translate_edit_text.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                val toTranslateCount = to_translate_edit_text.text.toString().replace(" ", "").length
-                if (toTranslateCount > 0) {
-                    clear_to_translate_button.visibility = View.VISIBLE
-                    mic_fab_button.hide()
-                    paste_fab_button.hide()
-                } else {
-                    clear_to_translate_button.visibility = View.GONE
-                    mic_fab_button.show()
-                    if (getClipboardText() != null) {
-                        paste_fab_button.show()
-                    }
-                }
-                if (toTranslateCount > 2) {
-                    updateTranslation()
-                } else {
-                    translated_edit_text.text = ""
-                    alternatives_label.visibility = View.GONE
-                    alternatives_linear_layout.removeAllViews()
-                    mRetrySnackBar?.let {
-                        it.dismiss()
-                        mRetrySnackBar = null
-                    }
+        to_translate_edit_text.onTextChanged { s ->
+            val toTranslateCount = s.replace(" ", "").length
+            if (toTranslateCount > 0) {
+                clear_to_translate_button.visibility = View.VISIBLE
+                mic_fab_button.hide()
+                paste_fab_button.hide()
+            } else {
+                clear_to_translate_button.visibility = View.GONE
+                mic_fab_button.show()
+                if (getClipboardText() != null) {
+                    paste_fab_button.show()
                 }
             }
-
-            override fun afterTextChanged(s: Editable) {}
-        })
-
-        translated_edit_text.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (!isAdded) return
-                if (count > 0) {
-                    copy_to_clipboard_button.show()
-                    translated_edit_text.minLines = resources.getInteger(R.integer.min_lines_with_buttons)
-                } else {
-                    copy_to_clipboard_button.hide()
-                    translated_edit_text.minLines = resources.getInteger(R.integer.min_lines)
+            if (toTranslateCount > 2) {
+                updateTranslation(false)
+            } else {
+                translated_edit_text.text = ""
+                alternatives_label.visibility = View.GONE
+                alternatives_linear_layout.removeAllViews()
+                retrySnackBar?.let {
+                    it.dismiss()
+                    retrySnackBar = null
                 }
-                updateTextToSpeechVisibility()
             }
+        }
 
-            override fun afterTextChanged(s: Editable) {}
-        })
+        translated_edit_text.onTextChanged { s ->
+            if (!isAdded) return@onTextChanged
+            if (s.isNotEmpty()) {
+                copy_to_clipboard_button.show()
+                translated_edit_text.minLines = resources.getInteger(R.integer.min_lines_with_buttons)
+            } else {
+                copy_to_clipboard_button.hide()
+                translated_edit_text.minLines = resources.getInteger(R.integer.min_lines)
+            }
+            updateTextToSpeechVisibility()
+        }
     }
 
     private fun updateTranslateToSpinner() {
         val safeContext = context ?: return
         // We update the translateTo spinner based on translateFrom selected language
-        val selectedLanguage = when (mDetectedLanguage) {
+        val selectedLanguage = when (viewModel.detectedLanguage) {
             null -> LanguageManager.getLanguageValue(translate_from_spinner.selectedItem.toString(), safeContext)
-            else -> mDetectedLanguage
+            else -> viewModel.detectedLanguage
         }
-        mTranslateToLanguages = LanguageManager.getLanguagesStringArray(safeContext, selectedLanguage, false)
-        val translateToAdapter = ShrinkSpinnerAdapter(safeContext, R.layout.item_language_spinner, mTranslateToLanguages)
+        translateToLanguages = LanguageManager.getLanguagesStringArray(safeContext, selectedLanguage, false)
+        val translateToAdapter = ShrinkSpinnerAdapter(safeContext, R.layout.item_language_spinner, translateToLanguages)
         translateToAdapter.setDropDownViewResource(R.layout.item_language_spinner_dropdown)
         translate_to_spinner.adapter = translateToAdapter
 
         // We hide invert button if translateFrom is AUTO but language isn't detected
-        if (selectedLanguage == AUTO && mDetectedLanguage == null) {
+        if (selectedLanguage == AUTO && viewModel.detectedLanguage == null) {
             invert_languages_button.hide()
         } else {
             invert_languages_button.show()
@@ -293,7 +266,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
         // We select the last used translateTo
         val lastUsedTranslateTo = LanguageManager.getLastUsedTranslateTo(safeContext)
-        for ((index, language) in mTranslateToLanguages.withIndex()) {
+        for ((index, language) in translateToLanguages.withIndex()) {
             if (LanguageManager.getLanguageValue(language, safeContext) == lastUsedTranslateTo) {
                 translate_to_spinner.setSelection(index)
                 break
@@ -301,121 +274,48 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         }
     }
 
-    private fun displayTranslationResponse(translationResponse: TranslationResponse) {
+    private fun updateTranslation(retry: Boolean) {
         val safeContext = context ?: return
-        translated_edit_text.text = translationResponse.getBestTranslation()
 
-        // Alternative translations
-        mLastAlternatives = translationResponse.getAlternateTranslations()
-        updateAlternatives(safeContext)
-
-        // Detected language
-        if (translate_from_spinner.selectedItemPosition == 0) {
-            mDetectedLanguage = translationResponse.sourceLanguage
-            displayDetectedLanguage()
-        }
-
-        // Reporting
-        val params = Bundle()
-        params.putString("translate_from", mLastTranslatedFrom)
-        params.putString("translate_to", mLastTranslatedTo)
-        mListener.logEvent("translation", params)
-    }
-
-    private fun handleViewModelStatusChange(status: TranslationViewModel.Status) {
-        lastKnownStatus = status
-        if (status != TranslationViewModel.Status.ERROR) {
-            mRetrySnackBar?.let {
-                it.dismiss()
-                mRetrySnackBar = null
-            }
-            translate_progressbar.visibility = if (status == TranslationViewModel.Status.IDLE) View.GONE else View.VISIBLE
-
-        } else {
-            translate_progressbar.visibility = View.GONE
-            translated_edit_text.text = ""
-
-            if (mRetrySnackBar == null) {
-                view?.let { view ->
-                    mRetrySnackBar = Snackbar.make(view, R.string.snack_bar_retry_label, Snackbar.LENGTH_INDEFINITE)
-                            .setAction(R.string.snack_bar_retry_button) {
-                                updateTranslation()
-                                mListener.logEvent("retry_snack_bar_tapped", null)
-                            }
-                    mRetrySnackBar?.show()
-                }
-                mListener.logEvent("retry_snack_bar_displayed", null)
-            }
-        }
-    }
-
-    private fun updateTranslation() {
-        // If a translation is in progress, we return directly
-        if (lastKnownStatus?.equals(TranslationViewModel.Status.LOADING) == true ||
-                to_translate_edit_text.text.toString().replace(" ", "").length <= 2 ||
+        // If text to translate is incorrect or languages not selected, we stop
+        if (to_translate_edit_text.text.toString().replace(" ", "").length <= 2 ||
                 translate_from_spinner.selectedItemPosition == -1 ||
                 translate_to_spinner.selectedItemPosition == -1) {
             return
         }
-
-        // We check if fields have changed since last translation
-        val safeContext = context ?: return
         val toTranslate = to_translate_edit_text.text.toString()
-        var translateFrom = mTranslateFromLanguages[translate_from_spinner.selectedItemPosition]
-        var translateTo = mTranslateToLanguages[translate_to_spinner.selectedItemPosition]
+        var translateFrom = translateFromLanguages[translate_from_spinner.selectedItemPosition]
+        var translateTo = translateToLanguages[translate_to_spinner.selectedItemPosition]
         translateFrom = LanguageManager.getLanguageValue(translateFrom, safeContext)
         translateTo = LanguageManager.getLanguageValue(translateTo, safeContext)
-        if (toTranslate == mLastTranslatedSentence &&
-                translateFrom == mLastTranslatedFrom &&
-                translateTo == mLastTranslatedTo &&
-                lastKnownStatus?.equals(TranslationViewModel.Status.ERROR) == false) {
-            return
-        }
-
-        // If languages have changed, we save it to preferences
-        if (translateFrom != mLastTranslatedFrom) {
-            LanguageManager.saveLastUsedTranslateFrom(safeContext, translateFrom)
-        }
-        if (translateTo != mLastTranslatedTo) {
-            LanguageManager.saveLastUsedTranslateTo(safeContext, translateTo)
-        }
-
-        // If fields have changed, we launch a new translation
-        mLastTranslatedSentence = toTranslate
-        mLastTranslatedFrom = translateFrom
-        mLastTranslatedTo = translateTo
-        val preferredLanguages = ArrayList<String>()
-        preferredLanguages.add(LanguageManager.getLastUsedTranslateFrom(safeContext))
-        preferredLanguages.add(LanguageManager.getLastUsedTranslateTo(safeContext))
-
-        viewModel.translate(toTranslate, translateFrom, translateTo, preferredLanguages)
+        viewModel.requestTranslation(toTranslate, translateFrom, translateTo, retry)
     }
 
-    private fun displayDetectedLanguage() {
+    private fun displayDetectedLanguage(detectedLanguageValue: String) {
         val safeContext = context ?: return
         updateTranslateToSpinner()
-        var detectedLanguage = LanguageManager.getLanguageString(mDetectedLanguage, safeContext)
-        detectedLanguage = detectedLanguage + " " + getString(R.string.detected_language_label)
+        val detectedLanguage = LanguageManager.getLanguageString(detectedLanguageValue, safeContext) + " " + getString(R.string.detected_language_label)
         (translate_from_spinner.selectedView as TextView?)?.text = detectedLanguage
-        mTranslateFromAdapter.setDetectedLanguage(detectedLanguage)
+        translateFromAdapter.setDetectedLanguage(detectedLanguage)
         Handler().postDelayed({ checkTranslateFromLabelVisibility() }, 50)
     }
 
     private fun hideDetectedLanguage() {
-        mDetectedLanguage = null
-        mTranslateFromAdapter.clearDetectedLanguage()
+        viewModel.detectedLanguage = null
+        translateFromAdapter.clearDetectedLanguage()
         if (translate_from_spinner.selectedItemPosition == 0) {
-            (translate_from_spinner.selectedView as TextView).text = mTranslateFromLanguages[0]
+            (translate_from_spinner.selectedView as TextView).text = translateFromLanguages[0]
         }
         Handler().postDelayed({ checkTranslateFromLabelVisibility() }, 50)
     }
 
-    private fun updateAlternatives(context: Context) {
+    private fun updateAlternatives(alternatives: List<String>) {
+        if (!isAdded) return
         alternatives_linear_layout.removeAllViews()
-        alternatives_label.visibility = if (mLastAlternatives?.isNotEmpty() == true) View.VISIBLE else View.GONE
-        mLastAlternatives?.let {
+        alternatives_label.visibility = if (alternatives.isNotEmpty()) View.VISIBLE else View.GONE
+        alternatives.let {
             val margin4dp = 4.dpToPx
-            val textViewColor = ContextCompat.getColor(context, R.color.textBlackColor)
+            val textViewColor = ContextCompat.getColor(requireContext(), R.color.textBlackColor)
             val textViewParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
             textViewParams.setMargins(0, margin4dp, 0, margin4dp)
             it.forEach { alternative ->
@@ -431,16 +331,16 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     }
 
     private fun clearTextTapped() {
-        mLastTranslatedSentence = ""
+        viewModel.clearLastResponse()
         to_translate_edit_text.setText("")
         translated_edit_text.text = ""
         alternatives_label.visibility = View.GONE
         alternatives_linear_layout.removeAllViews()
-        if (mDetectedLanguage != null) {
+        if (viewModel.detectedLanguage != null) {
             hideDetectedLanguage()
             updateTranslateToSpinner()
         }
-        mListener.logEvent("clear_text", null)
+        viewModel.logEvent("clear_text", null)
     }
 
     private fun copyTranslatedTextToClipboard() {
@@ -450,14 +350,14 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         Snackbar.make(clear_to_translate_button,
                 R.string.copied_to_clipboard_text,
                 Snackbar.LENGTH_SHORT).show()
-        mListener.logEvent("copy_to_clipboard", null)
+        viewModel.logEvent("copy_to_clipboard", null)
     }
 
     private fun pasteTextFromClipboard() {
         val clipboardText = getClipboardText()
         if (clipboardText != null) {
             setToTranslateText(clipboardText)
-            mListener.logEvent("paste_from_clipboard", null)
+            viewModel.logEvent("paste_from_clipboard", null)
         } else {
             paste_fab_button.hide()
             Timber.w("Clipboard is null or primary clip is empty")
@@ -466,14 +366,14 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     private fun invertLanguages() {
         val safeContext = context ?: return
-        val oldTranslateFrom = when (mDetectedLanguage) {
-            null -> LanguageManager.getLanguageValue(mTranslateFromLanguages[translate_from_spinner.selectedItemPosition], safeContext)
-            else -> mDetectedLanguage ?: ""
+        val oldTranslateFrom = when (viewModel.detectedLanguage) {
+            null -> LanguageManager.getLanguageValue(translateFromLanguages[translate_from_spinner.selectedItemPosition], safeContext)
+            else -> viewModel.detectedLanguage ?: ""
         }
-        val oldTranslateTo = mTranslateToLanguages[translate_to_spinner.selectedItemPosition]
+        val oldTranslateTo = translateToLanguages[translate_to_spinner.selectedItemPosition]
 
         LanguageManager.saveLastUsedTranslateTo(safeContext, oldTranslateFrom)
-        for ((index, language) in mTranslateFromLanguages.withIndex()) {
+        for ((index, language) in translateFromLanguages.withIndex()) {
             if (language == oldTranslateTo) {
                 translate_from_spinner.setSelection(index)
                 val translateFromValue = LanguageManager.getLanguageValue(language, safeContext)
@@ -489,7 +389,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
                 .withEndAction { invert_languages_button.rotation = 0f }
                 .startDelay = 75
 
-        mListener.logEvent("invert_languages", null)
+        viewModel.logEvent("invert_languages", null)
     }
 
     private fun checkTranslateFromLabelVisibility() {
@@ -499,9 +399,10 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     }
 
     private fun updateTextToSpeechVisibility() {
-        if (mTextToSpeechInitialized && mLastTranslatedTo != null && !translated_edit_text.text.toString().isEmpty()) {
-            val locale = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech)
-            if (mTextToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
+        val lastTranslatedTo = viewModel.getLastTranslation()?.request?.toLanguage
+        if (textToSpeechInitialized && lastTranslatedTo != null && !translated_edit_text.text.toString().isEmpty()) {
+            val locale = LanguageManager.getLocaleFromLanguageValue(lastTranslatedTo, textToSpeech)
+            if (textToSpeech.isLanguageAvailable(locale) == TextToSpeech.LANG_AVAILABLE) {
                 text_to_speech_fab_button.show()
                 return
             }
@@ -509,17 +410,23 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
         text_to_speech_fab_button.hide()
     }
 
+    @Suppress("DEPRECATION")
     private fun onTextToSpeechTapped() {
-        if (!mTextToSpeechInitialized || mTextToSpeech.isSpeaking || translated_edit_text.text.toString().isEmpty() || mLastTranslatedTo == null) {
+        val lastTranslatedTo = viewModel.getLastTranslation()?.request?.toLanguage
+        if (!textToSpeechInitialized || textToSpeech.isSpeaking || translated_edit_text.text.toString().isEmpty() || lastTranslatedTo == null) {
             return
         }
-        if (mListener.currentMediaVolume > 0) {
-            mTextToSpeech.language = LanguageManager.getLocaleFromLanguageValue(mLastTranslatedTo, mTextToSpeech)
-            mTextToSpeech.speak(translated_edit_text.text.toString(), TextToSpeech.QUEUE_FLUSH, null)
+        if (listener.currentMediaVolume > 0) {
+            textToSpeech.language = LanguageManager.getLocaleFromLanguageValue(lastTranslatedTo, textToSpeech)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                textToSpeech.speak(translated_edit_text.text.toString(), TextToSpeech.QUEUE_FLUSH, null, null)
+            } else {
+                textToSpeech.speak(translated_edit_text.text.toString(), TextToSpeech.QUEUE_FLUSH, null)
+            }
         } else {
             Snackbar.make(clear_to_translate_button, R.string.volume_off_label, Snackbar.LENGTH_SHORT).show()
         }
-        mListener.logEvent("text_to_speech", null)
+        viewModel.logEvent("text_to_speech", null)
     }
 
     // endregion
@@ -537,6 +444,5 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
     interface OnFragmentInteractionListener {
         val currentMediaVolume: Int
         fun onSpeechToTextTapped(selectedLocale: String)
-        fun logEvent(event: String, bundle: Bundle?)
     }
 }

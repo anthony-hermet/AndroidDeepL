@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'io.fabric'
 
 ext {
-    koin_version = "2.0.0-alpha-3"
+    koin_version = "2.0.0-alpha-6"
 }
 
 android {
@@ -50,15 +50,15 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.0.0'
 
     // Google & Android libraries
-    implementation "androidx.appcompat:appcompat:1.1.0-alpha01"
-    implementation "com.google.android.material:material:1.1.0-alpha02"
+    implementation "androidx.appcompat:appcompat:1.1.0-alpha03"
+    implementation "com.google.android.material:material:1.1.0-alpha05"
     implementation "androidx.cardview:cardview:1.0.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.0.0-alpha2"
+    implementation "androidx.constraintlayout:constraintlayout:2.0.0-alpha3"
     withPlayServicesImplementation('com.crashlytics.sdk.android:crashlytics:2.9.7@aar') {
         transitive = true
     }
-    withPlayServicesImplementation 'com.google.firebase:firebase-core:16.0.6'
-    withPlayServicesImplementation 'com.google.firebase:firebase-config:16.1.2'
+    withPlayServicesImplementation 'com.google.firebase:firebase-core:16.0.8'
+    withPlayServicesImplementation 'com.google.firebase:firebase-config:16.4.1'
 
     // Other libraries
     implementation "com.squareup.retrofit2:retrofit:2.5.0"
@@ -70,9 +70,9 @@ dependencies {
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
 
     // ViewModel and LiveData
-    implementation "androidx.lifecycle:lifecycle-extensions:2.1.0-alpha01"
-    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.1.0-alpha01"
-    testImplementation "androidx.arch.core:core-testing:2.0.0"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.1.0-alpha03"
+    annotationProcessor "androidx.lifecycle:lifecycle-compiler:2.1.0-alpha03"
+    testImplementation "androidx.arch.core:core-testing:2.0.1"
 
     // Tests
     testImplementation "junit:junit:4.12"

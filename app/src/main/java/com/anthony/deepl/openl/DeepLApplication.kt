@@ -4,6 +4,7 @@ import android.app.Application
 import com.anthony.deepl.openl.di.deeplAppModule
 
 import com.anthony.deepl.openl.util.FirebaseManager
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 
@@ -20,6 +21,7 @@ class DeepLApplication : Application() {
         setupLogTool()
         startKoin {
             logger(Level.ERROR)
+            androidContext(this@DeepLApplication)
             modules(listOf(deeplAppModule))
         }
     }
