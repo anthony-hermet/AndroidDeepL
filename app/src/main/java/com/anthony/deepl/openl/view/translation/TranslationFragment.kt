@@ -66,7 +66,7 @@ class TranslationFragment : Fragment(), View.OnClickListener, AdapterView.OnItem
 
     override fun onStart() {
         super.onStart()
-        viewModel.liveTranslationResponse.observe(this, Observer { resource ->
+        viewModel.getLiveTranslationResponse().observe(this, Observer { resource ->
             if (resource !is FailureResource) {
                 retrySnackBar?.let {
                     it.dismiss()

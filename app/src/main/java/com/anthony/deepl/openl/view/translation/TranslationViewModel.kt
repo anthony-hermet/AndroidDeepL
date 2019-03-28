@@ -3,28 +3,40 @@ package com.anthony.deepl.openl.view.translation
 import android.app.Application
 import android.os.Bundle
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.anthony.deepl.openl.backend.DeepLService
 import com.anthony.deepl.openl.manager.LanguageManager
 import com.anthony.deepl.openl.model.*
 import com.anthony.deepl.openl.util.FirebaseManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
 import java.util.ArrayList
+import kotlin.coroutines.CoroutineContext
 
 class TranslationViewModel(private val app: Application,
                            private val deepLService: DeepLService,
-                           private val firebaseManager: FirebaseManager) : AndroidViewModel(app) {
+                           private val firebaseManager: FirebaseManager) : AndroidViewModel(app), CoroutineScope {
 
     companion object {
-        private const val REQUEST_DELAY_MS = 800
+        private const val REQUEST_DELAY_MS = 800L
     }
 
-    val liveTranslationResponse = MutableLiveData<ResultResource<CompletedTranslation>>()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO
+
+    private val liveTranslationResponse = MutableLiveData<ResultResource<CompletedTranslation>>()
+    fun getLiveTranslationResponse(): LiveData<ResultResource<CompletedTranslation>> = liveTranslationResponse
+
     var lastRequest: TranslationRequest? = null
     var detectedLanguage: String? = null
+    private var currentRequest: Job? = null
 
     init {
         liveTranslationResponse.postValue(IdleResource())
@@ -69,7 +81,11 @@ class TranslationViewModel(private val app: Application,
                 "LMT_handle_jobs")
         if (lastRequest != request) {
             lastRequest = request
-            sendTranslationRequest(request)
+            currentRequest?.cancel()
+            currentRequest = launch {
+                Thread.sleep(REQUEST_DELAY_MS)
+                sendTranslationRequest(request)
+            }
         }
     }
 
